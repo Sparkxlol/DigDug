@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "Spritesheet.h"
+#include "DigDug.h"
 
 int main()
 {
