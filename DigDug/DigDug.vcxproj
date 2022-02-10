@@ -147,37 +147,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animator.cpp" />
-    <ClCompile Include="DigDug.cpp" />
-    <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="Fire.cpp" />
-    <ClCompile Include="Fygar.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Level.cpp" />
-    <ClCompile Include="Pooka.cpp" />
-    <ClCompile Include="Rock.cpp" />
-    <ClCompile Include="Sand.cpp" />
-    <ClCompile Include="Score.cpp" />
-    <ClCompile Include="Shot.cpp" />
+    <ClCompile Include="DigDug.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Spritesheet.cpp" />
-    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animator.h" />
     <ClInclude Include="DigDug.h" />
-    <ClInclude Include="Enemy.h" />
-    <ClInclude Include="Fire.h" />
-    <ClInclude Include="Fygar.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="Level.h" />
-    <ClInclude Include="Pooka.h" />
-    <ClInclude Include="Rock.h" />
-    <ClInclude Include="Sand.h" />
-    <ClInclude Include="Score.h" />
-    <ClInclude Include="Shot.h" />
     <ClInclude Include="Spritesheet.h" />
-    <ClInclude Include="UI.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
