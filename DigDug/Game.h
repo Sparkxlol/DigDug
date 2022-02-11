@@ -30,7 +30,7 @@ public:
 private:
 	DigDug* digDug;
 	std::vector<Fygar*> fygars;
-	std::vector<Pooka*> pookas;
+	//std::vector<Pooka*> pookas;
 	std::vector<Rock*> rocks;
 	std::vector<Sand*> sand;
 	std::vector<Level*> levels;

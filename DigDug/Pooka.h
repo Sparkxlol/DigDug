@@ -1,5 +1,6 @@
 #pragma once
-#include "Pooka.h"
+/*
+#include "Enemy.h"
 
 class Pooka : public Enemy
 {
@@ -7,6 +8,6 @@ public:
 	Pooka();
 	~Pooka();
 
-	void update();
-};
+	//void update();
+};*/
 
