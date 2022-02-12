@@ -14,16 +14,14 @@ public:
 	sf::Vector2f getPosition();
 	bool getCanMove();
 	sf::FloatRect* getCollider(); 
-	sf::RenderWindow* getWindow();
 
 	void setActive(const bool&);
 	void setPosition(const sf::Vector2f);
 	bool setCanMove(const bool&);
 
-
 	void move(sf::Vector2f);
 
-	//virtual void update() = 0;
+	virtual void update() = 0;
 	virtual void drawObject();
 
 private:
@@ -31,7 +29,7 @@ private:
 	sf::Vector2f position;
 	sf::FloatRect boundingBox;
 	Spritesheet* spritesheet;
-	Animator* anim;
+	Animator anim;
  	sf::RenderWindow* window;
 };
 

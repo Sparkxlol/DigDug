@@ -1,10 +1,15 @@
 #include "GameObject.h"
 
-GameObject::GameObject()
+
+// GameObject default constructor which intializes pointers to nullptr
+// and booleans to false.
+GameObject::GameObject() : anim(nullptr)
 {
 	spritesheet = nullptr;
 	anim = nullptr;
  	window = nullptr;
+	canMove = false;
+	isActive = false;
 }
 
 
@@ -13,9 +18,9 @@ GameObject::~GameObject()
 }
 
 
-GameObject::GameObject(Spritesheet* s, sf::Vector2f pos, sf::RenderWindow* win)
+// Sets booleans to true and creates animator with passed in spritesheet.
+GameObject::GameObject(Spritesheet* s, sf::Vector2f pos, sf::RenderWindow* win) : anim(s)
 {
-	//set position, active, and move
 	position = pos;
 	isActive = true;
 	canMove = true;
@@ -24,34 +29,36 @@ GameObject::GameObject(Spritesheet* s, sf::Vector2f pos, sf::RenderWindow* win)
 }
 
 
+// Returns if object is alive(true)/dead(false)
 bool GameObject::getActive()
 {
 	return isActive;
 }
 
 
+// Returns the position of the spritesheet.
 sf::Vector2f GameObject::getPosition()
 {
 	return position;
 }
 
 
+// Returns if the object can currently move.
 bool GameObject::getCanMove()
 {
 	return canMove;
 }
 
 
+// Returns the collider/FloatRect of the object to check
+// collisions with other objects.
 sf::FloatRect* GameObject::getCollider()
 {
 	return &boundingBox;
 }
 
-sf::RenderWindow* GameObject::getWindow()
-{
-	return window;
-}
 
+// Sets if object is dead/alive.
 void GameObject::setActive(const bool &a)
 {
 	isActive = a;
@@ -60,6 +67,7 @@ void GameObject::setActive(const bool &a)
 }
 
 
+// Sets position of the spritesheet.
 void GameObject::setPosition(const sf::Vector2f a)
 {
 	position = a;
@@ -68,6 +76,7 @@ void GameObject::setPosition(const sf::Vector2f a)
 }
 
 
+// Sets if object is currently allowed to move.
 bool GameObject::setCanMove(const bool &a)
 {
 	canMove = a;
@@ -75,7 +84,8 @@ bool GameObject::setCanMove(const bool &a)
 	return a;
 }
 
-	
+
+// Move the object in x and y direction.
 void GameObject::move(sf::Vector2f amount)
 {
 	//move "amount" in a direction
@@ -83,6 +93,9 @@ void GameObject::move(sf::Vector2f amount)
 	return;
 }
 
+
+
+// Draws the object onto the window.
 void GameObject::drawObject()
 {
 	window->draw(*spritesheet);
