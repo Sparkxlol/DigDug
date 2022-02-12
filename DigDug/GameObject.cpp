@@ -3,13 +3,10 @@
 
 // GameObject default constructor which intializes pointers to nullptr
 // and booleans to false.
-GameObject::GameObject() : anim(nullptr)
-{
-	spritesheet = nullptr;
-	anim = nullptr;
- 	window = nullptr;
-	canMove = false;
+GameObject::GameObject() : GameObject(nullptr, sf::Vector2f(0, 0), nullptr)
+{ 
 	isActive = false;
+	canMove = false;
 }
 
 
@@ -19,13 +16,11 @@ GameObject::~GameObject()
 
 
 // Sets booleans to true and creates animator with passed in spritesheet.
-GameObject::GameObject(Spritesheet* s, sf::Vector2f pos, sf::RenderWindow* win) : anim(s)
+GameObject::GameObject(Spritesheet* s, sf::Vector2f pos, sf::RenderWindow* win)
+	: anim(s), window(win), spritesheet(s), position(pos)
 {
-	position = pos;
 	isActive = true;
-	canMove = true;
-	window = win;
-	spritesheet = s;
+	canMove = false;
 }
 
 

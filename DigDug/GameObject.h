@@ -21,11 +21,12 @@ public:
 
 	void move(sf::Vector2f);
 
-	virtual void update() = 0;
+	virtual void update() = 0; // Runs every frame and should update collisions, but not draw object.
 	virtual void drawObject();
+	virtual void collide() = 0; // Checks collisions with objects that most affect player.
 
 private:
-	bool isActive, canMove;
+	bool isActive, canMove; // If not active, do not run update.
 	sf::Vector2f position;
 	sf::FloatRect boundingBox;
 	Spritesheet* spritesheet;

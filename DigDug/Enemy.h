@@ -5,14 +5,17 @@ class Enemy : public GameObject
 {
 public:
 	Enemy();
-	/*
-	bool getCanFloat(); 
-	int getCurrentPump();
-	void die();
+	~Enemy();
+	Enemy(Spritesheet*, sf::Vector2f, sf::RenderWindow*);
+
+	void increaseCurrentPump(int);
+
+	virtual void collide() = 0;
 	virtual void update() = 0;
-	*/
+	virtual void movement() = 0;
+
 private:
-	//bool canFloat;
-	//int currentPump;
+	bool canFloat;
+	int currentPump;
 };
 

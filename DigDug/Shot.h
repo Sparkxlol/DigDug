@@ -4,8 +4,10 @@
 class Shot : public GameObject
 {
 public:
-	Shot();
-	//void shoot(Vector2f);
-	//void update();
+	Shot(Spritesheet*, sf::Vector2f, sf::RenderWindow*);
+	~Shot();
+	void shoot(sf::Vector2f, int);
+	void update();
+	void collide();
 };
 

@@ -1,8 +1,12 @@
 #include "DigDug.h"
 
-DigDug::DigDug()
+enum Input { up, down, left, right, z, none };
+
+
+DigDug::DigDug() : DigDug(nullptr, nullptr, sf::Vector2f(0, 0), nullptr)
 {
-	//if you're here you are wrong
+	speed = 0.0f;
+	input = none;
 }
 
 
@@ -12,39 +16,69 @@ DigDug::~DigDug()
 }
 
 
-DigDug::DigDug(Spritesheet* s) : GameObject(s, , sf::RenderWindow* win))
+DigDug::DigDug(Spritesheet* s, Spritesheet* shotS, sf::Vector2f pos, sf::RenderWindow* win)
+	: shot(shotS, pos, win), GameObject(s, pos, win) 
 {
-	canMove = true;
 	speed = .5f;
-}
-
-/*
-Shot& DigDug::getShot()
-{
-	return shot;
+	input = none;
 }
 
 
+// Runs the shoot method from shot.
 void DigDug::shoot()
 {
-	
+
 }
-*/
+
 
 void DigDug::update()
 {
-	
+	// Checks player inputs
+
+	// Checks collision
+
+	// Updates animator
 }
 
 
+// Draws digDug but also calls the shot's drawObject.
+void DigDug::drawObject()
+{
+
+}
+
+
+void DigDug::collide()
+{
+	// Checks collision with sand using input of direction.
+	// If alligned properly with sand move toward sand, if not
+	// move the direction of previous input, based on sand
+	// mask. When moving towards sand, should run sand mask variable
+	// with player direction and position. 
+
+	// Checks collision with enemy, dies if touches.
+
+	// Checks collision with rock, dies if rock is falling.
+
+}
+
+
+// Takes input for movement using the arrow keys
+// and takes input to shoot using the Z key
 void DigDug::playerInput()
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		move(sf::Vector2f(speed, 0));
+		input = right;
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-		move(sf::Vector2f(speed, 0));
+		input = left;
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-		move(sf::Vector2f(speed, 0));
+		input = up;
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-		move(sf::Vector2f(speed, 0));
+		input = down;
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+		input = z;
+	else
+		input = none;
+
+	// If player presses Z, shoot the shot and prevent movement.
 }

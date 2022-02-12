@@ -8,15 +8,18 @@ class DigDug : public GameObject
 public:
 	DigDug();
 	~DigDug();
-	DigDug(Spritesheet*);
+	DigDug(Spritesheet*, Spritesheet*, sf::Vector2f, sf::RenderWindow*);
 
-	//Shot& getShot();
-	//void shoot();
-	void update();
+	void shoot();
 	void playerInput();
+
+	void update() override;
+	void drawObject() override;
+	void collide() override;
+
 private:
-	bool canMove;
-	//Shot shot;
+	int input;
+	Shot shot;
 	float speed;
 };
 
