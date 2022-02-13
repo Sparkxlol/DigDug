@@ -31,6 +31,12 @@ void DigDug::shoot()
 }
 
 
+void DigDug::die()
+{
+	// 
+}
+
+
 void DigDug::update()
 {
 	// Checks player inputs

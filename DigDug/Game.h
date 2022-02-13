@@ -18,19 +18,20 @@ public:
 	Game();
 	~Game();
 
-	void update();
-	void setupTextures();//Not really textures
+	void setupObjects(); 
 	void setupLevels();
 	void loadLevel(int); // input is level number 
-	void drawObjects();
-	void playerInputs(); // for pause menu or something else
 
-	int enemiesLeft();
+	bool enemiesLeft();
+
+	void playerInputs(); // for pause menu or something else
+	void update();
+	void drawObjects();
 
 private:
 	DigDug* digDug;
 	std::vector<Fygar*> fygars;
-	//std::vector<Pooka*> pookas;
+	std::vector<Pooka*> pookas;
 	std::vector<Rock*> rocks;
 	std::vector<Sand*> sand;
 	std::vector<Level*> levels;
@@ -39,6 +40,7 @@ private:
 	int currentLevel;
 	UI* ui;
 	sf::RenderWindow* window;
+	std::vector<Spritesheet*> sprites;
 	std::vector<std::string> fileLocations;
 };
 

@@ -1,5 +1,4 @@
 #pragma once
-#include "Spritesheet.h"
 #include "GameObject.h"
 #include "Shot.h"
 
@@ -12,6 +11,7 @@ public:
 
 	void shoot();
 	void playerInput();
+	void die();
 
 	void update() override;
 	void drawObject() override;
