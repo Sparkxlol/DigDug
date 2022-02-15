@@ -16,13 +16,15 @@ Fygar::~Fygar()
 Fygar::Fygar(Spritesheet* s, Spritesheet* fireS, sf::Vector2f pos, sf::RenderWindow* win)
 	: Enemy(s, pos, win), fire(fireS, pos, win)
 {
-
+	
 }
 
 
 void Fygar::shootFire()
 {
 	// Sets fire active and uses its shoot method
+	fire.setActive();
+	fire.shoot();
 }
 
 
@@ -31,16 +33,19 @@ void Fygar::update()
 	// Update movement
 
 	// Check collisions
-
+	Fygar.collide();
 	// Update animator
 
 	// Updates fire
+	fire.update();
 }
 
 
 void Fygar::drawObject()
 {
 	// Calls overrided draw, but also calls the fires
+
+	fire.drawObject();
 }
 
 
@@ -55,6 +60,6 @@ void Fygar::movement()
 	// Moves until hits wall, using collision checks
 
 	// When stuck floats periodically
-
+	
 	// If in range of player moves toward player and shoots fire.
 }

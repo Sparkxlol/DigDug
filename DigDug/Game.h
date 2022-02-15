@@ -29,13 +29,7 @@ public:
 	void drawObjects();
 
 private:
-	DigDug* digDug;
-	std::vector<Fygar*> fygars;
-	std::vector<Pooka*> pookas;
-	std::vector<Rock*> rocks;
-	std::vector<Sand*> sand;
 	std::vector<Level*> levels;
-	std::vector<Score*> scores;
 
 	int currentLevel;
 	UI* ui;

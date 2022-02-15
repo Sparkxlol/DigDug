@@ -1,7 +1,8 @@
 #include "Rock.h"
 
 Rock::Rock() : Rock(nullptr, sf::Vector2f(0, 0), nullptr)
-{ }
+{ 
+}
 
 
 Rock::~Rock()
@@ -11,8 +12,10 @@ Rock::~Rock()
 
 
 Rock::Rock(Spritesheet* s, sf::Vector2f pos, sf::RenderWindow* win)
-	: GameObject(s, pos, win), isFalling(false)
-{ }
+	: GameObject(s, pos, win)
+{ 
+	isFalling = false;
+}
 
 
 

@@ -18,7 +18,6 @@ public:
 	void collide() override;
 
 private:
-	int input;
 	Shot shot;
 	float speed;
 };

@@ -9,7 +9,6 @@ DigDug::DigDug() : DigDug(nullptr, nullptr, sf::Vector2f(0, 0), nullptr)
 	input = none;
 }
 
-
 DigDug::~DigDug()
 {
 
@@ -27,7 +26,7 @@ DigDug::DigDug(Spritesheet* s, Spritesheet* shotS, sf::Vector2f pos, sf::RenderW
 // Runs the shoot method from shot.
 void DigDug::shoot()
 {
-
+	shot.shoot();
 }
 
 
@@ -73,6 +72,8 @@ void DigDug::collide()
 // and takes input to shoot using the Z key
 void DigDug::playerInput()
 {
+	int input;
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 		input = right;
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
@@ -82,9 +83,31 @@ void DigDug::playerInput()
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 		input = down;
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+	{
 		input = z;
+		setCanMove(false);
+	}
 	else
 		input = none;
 
+	switch(input)
+	{
+	case up:
+		break; 
+	case down:
+		break; 
+	case left:
+		break;
+	case right:
+		break;
+	case z:
+		break; 
+	case none:
+		break;
+	default:
+	}
+
+	//set coordinate to move in switch statement above.
+	//move()
 	// If player presses Z, shoot the shot and prevent movement.
 }
