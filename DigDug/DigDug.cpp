@@ -39,9 +39,9 @@ void DigDug::die()
 
 void DigDug::update()
 {
-	// Checks player inputs
-
 	// Checks collision
+
+	// Checks player inputs
 
 	// Updates animator
 }

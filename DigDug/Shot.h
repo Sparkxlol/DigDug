@@ -4,10 +4,11 @@
 class Shot : public GameObject
 {
 public:
-	Shot(Spritesheet*, sf::Vector2f, sf::RenderWindow*);
+	Shot();
 	~Shot();
+	Shot(Spritesheet* s, sf::Vector2f playerPos, sf::RenderWindow* win);
 	void shoot(sf::Vector2f, int);
-	void update();
-	void collide();
+	void update() override;
+	void collide() override;
 };
 

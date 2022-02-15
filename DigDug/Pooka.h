@@ -6,7 +6,9 @@ class Pooka : public Enemy
 public:
 	Pooka();
 	~Pooka();
-
-	//void update();
+	Pooka(Spritesheet*, sf::Vector2f, sf::RenderWindow*);
+	void update() override;
+	void collide() override;
+	void movement() override;
 };
 

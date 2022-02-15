@@ -1,7 +1,7 @@
 #include "Shot.h"
 
-Shot::Shot(Spritesheet* s, sf::Vector2f playerPos, sf::RenderWindow* win)
-	: GameObject(s, playerPos, win)
+
+Shot::Shot() : Shot(nullptr, sf::Vector2f(0, 0), nullptr)
 {
 
 }
@@ -10,6 +10,13 @@ Shot::Shot(Spritesheet* s, sf::Vector2f playerPos, sf::RenderWindow* win)
 Shot::~Shot()
 {
 	// Deconstructor 
+}
+
+
+Shot::Shot(Spritesheet* s, sf::Vector2f playerPos, sf::RenderWindow* win)
+	: GameObject(s, playerPos, win)
+{
+
 }
 
 
@@ -26,11 +33,11 @@ void Shot::shoot(sf::Vector2f playerPos, int direction)
 
 void Shot::update()
 {
+	// Checks collision
+
 	// Updates the animator
 
 	// If animation is done and nothing is hit, set not active
-
-	// Checks collision
 }
 
 

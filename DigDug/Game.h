@@ -40,7 +40,6 @@ private:
 	int currentLevel;
 	UI* ui;
 	sf::RenderWindow* window;
-	std::vector<Spritesheet*> sprites;
 	std::vector<std::string> fileLocations;
 };
 

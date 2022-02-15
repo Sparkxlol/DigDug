@@ -6,10 +6,14 @@ class Fygar : public Enemy
 {
 public:
 	Fygar();
-	//breathFire();
-	//Fire* getFire();
-	//void update();
+	~Fygar();
+	Fygar(Spritesheet*, Spritesheet*, sf::Vector2f, sf::RenderWindow*);
+	void shootFire();
+	void update() override;
+	void drawObject() override;
+	void collide() override;
+	void movement() override;
 private:
-	//Fire* fire;
+	Fire fire;
 };
 
