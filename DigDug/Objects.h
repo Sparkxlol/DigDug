@@ -15,8 +15,11 @@ public:
 	~Objects();
 
 	DigDug* getDigDug();
-
-
+	Fygar* getFygar();
+	Pooka* getPooka();
+	Rock* getRock();
+	Sand* getSand();
+	Score* getScore();
 
 private:
 	DigDug* digDug;

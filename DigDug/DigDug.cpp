@@ -1,12 +1,10 @@
 #include "DigDug.h"
 
-enum Input { up, down, left, right, z, none };
-
 
 DigDug::DigDug() : DigDug(nullptr, nullptr, sf::Vector2f(0, 0), nullptr)
 {
 	speed = 0.0f;
-	input = none;
+	shooting = false;
 }
 
 DigDug::~DigDug()
@@ -18,15 +16,16 @@ DigDug::~DigDug()
 DigDug::DigDug(Spritesheet* s, Spritesheet* shotS, sf::Vector2f pos, sf::RenderWindow* win)
 	: shot(shotS, pos, win), GameObject(s, pos, win) 
 {
-	speed = .5f;
-	input = none;
+	speed = .025f;
+	shooting = false;
 }
 
 
 // Runs the shoot method from shot.
 void DigDug::shoot()
 {
-	shot.shoot();
+	shot.shoot(getPosition(), getDirection());
+	shooting = true;
 }
 
 
@@ -39,17 +38,21 @@ void DigDug::die()
 void DigDug::update()
 {
 	// Checks collision
+	collide();
 
 	// Checks player inputs
+	playerInput();
 
 	// Updates animator
+	anim.playAnimation();
 }
 
 
 // Draws digDug but also calls the shot's drawObject.
 void DigDug::drawObject()
 {
-
+	window->draw(*spritesheet);
+	shot.drawObject();
 }
 
 
@@ -93,18 +96,44 @@ void DigDug::playerInput()
 	switch(input)
 	{
 	case up:
+		move(sf::Vector2f(0, -speed));
+		if (getDirection() != up || anim.getActive() == false)
+		{
+			setDirection(up);
+			anim.setAnimation(2, 3, .2f, true);
+		}
 		break; 
 	case down:
+		move(sf::Vector2f(0, speed));
+		if (getDirection() != down || anim.getActive() == false)
+		{
+			setDirection(down);
+			anim.setAnimation(6, 7, .2f, true);
+		}
 		break; 
 	case left:
+		move(sf::Vector2f(-speed, 0));
+		if (getDirection() != left || anim.getActive() == false)
+		{
+			setDirection(left);
+			anim.setAnimation(4, 5, .2f, true);
+		}
 		break;
 	case right:
+		move(sf::Vector2f(speed, 0));
+		if (getDirection() != right || anim.getActive() == false)
+		{
+			setDirection(right);
+			anim.setAnimation(0, 1, .2f, true);
+		}
 		break;
 	case z:
+		shoot();
 		break; 
-	case none:
-		break;
 	default:
+		anim.setActive(false);
+		break;
+		// nothing
 	}
 
 	//set coordinate to move in switch statement above.

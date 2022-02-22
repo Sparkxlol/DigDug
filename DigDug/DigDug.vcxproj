@@ -157,8 +157,6 @@
     <ClCompile Include="Fygar.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Level.cpp" />
-    <ClCompile Include="Objects.cpp" />
     <ClCompile Include="Pooka.cpp" />
     <ClCompile Include="Rock.cpp" />
     <ClCompile Include="Sand.cpp" />
@@ -175,8 +173,6 @@
     <ClInclude Include="Fygar.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="Level.h" />
-    <ClInclude Include="Objects.h" />
     <ClInclude Include="Pooka.h" />
     <ClInclude Include="Rock.h" />
     <ClInclude Include="Sand.h" />

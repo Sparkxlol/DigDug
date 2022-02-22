@@ -2,6 +2,7 @@
 
 Rock::Rock() : Rock(nullptr, sf::Vector2f(0, 0), nullptr)
 { 
+	isFalling = false;
 }
 
 

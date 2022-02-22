@@ -7,6 +7,7 @@ GameObject::GameObject() : GameObject(nullptr, sf::Vector2f(0, 0), nullptr)
 { 
 	isActive = false;
 	canMove = false;
+	direction = 0;
 }
 
 
@@ -17,10 +18,18 @@ GameObject::~GameObject()
 
 // Sets booleans to true and creates animator with passed in spritesheet.
 GameObject::GameObject(Spritesheet* s, sf::Vector2f pos, sf::RenderWindow* win)
-	: anim(s), window(win), spritesheet(s), position(pos)
+	: anim(s), window(win), spritesheet(s)
 {
 	isActive = true;
 	canMove = false;
+	direction = 0;
+}
+
+
+// Returns the direction of the animation and object
+int GameObject::getDirection()
+{
+	return direction;
 }
 
 
@@ -34,7 +43,7 @@ bool GameObject::getActive()
 // Returns the position of the spritesheet.
 sf::Vector2f GameObject::getPosition()
 {
-	return position;
+	return spritesheet->getPosition();
 }
 
 
@@ -45,6 +54,7 @@ bool GameObject::getCanMove()
 }
 
 
+/*
 // Returns the collider/FloatRect of the object to check
 // collisions with other objects.
 sf::FloatRect* GameObject::getCollider()
@@ -53,19 +63,43 @@ sf::FloatRect* GameObject::getCollider()
 }
 
 
-// Sets if object is dead/alive.
-void GameObject::setActive(const bool &a)
+// Returns the animator to set animations / frame changes
+Animator* GameObject::getAnimator()
 {
-	isActive = a;
+	return &anim;
+}
+
+
+// Returns the window to allow overridden drawObjects to function
+sf::RenderWindow* GameObject::getWindow()
+{
+	return window;
+}
+*/
+
+
+// Sets the direction of the animation and object
+void GameObject::setDirection(const int &dir)
+{
+	direction = dir;
+
+	return;
+}
+
+
+// Sets if object is dead/alive.
+void GameObject::setActive(const bool &active)
+{
+	isActive = active;
 
 	return;
 }
 
 
 // Sets position of the spritesheet.
-void GameObject::setPosition(const sf::Vector2f a)
+void GameObject::setPosition(const sf::Vector2f pos)
 {
-	position = a;
+	spritesheet->setPosition(pos);
 
 	return;
 }
@@ -85,6 +119,7 @@ void GameObject::move(sf::Vector2f amount)
 {
 	//move "amount" in a direction
 	spritesheet->move(amount);
+
 	return;
 }
 

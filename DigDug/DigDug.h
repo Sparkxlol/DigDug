@@ -18,7 +18,9 @@ public:
 	void collide() override;
 
 private:
+	bool shooting;
 	Shot shot;
 	float speed;
+	enum Input { up, down, left, right, z, none };
 };
 

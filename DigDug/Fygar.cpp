@@ -23,8 +23,8 @@ Fygar::Fygar(Spritesheet* s, Spritesheet* fireS, sf::Vector2f pos, sf::RenderWin
 void Fygar::shootFire()
 {
 	// Sets fire active and uses its shoot method
-	fire.setActive();
-	fire.shoot();
+	fire.setActive(true);
+	fire.shoot(getPosition(), getDirection());
 }
 
 
@@ -33,7 +33,7 @@ void Fygar::update()
 	// Update movement
 
 	// Check collisions
-	Fygar.collide();
+	collide();
 	// Update animator
 
 	// Updates fire

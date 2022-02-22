@@ -21,7 +21,7 @@ Score::Score(Spritesheet* s)
 
 bool getActive()
 {
-
+	return true;
 }
 
 

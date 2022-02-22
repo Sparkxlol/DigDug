@@ -10,11 +10,15 @@ public:
 	~GameObject();
 	GameObject(Spritesheet*, sf::Vector2f, sf::RenderWindow*);
 
+	int getDirection();
 	bool getActive();
 	sf::Vector2f getPosition();
 	bool getCanMove();
-	sf::FloatRect* getCollider(); 
+	//sf::FloatRect* getCollider(); // Could all be protected instead of get/set :)
+	//Animator* getAnimator();
+	//sf::RenderWindow* getWindow();
 
+	void setDirection(const int&);
 	void setActive(const bool&);
 	void setPosition(const sf::Vector2f);
 	bool setCanMove(const bool&);
@@ -25,12 +29,14 @@ public:
 	virtual void drawObject();
 	virtual void collide() = 0; // Checks collisions with objects that most affect player.
 
-private:
-	bool isActive, canMove; // If not active, do not run update.
-	sf::Vector2f position;
+protected:
 	sf::FloatRect boundingBox;
 	Spritesheet* spritesheet;
 	Animator anim;
- 	sf::RenderWindow* window;
+	sf::RenderWindow* window;
+
+private:
+	int direction; // Direction of object animation, *might change to enum class*
+	bool isActive, canMove; // If not active, do not run update.
 };
 

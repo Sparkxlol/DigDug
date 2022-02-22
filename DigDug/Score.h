@@ -17,6 +17,6 @@ private:
 	Spritesheet* sprite;
 	sf::Clock clock;
 	bool isActive;
-	int deathTime; // Time until object is nonActive.
+	float deathTime; // Time until object is nonActive.
 };
 
