@@ -20,6 +20,8 @@ GameObject::~GameObject()
 GameObject::GameObject(Spritesheet* s, sf::Vector2f pos, sf::RenderWindow* win)
 	: anim(s), window(win), spritesheet(s)
 {
+	setPosition(pos);
+
 	isActive = true;
 	canMove = false;
 	direction = 0;
@@ -54,15 +56,18 @@ bool GameObject::getCanMove()
 }
 
 
-/*
+
 // Returns the collider/FloatRect of the object to check
 // collisions with other objects.
-sf::FloatRect* GameObject::getCollider()
+sf::FloatRect& GameObject::getCollider()
 {
-	return &boundingBox;
+	boundingBox = spritesheet->getGlobalBounds();
+
+	return boundingBox;
 }
 
 
+/*
 // Returns the animator to set animations / frame changes
 Animator* GameObject::getAnimator()
 {

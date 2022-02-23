@@ -14,7 +14,7 @@ public:
 	bool getActive();
 	sf::Vector2f getPosition();
 	bool getCanMove();
-	//sf::FloatRect* getCollider(); // Could all be protected instead of get/set :)
+	sf::FloatRect& getCollider(); // Could all be protected instead of get/set :)
 	//Animator* getAnimator();
 	//sf::RenderWindow* getWindow();
 

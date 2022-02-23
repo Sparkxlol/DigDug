@@ -3,7 +3,7 @@
 
 Shot::Shot() : Shot(nullptr, sf::Vector2f(0, 0), nullptr)
 {
-
+	setActive(false);
 }
 
 
@@ -16,7 +16,7 @@ Shot::~Shot()
 Shot::Shot(Spritesheet* s, sf::Vector2f playerPos, sf::RenderWindow* win)
 	: GameObject(s, playerPos, win)
 {
-
+	setActive(false);
 }
 
 

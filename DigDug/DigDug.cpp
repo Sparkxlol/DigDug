@@ -31,7 +31,7 @@ void DigDug::shoot()
 
 void DigDug::die()
 {
-	// 
+	setActive(false);
 }
 
 
