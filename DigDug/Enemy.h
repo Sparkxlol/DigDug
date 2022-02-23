@@ -8,7 +8,7 @@ public:
 	~Enemy();
 	Enemy(Spritesheet*, sf::Vector2f, sf::RenderWindow*);
 
-	void increaseCurrentPump(int);
+	void changeCurrentPump(int);
 
 	virtual void collide() = 0;
 	virtual void update() = 0;

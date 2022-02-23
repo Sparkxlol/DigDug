@@ -27,6 +27,7 @@ void Pooka::update()
 	// Check collisions
 
 	// Update animator
+	
 }
 
 

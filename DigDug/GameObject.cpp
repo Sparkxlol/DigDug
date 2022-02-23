@@ -133,7 +133,8 @@ void GameObject::move(sf::Vector2f amount)
 // Draws the object onto the window.
 void GameObject::drawObject()
 {
-	window->draw(*spritesheet);
+	if(isActive)
+		window->draw(*spritesheet);
 
 	return;
 }

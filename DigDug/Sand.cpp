@@ -65,7 +65,6 @@ void Sand::changeSand(sf::Vector2f playerPos, int dir)
 		break;
 	}
 
-	/*
 	// Finds out which sprite to load based on the current corresponding masking.
 	// Should be optimized, probably >.<
 	if (topMask > 0 && bottomMask > 0 && leftMask > 0 && rightMask > 0)
@@ -87,14 +86,13 @@ void Sand::changeSand(sf::Vector2f playerPos, int dir)
 	else if (bottomMask > 0 && leftMask > 0)
 		foreground->loadSprite(8);
 	else if (leftMask > 0 || rightMask > 0)
-		foreground->loadSprite(6);
-	else if (topMask > 0 || bottomMask > 0)
 		foreground->loadSprite(5);
-	*/
+	else if (topMask > 0 || bottomMask > 0)
+		foreground->loadSprite(4);
 
 	// Make sure that the current height and width is not greater than 16.
 	int height = (topMask + bottomMask > 16) ? 0 : 16 - topMask - bottomMask;
-	int width = (leftMask + rightMask > 16) ? 0 : 16 - leftMask - rigthMask;
+	int width = (leftMask + rightMask > 16) ? 0 : 16 - leftMask - rightMask;
 
 	// Sets the top and the left of the mask to the current sprite plus the mask.
 	// Sets the width and height to the total masking or 16.
@@ -119,7 +117,7 @@ void Sand::reset(int spriteIndex, sf::Vector2f pos, int initialFore, int initial
 	// Sprite index is for color changes.
 	
 	background2->setPosition(pos);
-	background2->setTextureRect(sf::IntRect(initialFore, initialBack, 16, 16);
+	background2->setTextureRect(sf::IntRect(initialFore, initialBack, 16, 16));
 	background2->loadSprite(spriteIndex);
 	background->loadSprite(spriteIndex);
 }

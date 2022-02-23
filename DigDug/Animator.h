@@ -14,6 +14,7 @@ public:
 	void playAnimation();
 	void playAnimation(float newFrameLength);
 
+	bool getFinished();
 	void setActive(bool active);
 	bool getActive();
 	int getFrame();
@@ -27,5 +28,6 @@ private:
 	int currentIndex; // sprite index that animation is currently on.
 	float frameLength; // how long each frame lasts for until updating.
 	bool active; // runs animation if true.
+	bool animFinished;
 };
 

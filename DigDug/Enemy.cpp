@@ -20,8 +20,9 @@ Enemy::Enemy(Spritesheet* s, sf::Vector2f pos, sf::RenderWindow* win)
 }
 
 
-// Increases the pump amount
-void Enemy::increaseCurrentPump(int pump)
+// Changes the pump amount
+// Input can be a negative number (Owen)
+void Enemy::changeCurrentPump(int pump)
 {
-
+	currentPump += pump;
 }

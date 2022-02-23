@@ -10,6 +10,7 @@ Animator::Animator(Spritesheet* sprite)
 	currentIndex = 0;
 	frameLength = .0f;
 	active = false;
+	animFinished = false;
 }
 
 
@@ -51,9 +52,13 @@ void Animator::playAnimation()
 	{
 		if (clock.getElapsedTime().asSeconds() >= frameLength)
 		{
+			if (getFrame() == maxIndex)
+				animFinished = true;
 			nextFrame();
 			clock.restart(); // Restarts clock to 0.
 		}
+		else
+			animFinished = false;
 	}
 }
 
@@ -64,6 +69,12 @@ void Animator::playAnimation(float newFrameLength)
 {
 	frameLength = newFrameLength;
 	playAnimation();
+}
+
+
+bool Animator::getFinished()
+{
+	return animFinished;
 }
 
 

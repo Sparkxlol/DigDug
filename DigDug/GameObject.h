@@ -34,6 +34,7 @@ protected:
 	Spritesheet* spritesheet;
 	Animator anim;
 	sf::RenderWindow* window;
+	enum Input { up, down, left, right, z, none };
 
 private:
 	int direction; // Direction of object animation, *might change to enum class*

@@ -42,6 +42,7 @@ void DigDug::update()
 
 	// Checks player inputs
 	playerInput();
+	shot.update();
 
 	// Updates animator
 	anim.playAnimation();
@@ -51,8 +52,11 @@ void DigDug::update()
 // Draws digDug but also calls the shot's drawObject.
 void DigDug::drawObject()
 {
-	window->draw(*spritesheet);
-	shot.drawObject();
+	if (getActive())
+	{
+		window->draw(*spritesheet);
+		shot.drawObject();
+	}
 }
 
 
@@ -88,55 +92,66 @@ void DigDug::playerInput()
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
 	{
 		input = z;
-		setCanMove(false);
 	}
 	else
+	{
 		input = none;
+	}
 
 	switch(input)
 	{
 	case up:
-		move(sf::Vector2f(0, -speed));
-		if (getDirection() != up || anim.getActive() == false)
+		if (getCanMove())
 		{
-			setDirection(up);
-			anim.setAnimation(2, 3, .2f, true);
+			move(sf::Vector2f(0, -speed));
+			if (getDirection() != up || anim.getActive() == false)
+			{
+				setDirection(up);
+				anim.setAnimation(2, 3, .2f, true);
+			}
 		}
 		break; 
 	case down:
-		move(sf::Vector2f(0, speed));
-		if (getDirection() != down || anim.getActive() == false)
+		if (getCanMove())
 		{
-			setDirection(down);
-			anim.setAnimation(6, 7, .2f, true);
+			move(sf::Vector2f(0, speed));
+			if (getDirection() != down || anim.getActive() == false)
+			{
+				setDirection(down);
+				anim.setAnimation(6, 7, .2f, true);
+			}
 		}
 		break; 
 	case left:
-		move(sf::Vector2f(-speed, 0));
-		if (getDirection() != left || anim.getActive() == false)
+		if (getCanMove())
 		{
-			setDirection(left);
-			anim.setAnimation(4, 5, .2f, true);
+			move(sf::Vector2f(-speed, 0));
+			if (getDirection() != left || anim.getActive() == false)
+			{
+				setDirection(left);
+				anim.setAnimation(4, 5, .2f, true);
+			}
 		}
 		break;
 	case right:
-		move(sf::Vector2f(speed, 0));
-		if (getDirection() != right || anim.getActive() == false)
+		if (getCanMove())
 		{
-			setDirection(right);
-			anim.setAnimation(0, 1, .2f, true);
+			move(sf::Vector2f(speed, 0));
+			if (getDirection() != right || anim.getActive() == false)
+			{
+				setDirection(right);
+				anim.setAnimation(0, 1, .2f, true);
+			}
 		}
 		break;
 	case z:
+		setCanMove(false);
 		shoot();
 		break; 
 	default:
+		if (!shot.getActive())
+			setCanMove(true);
 		anim.setActive(false);
 		break;
-		// nothing
 	}
-
-	//set coordinate to move in switch statement above.
-	//move()
-	// If player presses Z, shoot the shot and prevent movement.
 }
