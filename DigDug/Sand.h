@@ -9,7 +9,7 @@ public:
 	Sand(Spritesheet* fore, Spritesheet* back, Spritesheet* back2, int initialFore, int initialBack, sf::Vector2f, sf::RenderWindow*);
 
 	void changeSand(sf::Vector2f, int dir);
-	void reset(int spriteIndex, int initialFore, int initialBack);
+	void reset(int spriteIndex, sf::Vector2f, int initialFore, int initialBack);
 
 	sf::FloatRect& getCollider();
 	void drawObject();
