@@ -4,8 +4,10 @@
 class Animator
 {
 public:
-	Animator(Spritesheet* sprite);
+	Animator();
 	~Animator();
+	void setSprite(Spritesheet*);
+
 	// Sets the animation to the frames it should run through
 	// and the duration it should take for each frame to change.
 	void setAnimation(int minIndex, int maxIndex,

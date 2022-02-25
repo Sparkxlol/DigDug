@@ -1,8 +1,25 @@
 #include "Sand.h"
 
 
-Sand::Sand() : Sand(nullptr, nullptr, nullptr, 0, 0, sf::Vector2f(0, 0), nullptr)
-{ }
+Sand::Sand() : Sand(nullptr)
+{ 
+	foreground.setupSprite("Images/foregroundSpritesheet.png",
+		sf::Vector2i(240, 16), sf::Vector2i(16, 16));
+	background.setupSprite("Images/backgroundSpritesheet.png",
+		sf::Vector2i(192, 16), sf::Vector2i(16, 16));
+	background2.setupSprite("Images/backgroundSpritesheet.png",
+		sf::Vector2i(192, 16), sf::Vector2i(16, 16));
+
+	// Sets correct sprites to foreground and background.
+	foreground.loadSprite(0);
+	background.loadSprite(0);
+	background2.loadSprite(0);
+
+	// Allow for correct positioning on the mask/texture.
+	initialBackground = 0;
+	initialForeground = 0;
+	isActive = false;
+}
 
 
 Sand::~Sand()
@@ -11,22 +28,25 @@ Sand::~Sand()
 }
 
 
-Sand::Sand(Spritesheet* fore, Spritesheet* back1, Spritesheet* back2, int initialFore, int initialBack, sf::Vector2f pos, sf::RenderWindow* win)
-	: foreground(fore), background(back1), background2(back2), window(win)
+Sand::Sand(sf::RenderWindow* win)
+	: window(win)
 {
-	// Moves each spritesheet to initial location.
-	foreground->setPosition(pos);
-	background->setPosition(pos);
-	background2->setPosition(pos);
+	foreground.setupSprite("Images/foregroundSpritesheet.png",
+		sf::Vector2i(240, 16), sf::Vector2i(16, 16));
+	background.setupSprite("Images/backgroundSpritesheet.png",
+		sf::Vector2i(192, 16), sf::Vector2i(16, 16));
+	background2.setupSprite("Images/backgroundSpritesheet.png",
+		sf::Vector2i(192, 16), sf::Vector2i(16, 16));
 
 	// Sets correct sprites to foreground and background.
-	foreground->loadSprite(initialFore);
-	background->loadSprite(initialBack);
-	background2->loadSprite(initialBack);
+	foreground.loadSprite(0);
+	background.loadSprite(0);
+	background2.loadSprite(0);
 
 	// Allow for correct positioning on the mask/texture.
-	initialBackground = initialBack;
-	initialForeground = initialFore;
+	initialBackground = 0;
+	initialForeground = 0;
+	isActive = false;
 }
 
 
@@ -36,8 +56,8 @@ void Sand::changeSand(sf::Vector2f playerPos, int dir)
 {
 	// Finds x and y change from the player to the top left of the
 	// sand object and adds 16 to prevent negatives -> 32.
-	int xChange = playerPos.x - background->getPosition().x + 16;
-	int yChange = playerPos.y - background->getPosition().y + 16;
+	int xChange = playerPos.x - background.getPosition().x + 16;
+	int yChange = playerPos.y - background.getPosition().y + 16;
 
 	switch (dir)
 	{
@@ -68,27 +88,27 @@ void Sand::changeSand(sf::Vector2f playerPos, int dir)
 	// Finds out which sprite to load based on the current corresponding masking.
 	// Should be optimized, probably >.<
 	if (topMask > 0 && bottomMask > 0 && leftMask > 0 && rightMask > 0)
-		foreground->loadSprite(15);
+		foreground.loadSprite(15);
 	else if (topMask > 0 && bottomMask > 0 && leftMask > 0)
-		foreground->loadSprite(13);
+		foreground.loadSprite(13);
 	else if (topMask > 0 && bottomMask > 0 && rightMask > 0)
-		foreground->loadSprite(14);
+		foreground.loadSprite(14);
 	else if (bottomMask > 0 && leftMask > 0 && rightMask > 0)
-		foreground->loadSprite(11);
+		foreground.loadSprite(11);
 	else if (topMask > 0 && leftMask > 0 && rightMask > 0)
-		foreground->loadSprite(12);
+		foreground.loadSprite(12);
 	else if (topMask > 0 && rightMask > 0)
-		foreground->loadSprite(9);
+		foreground.loadSprite(9);
 	else if (topMask > 0 && leftMask > 0)
-		foreground->loadSprite(10);
+		foreground.loadSprite(10);
 	else if (bottomMask > 0 && rightMask > 0)
-		foreground->loadSprite(7);
+		foreground.loadSprite(7);
 	else if (bottomMask > 0 && leftMask > 0)
-		foreground->loadSprite(8);
+		foreground.loadSprite(8);
 	else if (leftMask > 0 || rightMask > 0)
-		foreground->loadSprite(5);
+		foreground.loadSprite(5);
 	else if (topMask > 0 || bottomMask > 0)
-		foreground->loadSprite(4);
+		foreground.loadSprite(4);
 
 	// Make sure that the current height and width is not greater than 16.
 	int height = (topMask + bottomMask > 16) ? 0 : 16 - topMask - bottomMask;
@@ -96,7 +116,7 @@ void Sand::changeSand(sf::Vector2f playerPos, int dir)
 
 	// Sets the top and the left of the mask to the current sprite plus the mask.
 	// Sets the width and height to the total masking or 16.
-	background2->setTextureRect(sf::IntRect(
+	background2.setTextureRect(sf::IntRect(
 		initialBackground * 16 + leftMask,
 		initialBackground * 16 + topMask,
 		width,
@@ -105,8 +125,8 @@ void Sand::changeSand(sf::Vector2f playerPos, int dir)
 
 	// Moves the sprite so the increase doesn't always come from the bottom of the mask when
 	// the topMask is changed instead of the bottomMask.
-	background2->setPosition(
-		sf::Vector2f(background->getPosition().x + leftMask, background->getPosition().y + topMask)
+	background2.setPosition(
+		sf::Vector2f(background.getPosition().x + leftMask, background.getPosition().y + topMask)
 	);
 }
 
@@ -116,10 +136,10 @@ void Sand::reset(int spriteIndex, sf::Vector2f pos, int initialFore, int initial
 	// Resets the values of sand to load for the next level. 
 	// Sprite index is for color changes.
 	
-	background2->setPosition(pos);
-	background2->setTextureRect(sf::IntRect(initialFore, initialBack, 16, 16));
-	background2->loadSprite(spriteIndex);
-	background->loadSprite(spriteIndex);
+	background2.setPosition(pos);
+	background2.setTextureRect(sf::IntRect(initialFore, initialBack, 16, 16));
+	background2.loadSprite(spriteIndex);
+	background.loadSprite(spriteIndex);
 }
 
 
@@ -127,7 +147,7 @@ void Sand::reset(int spriteIndex, sf::Vector2f pos, int initialFore, int initial
 // collisions with other objects.
 sf::FloatRect& Sand::getCollider()
 {
-	boundingBox = background->getGlobalBounds();
+	boundingBox = background.getGlobalBounds();
 
 	return boundingBox;
 }
@@ -135,7 +155,21 @@ sf::FloatRect& Sand::getCollider()
 
 void Sand::drawObject()
 {
-	window->draw(*background);
-	window->draw(*foreground);
-	window->draw(*background2);
+	if (getActive())
+	{
+		window->draw(background);
+		window->draw(foreground);
+		window->draw(background2);
+	}
+}
+
+void Sand::setActive(const bool& active)
+{
+	isActive = active;
+}
+
+
+bool Sand::getActive()
+{
+	return isActive;
 }

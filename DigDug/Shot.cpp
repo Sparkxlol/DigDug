@@ -1,8 +1,11 @@
 #include "Shot.h"
 
 
-Shot::Shot() : Shot(nullptr, sf::Vector2f(0, 0), nullptr)
+Shot::Shot() : Shot(nullptr, nullptr)
 {
+	spritesheet.setupSprite("Images/shotSpritesheet.png",
+		sf::Vector2i(64, 32), sf::Vector2i(16, 16));
+	anim.setSprite(&spritesheet);
 	setActive(false);
 }
 
@@ -13,9 +16,12 @@ Shot::~Shot()
 }
 
 
-Shot::Shot(Spritesheet* s, sf::Vector2f playerPos, sf::RenderWindow* win)
-	: GameObject(s, playerPos, win)
+Shot::Shot(sf::RenderWindow* win, Game* game)
+	: GameObject(win, game)
 {
+	spritesheet.setupSprite("Images/shotSpritesheet.png",
+		sf::Vector2i(64, 32), sf::Vector2i(16, 16));
+	anim.setSprite(&spritesheet);
 	setActive(false);
 }
 

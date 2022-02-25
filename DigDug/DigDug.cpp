@@ -1,8 +1,11 @@
 #include "DigDug.h"
 
 
-DigDug::DigDug() : DigDug(nullptr, nullptr, sf::Vector2f(0, 0), nullptr)
+DigDug::DigDug() : DigDug(nullptr, nullptr)
 {
+	spritesheet.setupSprite("Images/digDugSpritesheet.png",
+		sf::Vector2i(256, 80), sf::Vector2i(16, 16));
+	anim.setSprite(&spritesheet);
 	speed = 0.0f;
 	shooting = false;
 }
@@ -13,9 +16,12 @@ DigDug::~DigDug()
 }
 
 
-DigDug::DigDug(Spritesheet* s, Spritesheet* shotS, sf::Vector2f pos, sf::RenderWindow* win)
-	: shot(shotS, pos, win), GameObject(s, pos, win) 
+DigDug::DigDug(sf::RenderWindow* win, Game* game)
+	: shot(win, game), GameObject(win, game) 
 {
+	spritesheet.setupSprite("Images/digDugSpritesheet.png",
+		sf::Vector2i(256, 80), sf::Vector2i(16, 16));
+	anim.setSprite(&spritesheet);
 	speed = .025f;
 	shooting = false;
 }
@@ -54,7 +60,7 @@ void DigDug::drawObject()
 {
 	if (getActive())
 	{
-		window->draw(*spritesheet);
+		window->draw(spritesheet);
 		shot.drawObject();
 	}
 }

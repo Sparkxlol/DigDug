@@ -1,9 +1,11 @@
 #include "Fygar.h"
 
 
-Fygar::Fygar() : Fygar(nullptr, nullptr, sf::Vector2f(0, 0), nullptr)
+Fygar::Fygar() : Fygar(nullptr, nullptr)
 {
-
+	spritesheet.setupSprite("Images/fygarSpritesheet.png",
+		sf::Vector2i(128, 96), sf::Vector2i(16, 16));
+	anim.setSprite(&spritesheet);
 }
 
 
@@ -13,10 +15,13 @@ Fygar::~Fygar()
 }
 
 
-Fygar::Fygar(Spritesheet* s, Spritesheet* fireS, sf::Vector2f pos, sf::RenderWindow* win)
-	: Enemy(s, pos, win), fire(fireS, pos, win)
+Fygar::Fygar(sf::RenderWindow* win, Game* game)
+	: Enemy(win, game), fire(win, game)
 {
-	
+	spritesheet.setupSprite("Images/fygarSpritesheet.png",
+		sf::Vector2i(128, 96), sf::Vector2i(16, 16));
+	anim.setSprite(&spritesheet);
+
 }
 
 

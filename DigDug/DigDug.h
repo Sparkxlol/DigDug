@@ -7,7 +7,7 @@ class DigDug : public GameObject
 public:
 	DigDug();
 	~DigDug();
-	DigDug(Spritesheet*, Spritesheet*, sf::Vector2f, sf::RenderWindow*);
+	DigDug(sf::RenderWindow*, Game*);
 
 	void shoot();
 	void playerInput();

@@ -1,7 +1,10 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <vector>
-#include <string>
+#include "DigDug.h"
+#include "Fygar.h"
+#include "Pooka.h"
+#include "Rock.h"
+#include "Sand.h"
+#include "Score.h"
 #include "UI.h"
 
 class Game
@@ -11,20 +14,34 @@ public:
 	Game();
 	~Game();
 
-	void setupObjects(); 
+	enum class Object { dig, fygar, pooka, rock, sand };
+
+	int getArrLength(const Game::Object&) const;
+	sf::FloatRect& getCollider(const Game::Object&, const int&) const; // Used by objects
+	bool getActive(const Game::Object&, const int&) const;
+
+	void update();
+
+private:
+	void drawObjects();
+	void updateObjects();
+	void setupObjects();
 	void setupLevels();
+	GameObject& getObject(const Game::Object&, const int&) const;
 	void loadLevel(int); // input is level number 
 
 	bool enemiesLeft();
 
-	void playerInputs();
-	void update();
-	void drawObjects();
+	DigDug* digDug;
+	std::vector<Fygar*> fygars;
+	std::vector<Pooka*> pookas;
+	std::vector<Rock*> rocks;
+	std::vector<Sand*> sand;
+	std::vector<Score*> scores;
 
-private:
 	int currentLevel;
-	UI* ui;
+	//UI* ui;
 	sf::RenderWindow* window;
-	std::vector<std::string> fileLocations;
+	std::vector<std::string> levelLocations;
 };
 

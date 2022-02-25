@@ -1,8 +1,14 @@
 #include "Score.h"
 
 
-Score::Score() : Score(nullptr)
-{ }
+Score::Score(sf::RenderWindow* win)
+	: window(win)
+{ 
+	spritesheet.setupSprite("Images/scores1Spritesheet.png",
+		sf::Vector2i(64, 112), sf::Vector2i(32, 16));
+	isActive = false;
+	deathTime = 2.5f;
+}
 
 
 Score::~Score()
@@ -11,33 +17,31 @@ Score::~Score()
 }
 
 
-Score::Score(Spritesheet* s)
-	: sprite(s)
-{
-	isActive = false;
-	deathTime = 2.5f;
-}
-
-
-bool getActive()
+bool Score::getActive()
 {
 	return true;
 }
 
 
-void setActive(const bool&)
+void Score::setActive(const bool& active)
 {
-
+	isActive = active;
 }
 
 
-void changeScore(int scoreIndex)
+void Score::changeScore(int scoreIndex)
 {
 	// Changes texture to scoreIndex
 }
 
 
-void update()
+void Score::update()
 {
 	// Waits until clock is at deathTime, and sets not active.
+}
+
+
+void Score::drawObject()
+{
+	window->draw(spritesheet);
 }

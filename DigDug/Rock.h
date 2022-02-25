@@ -6,7 +6,7 @@ class Rock : public GameObject
 public:
 	Rock();
 	~Rock();
-	Rock(Spritesheet*, sf::Vector2f, sf::RenderWindow*);
+	Rock(sf::RenderWindow*, Game* game);
 
 	void startFall();
 	void fall();

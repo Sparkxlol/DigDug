@@ -4,18 +4,19 @@
 class Score
 {
 public:
-	Score();
+	Score(sf::RenderWindow*);
 	~Score();
-	Score(Spritesheet* sprite);
 
 	bool getActive();
 	void setActive(const bool&);
 
 	void changeScore(int scoreIndex);
 	void update();
+	void drawObject();
 private:
-	Spritesheet* sprite;
+	Spritesheet spritesheet;
 	sf::Clock clock;
+	sf::RenderWindow* window;
 	bool isActive;
 	float deathTime; // Time until object is nonActive.
 };

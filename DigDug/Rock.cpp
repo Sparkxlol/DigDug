@@ -1,7 +1,10 @@
 #include "Rock.h"
 
-Rock::Rock() : Rock(nullptr, sf::Vector2f(0, 0), nullptr)
+Rock::Rock() : Rock(nullptr, nullptr)
 { 
+	spritesheet.setupSprite("Images/rockSpritesheet.png",
+		sf::Vector2i(64, 16), sf::Vector2i(16, 16));
+	anim.setSprite(&spritesheet);
 	isFalling = false;
 }
 
@@ -12,9 +15,12 @@ Rock::~Rock()
 }
 
 
-Rock::Rock(Spritesheet* s, sf::Vector2f pos, sf::RenderWindow* win)
-	: GameObject(s, pos, win)
+Rock::Rock(sf::RenderWindow* win, Game* game)
+	: GameObject(win, game)
 { 
+	spritesheet.setupSprite("Images/rockSpritesheet.png",
+		sf::Vector2i(64, 16), sf::Vector2i(16, 16));
+	anim.setSprite(&spritesheet);
 	isFalling = false;
 }
 

@@ -1,9 +1,11 @@
 #include "Pooka.h"
 
 
-Pooka::Pooka() : Pooka(nullptr, sf::Vector2f(0, 0), nullptr)
+Pooka::Pooka() : Pooka(nullptr, nullptr)
 {
-
+	spritesheet.setupSprite("Images/pookaSpritesheet.png",
+		sf::Vector2i(112, 96), sf::Vector2i(16, 16));
+	anim.setSprite(&spritesheet);
 }
 
 
@@ -13,10 +15,12 @@ Pooka::~Pooka()
 }
 
 
-Pooka::Pooka(Spritesheet* s, sf::Vector2f pos, sf::RenderWindow* win)
-	: Enemy(s, pos, win)
+Pooka::Pooka(sf::RenderWindow* win, Game* game)
+	: Enemy(win, game)
 {
-
+	spritesheet.setupSprite("Images/pookaSpritesheet.png",
+		sf::Vector2i(112, 96), sf::Vector2i(16, 16));
+	anim.setSprite(&spritesheet);
 }
 
 

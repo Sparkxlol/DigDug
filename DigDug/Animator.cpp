@@ -1,8 +1,8 @@
 #include "Animator.h"
 
-Animator::Animator(Spritesheet* sprite)
+Animator::Animator()
 {
-	this->sprite = sprite;
+	this->sprite = nullptr;
 	sf::Clock clock;
 
 	maxIndex = 0;
@@ -17,6 +17,13 @@ Animator::Animator(Spritesheet* sprite)
 Animator::~Animator()
 {
 
+}
+
+
+void Animator::setSprite(Spritesheet* s)
+{
+	sprite = s;
+	s->setPosition(50, 50);
 }
 
 

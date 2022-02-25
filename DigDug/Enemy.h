@@ -6,7 +6,7 @@ class Enemy : public GameObject
 public:
 	Enemy();
 	~Enemy();
-	Enemy(Spritesheet*, sf::Vector2f, sf::RenderWindow*);
+	Enemy(sf::RenderWindow*, Game*);
 
 	void changeCurrentPump(int);
 

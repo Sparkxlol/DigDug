@@ -3,20 +3,20 @@
 #include "Spritesheet.h"
 #include "Animator.h"
 
+class Game;
+
 class GameObject
 {
 public:
 	GameObject();
 	~GameObject();
-	GameObject(Spritesheet*, sf::Vector2f, sf::RenderWindow*);
+	GameObject(sf::RenderWindow*, Game*);
 
 	int getDirection();
 	bool getActive();
 	sf::Vector2f getPosition();
 	bool getCanMove();
 	sf::FloatRect& getCollider(); // Could all be protected instead of get/set :)
-	//Animator* getAnimator();
-	//sf::RenderWindow* getWindow();
 
 	void setDirection(const int&);
 	void setActive(const bool&);
@@ -30,8 +30,9 @@ public:
 	virtual void collide() = 0; // Checks collisions with objects that most affect player.
 
 protected:
+	Game* game;
 	sf::FloatRect boundingBox;
-	Spritesheet* spritesheet;
+	Spritesheet spritesheet;
 	Animator anim;
 	sf::RenderWindow* window;
 	enum Input { up, down, left, right, z, none };

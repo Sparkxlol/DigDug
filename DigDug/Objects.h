@@ -14,12 +14,13 @@ public:
 	Objects();
 	~Objects();
 
-	DigDug* getDigDug();
-	Fygar* getFygar();
-	Pooka* getPooka();
-	Rock* getRock();
-	Sand* getSand();
-	Score* getScore();
+	sf::FloatRect& getCollider(int, int); // Used by objects
+	bool getActive(int);
+
+	void drawObjects(); // Used by game
+	void updates();
+	void setUpLevel(int);
+
 
 private:
 	DigDug* digDug;
@@ -28,5 +29,6 @@ private:
 	std::vector<Rock*> rocks;
 	std::vector<Sand*> sand;
 	std::vector<Score*> scores;
+	sf::RenderWindow* window;
 };
 

@@ -1,12 +1,13 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <string>
 
 class Spritesheet : public sf::Sprite
 {
 public:
-	Spritesheet(std::string textureFile, sf::Vector2i totalSize,
-		sf::Vector2i spriteSize);
+	Spritesheet();
+	void setupSprite(std::string, sf::Vector2i, sf::Vector2i);
 	virtual bool loadSprite(int currentSprite);
 
 private:

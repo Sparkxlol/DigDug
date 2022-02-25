@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <fstream>
 
 Game::Game() : Game(nullptr)
 { }
@@ -6,8 +7,28 @@ Game::Game() : Game(nullptr)
 
 Game::~Game()
 {
-	// Delete digDug and UI
-	// Delete all arrays using for/for-each loop
+	delete digDug;
+
+	for (auto fygar : fygars)
+		delete fygar;
+
+	for (auto pooka : pookas)
+		delete pooka;
+
+	for (auto rock : rocks)
+		delete rock;
+
+	for (auto s : sand)
+		delete s;
+
+	for (auto score : scores)
+		delete score;
+
+	fygars.clear();
+	pookas.clear();
+	rocks.clear();
+	sand.clear();
+	scores.clear();
 }
 
 
@@ -15,29 +36,162 @@ Game::Game(sf::RenderWindow* window)
 	: window(window), currentLevel(1) 
 {
 	// Create UI and DigDug
-	
-	// Setup Textures
-	// Setup Levels
+	setupObjects();
+	setupLevels();
+	loadLevel(0);
+}
 
-	// Load Level 1, maybe Main Menu eventually.
+
+int Game::getArrLength(const Game::Object& object) const
+{
+	switch (object)
+	{
+	case Object::dig:
+		return 1;
+	case Object::fygar:
+		return fygars.size();
+	case Object::pooka:
+		return pookas.size();
+	case Object::rock:
+		return rocks.size();
+	case Object::sand:
+		return sand.size();
+	}
+}
+
+
+sf::FloatRect& Game::getCollider(const Game::Object& object, const int& index) const
+{
+	if (object == Game::Object::sand)
+		return sand.at(index)->getCollider();
+	return getObject(object, index).getCollider();
+}
+
+
+bool Game::getActive(const Game::Object& object, const int& index) const
+{
+	return getObject(object, index).getActive();
 }
 
 
 void Game::setupObjects()
 {
-	// Creates sprites from file, and creates each of the GameObjects.
+	digDug = new DigDug(window, this);
+	digDug->setActive(true);
+
+	for (int i = 0; i < 3; i++)
+	{
+		fygars.push_back(new Fygar(window, this));
+		pookas.push_back(new Pooka(window, this));
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		rocks.push_back(new Rock(window, this));
+	}
+
+	for (int i = 0; i < 224; i++)
+	{
+		sand.push_back(new Sand(window));
+	}
+
+	for (int i = 0; i < 7; i++)
+	{
+		scores.push_back(new Score(window));
+	}
 }
 
 
 void Game::setupLevels()
 {
 	// Create levels and pass in position of level file.
+	levelLocations.push_back("Levels/Level1.txt");
+}
+
+
+GameObject& Game::getObject(const Game::Object& object, const int& index) const
+{
+	switch (object)
+	{
+	case Object::dig:
+		return *digDug;
+	case Object::fygar:
+		return *fygars.at(index);
+	case Object::pooka:
+		return *pookas.at(index);
+	case Object::rock:
+		return *rocks.at(index);
+	}
 }
 
 
 void Game::loadLevel(int index)
 {
 	// Load level from level class at specified index.
+	std::ifstream levelFile(levelLocations.at(index));
+
+	if (!levelFile.is_open())
+	{
+		std::cerr << "Level at " << levelLocations.at(index) << "couldn't be opened!";
+	}
+
+	int value;
+	int currentX = 0;
+	int currentY = 0;
+	int currentPooka = 0;
+	int currentFygar = 0;
+	int currentRock = 0;
+	int currentSand = 0;
+
+	while (levelFile >> value)
+	{
+		currentX /= 16;
+		currentY /= 16;
+
+		if (currentX < 11)
+			currentX++;
+		else
+		{
+			currentX = 0;
+			currentY++;
+		}
+
+		currentX *= 16;
+		currentY *= 16;
+
+		switch (value)
+		{
+		case 1:
+			sand.at(currentSand)->setActive(true);
+			sand.at(currentSand)->reset(0, sf::Vector2f(currentX, currentY), 0, 0);
+			currentSand++;
+			break;
+		case 2:
+			digDug->setActive(true);
+			digDug->setPosition(sf::Vector2f(currentX, currentY));
+			break;
+		case 3:
+			pookas.at(currentPooka)->setActive(true);
+			pookas.at(currentPooka)->setPosition(sf::Vector2f(currentX, currentY));
+			currentPooka++;
+			break;
+		case 4:
+			fygars.at(currentFygar)->setActive(true);
+			fygars.at(currentFygar)->setPosition(sf::Vector2f(currentX, currentY));
+			currentFygar++;
+			break;
+		case 5:
+			rocks.at(currentRock)->setActive(true);
+			rocks.at(currentRock)->setPosition(sf::Vector2f(currentX, currentY));
+			currentRock++;
+			break;
+		default:
+			// Do nothing
+			break;
+		}
+	}
+
+	levelFile.close();
 }
 
 
@@ -48,24 +202,49 @@ bool Game::enemiesLeft()
 }
 
 
-void Game::playerInputs()
-{
-	// Check for pause menu inputs eventually.
-}
-
-
 void Game::update()
 {
 	// Run all updates
+	updateObjects();
 
 	// Check if player is dead or if all enemies are dead,
 	// and load current/next level.
+	//
 
 	// Draw objects
+	drawObjects();
+}
+
+
+void Game::updateObjects()
+{
+	digDug->update();
+
+	for (auto& fygar : fygars)
+		fygar->update();
+
+	for (auto& pooka : pookas)
+		pooka->update();
+
+	for (auto& rock : rocks)
+		rock->update();
 }
 
 
 void Game::drawObjects()
 {
 	// Run all draw object method.
+	digDug->drawObject();
+
+	for (auto& fygar : fygars)
+		fygar->drawObject();
+
+	for (auto& pooka : pookas)
+		pooka->drawObject();
+
+	for (auto& rock : rocks)
+		rock->drawObject();
+
+	for (auto& s : sand)
+		s->drawObject();
 }

@@ -1,16 +1,25 @@
 #include "Spritesheet.h"
 
 
-Spritesheet::Spritesheet(std::string textureFile, sf::Vector2i totalSize, 
-	sf::Vector2i spriteSize)
+Spritesheet::Spritesheet()
+{
+	texture = sf::Texture();
+	totalSize = sf::Vector2i(0, 0);
+	spriteSize = sf::Vector2i(0, 0);
+	textureFile = "unset";
+
+	setTexture(texture);
+}
+
+
+void Spritesheet::setupSprite(std::string textureFile, sf::Vector2i totalSize, sf::Vector2i spriteSize)
 {
 	if (!texture.loadFromFile(textureFile))
 		std::cerr << "Warning: Could not load " << textureFile << "!\n";
 
-	setTexture(texture);
-
 	this->totalSize = totalSize;
 	this->spriteSize = spriteSize;
+	this->textureFile = textureFile;
 
 	loadSprite(0);
 }
@@ -18,17 +27,24 @@ Spritesheet::Spritesheet(std::string textureFile, sf::Vector2i totalSize,
 
 bool Spritesheet::loadSprite(int currentSprite)
 {
-	int xTile = ((static_cast<float>(currentSprite) / spriteSize.x)
-		- (currentSprite / spriteSize.x)) * spriteSize.x;
-	int yTile = currentSprite / spriteSize.x;
+	int xTile = 0;
+	int yTile = 0;
+
+	if (spriteSize.x != 0)
+	{
+		xTile = ((static_cast<float>(currentSprite) / spriteSize.x)
+			- (currentSprite / spriteSize.x)) * spriteSize.x;
+		yTile = currentSprite / spriteSize.x;
+	}
 
 	// Catches out of bound attempts.
 	if (xTile >= totalSize.x || yTile >= totalSize.y)
 	{
-		std::cerr << "WARNING: Couldn't load tile at " 
-			<< currentSprite << " in " << textureFile << "!";
+		std::cerr << "WARNING: Could not load tile at " 
+			<< currentSprite << " in " << textureFile << "!\n";
 		return false;
 	}
+
 
 	// Sets the sprite to the correponding tile based on currentSprite.
 	// IntRect has xPos, yPos, width, height.

@@ -1,9 +1,10 @@
 #include "GameObject.h"
+#include "Game.h"
 
 
 // GameObject default constructor which intializes pointers to nullptr
 // and booleans to false.
-GameObject::GameObject() : GameObject(nullptr, sf::Vector2f(0, 0), nullptr)
+GameObject::GameObject() : GameObject(nullptr, nullptr)
 { 
 	isActive = false;
 	canMove = false;
@@ -17,12 +18,10 @@ GameObject::~GameObject()
 
 
 // Sets booleans to true and creates animator with passed in spritesheet.
-GameObject::GameObject(Spritesheet* s, sf::Vector2f pos, sf::RenderWindow* win)
-	: anim(s), window(win), spritesheet(s)
+GameObject::GameObject(sf::RenderWindow* win, Game* game)
+	: window(win), game(game)
 {
-	setPosition(pos);
-
-	isActive = true;
+	isActive = false;
 	canMove = false;
 	direction = 0;
 }
@@ -45,7 +44,7 @@ bool GameObject::getActive()
 // Returns the position of the spritesheet.
 sf::Vector2f GameObject::getPosition()
 {
-	return spritesheet->getPosition();
+	return spritesheet.getPosition();
 }
 
 
@@ -61,7 +60,7 @@ bool GameObject::getCanMove()
 // collisions with other objects.
 sf::FloatRect& GameObject::getCollider()
 {
-	boundingBox = spritesheet->getGlobalBounds();
+	boundingBox = spritesheet.getGlobalBounds();
 
 	return boundingBox;
 }
@@ -104,7 +103,7 @@ void GameObject::setActive(const bool &active)
 // Sets position of the spritesheet.
 void GameObject::setPosition(const sf::Vector2f pos)
 {
-	spritesheet->setPosition(pos);
+	spritesheet.setPosition(pos);
 
 	return;
 }
@@ -123,7 +122,7 @@ bool GameObject::setCanMove(const bool &a)
 void GameObject::move(sf::Vector2f amount)
 {
 	//move "amount" in a direction
-	spritesheet->move(amount);
+	spritesheet.move(amount);
 
 	return;
 }
@@ -134,7 +133,7 @@ void GameObject::move(sf::Vector2f amount)
 void GameObject::drawObject()
 {
 	if(isActive)
-		window->draw(*spritesheet);
+		window->draw(spritesheet);
 
 	return;
 }
