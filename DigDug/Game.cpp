@@ -9,20 +9,44 @@ Game::~Game()
 {
 	delete digDug;
 
+	for(int i = 0; i < fygars.size(); i++)
+	{
+		delete fygars.at(i);
+	}
+
+	for(int i = 0; i < pookas.size(); i++)
+	{
+		delete pookas.at(i);
+	}
+
+	for(int i = 0; i < rocks.size(); i++)
+	{
+		delete rocks.at(i);
+	}
+
+	for(int i = 0; i < sand.size(); i++)
+	{
+		delete sand.at(i);
+	}
+
+	for(int i = 0; i < scores.size(); i++)
+	{
+		delete scores.at(i);
+	}
+
+
+	/* use to delete if above doesn't work
 	for (auto fygar : fygars)
 		delete fygar;
-
 	for (auto pooka : pookas)
 		delete pooka;
-
 	for (auto rock : rocks)
 		delete rock;
-
 	for (auto s : sand)
 		delete s;
-
 	for (auto score : scores)
 		delete score;
+	*/
 
 	fygars.clear();
 	pookas.clear();
@@ -65,6 +89,30 @@ sf::FloatRect& Game::getCollider(const Game::Object& object, const int& index) c
 	if (object == Game::Object::sand)
 		return sand.at(index)->getCollider();
 	return getObject(object, index).getCollider();
+}
+
+
+Sand* Game::getSandPointer(const int index)
+{
+	return sand.at(index);
+}
+
+
+Fygar* Game::getFygarPointer(const int index)
+{
+	return fygars.at(index);
+}
+
+
+Pooka* Game::getPookaPointer(const int index)
+{
+	return pookas.at(index);
+}
+
+
+Rock* Game::getRockPointer(const int index)
+{
+	return rocks.at(index);
 }
 
 
@@ -234,6 +282,10 @@ void Game::updateObjects()
 void Game::drawObjects()
 {
 	// Run all draw object method.
+
+	for (auto& s : sand)
+		s->drawObject();
+
 	digDug->drawObject();
 
 	for (auto& fygar : fygars)
@@ -244,7 +296,4 @@ void Game::drawObjects()
 
 	for (auto& rock : rocks)
 		rock->drawObject();
-
-	for (auto& s : sand)
-		s->drawObject();
 }

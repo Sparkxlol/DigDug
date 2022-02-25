@@ -1,4 +1,5 @@
 #include "DigDug.h"
+#include "Game.h"
 
 
 DigDug::DigDug() : DigDug(nullptr, nullptr)
@@ -73,8 +74,22 @@ void DigDug::collide()
 	// move the direction of previous input, based on sand
 	// mask. When moving towards sand, should run sand mask variable
 	// with player direction and position. 
+	for (int i = 0; i < game->getArrLength(Game::Object::sand); i++)
+	{
+		if (getCollider().intersects(game->getCollider(Game::Object::sand, i)))
+		{
+			game->getSandPointer(i)->changeSand(getPosition(), getDirection());
+		}
+	}
 
 	// Checks collision with enemy, dies if touches.
+	for (int i = 0; i < game->getArrLength(Game::Object::fygar); i++)
+	{
+		if (getCollider().intersects(game->getCollider(Game::Object::fygar, i)))
+		{
+			//
+		}
+	}
 
 	// Checks collision with rock, dies if rock is falling.
 
@@ -160,4 +175,14 @@ void DigDug::playerInput()
 		anim.setActive(false);
 		break;
 	}
+}
+
+
+void DigDug::playerMovement(const int& input)
+{
+	//if digdug is not on a multiple of 16, prevent movement in a different
+	//direction and instead move digdug to a multiple of 16
+	//ex. moves right from 0 to 12, tries to move up, move digdug to 16 then allow to move up
+
+	return;
 }

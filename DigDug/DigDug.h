@@ -18,6 +18,8 @@ public:
 	void collide() override;
 
 private:
+	void playerMovement(const int&);
+
 	bool shooting;
 	Shot shot;
 	float speed;

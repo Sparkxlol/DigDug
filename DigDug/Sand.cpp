@@ -136,6 +136,8 @@ void Sand::reset(int spriteIndex, sf::Vector2f pos, int initialFore, int initial
 	// Resets the values of sand to load for the next level. 
 	// Sprite index is for color changes.
 	
+	foreground.setPosition(pos);
+	background.setPosition(pos);
 	background2.setPosition(pos);
 	background2.setTextureRect(sf::IntRect(initialFore, initialBack, 16, 16));
 	background2.loadSprite(spriteIndex);
