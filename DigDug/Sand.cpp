@@ -87,6 +87,28 @@ void Sand::changeSand(sf::Vector2f playerPos, int dir)
 
 	// Finds out which sprite to load based on the current corresponding masking.
 	// Should be optimized, probably >.<
+
+	if (leftMask >= 31)
+	{
+		leftMask = 30;
+		rightMask = 1;
+	}
+	if (rightMask >= 31)
+	{
+		rightMask = 30;
+		leftMask = 1;
+	}
+	if (topMask >= 31)
+	{
+		topMask = 30;
+		bottomMask = 1;
+	}
+	if (bottomMask >= 31)
+	{
+		bottomMask = 30;
+		topMask = 1;
+	}
+
 	if (topMask > 0 && bottomMask > 0 && leftMask > 0 && rightMask > 0)
 		foreground.loadSprite(15);
 	else if (topMask > 0 && bottomMask > 0 && leftMask > 0)

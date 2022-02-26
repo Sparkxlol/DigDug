@@ -53,3 +53,13 @@ bool Spritesheet::loadSprite(int currentSprite)
 
 	return true;
 }
+
+
+void Spritesheet::setSize(sf::Vector2i size, int index)
+{
+	if (size.x <= totalSize.x && size.y <= totalSize.y)
+	{
+		spriteSize = size;
+		loadSprite(index);
+	}
+}

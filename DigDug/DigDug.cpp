@@ -122,48 +122,10 @@ void DigDug::playerInput()
 	switch(input)
 	{
 	case up:
-		if (getCanMove())
-		{
-			move(sf::Vector2f(0, -speed));
-			if (getDirection() != up || anim.getActive() == false)
-			{
-				setDirection(up);
-				anim.setAnimation(2, 3, .2f, true);
-			}
-		}
-		break; 
 	case down:
-		if (getCanMove())
-		{
-			move(sf::Vector2f(0, speed));
-			if (getDirection() != down || anim.getActive() == false)
-			{
-				setDirection(down);
-				anim.setAnimation(6, 7, .2f, true);
-			}
-		}
-		break; 
-	case left:
-		if (getCanMove())
-		{
-			move(sf::Vector2f(-speed, 0));
-			if (getDirection() != left || anim.getActive() == false)
-			{
-				setDirection(left);
-				anim.setAnimation(4, 5, .2f, true);
-			}
-		}
-		break;
 	case right:
-		if (getCanMove())
-		{
-			move(sf::Vector2f(speed, 0));
-			if (getDirection() != right || anim.getActive() == false)
-			{
-				setDirection(right);
-				anim.setAnimation(0, 1, .2f, true);
-			}
-		}
+	case left:
+		playerMovement(input);
 		break;
 	case z:
 		setCanMove(false);
@@ -183,6 +145,82 @@ void DigDug::playerMovement(const int& input)
 	//if digdug is not on a multiple of 16, prevent movement in a different
 	//direction and instead move digdug to a multiple of 16
 	//ex. moves right from 0 to 12, tries to move up, move digdug to 16 then allow to move up
+
+	//!!Might need to change pos to 0 properly if off-sync!!
+
+	sf::Vector2f upV = sf::Vector2f(0, -speed);
+	sf::Vector2f downV = sf::Vector2f(0, speed);
+	sf::Vector2f leftV = sf::Vector2f(-speed, 0);
+	sf::Vector2f rightV = sf::Vector2f(speed, 0);
+
+	float xPos = getPosition().x / 16 - (static_cast<int>(getPosition().x) / 16);
+	float yPos = getPosition().y / 16 - (static_cast<int>(getPosition().y) / 16);
+
+	xPos = (xPos < .002f || xPos > .998f) ? 0.0f : xPos;
+	yPos = (yPos < .002f || yPos > .998f) ? 0.0f : yPos;
+
+	if (input == up || input == down)
+	{
+		if (xPos != 0)
+		{
+			if (getDirection() == left)
+				move(leftV);
+			else
+				move(rightV);
+		}
+		else
+		{
+			if (input == up)
+			{
+				move(upV);
+				if (getDirection() != up || anim.getActive() == false)
+				{
+					setDirection(up);
+					anim.setAnimation(2, 3, .2f, true);
+				}
+			}
+			else
+			{
+				move(downV);
+				if (getDirection() != down || anim.getActive() == false)
+				{
+					setDirection(down);
+					anim.setAnimation(6, 7, .2f, true);
+				}
+			}
+		}
+	}
+	else
+	{
+		if (yPos != 0)
+		{
+			if (getDirection() == up)
+				move(upV);
+			else
+				move(downV);
+		}
+		else
+		{
+			if (input == left)
+			{
+				move(leftV);
+				if (getDirection() != left || anim.getActive() == false)
+				{
+					setDirection(left);
+					anim.setAnimation(4, 5, .2f, true);
+				}
+			}
+			else
+			{
+				move(rightV);
+				if (getDirection() != right || anim.getActive() == false)
+				{
+					setDirection(right);
+					anim.setAnimation(0, 1, .2f, true);
+				}
+			}
+		}
+	}
 
 	return;
 }

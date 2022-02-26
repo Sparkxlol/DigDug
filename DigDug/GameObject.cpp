@@ -60,7 +60,13 @@ bool GameObject::getCanMove()
 // collisions with other objects.
 sf::FloatRect& GameObject::getCollider()
 {
+	// Smaller than sprite to allow objects to not collide
+	// with things with tiny extrusions. Ex. Dig Dug & Sand
 	boundingBox = spritesheet.getGlobalBounds();
+	boundingBox.left += .125f;
+	boundingBox.width -= .25f;
+	boundingBox.top += .125f;
+	boundingBox.height -= .25f;
 
 	return boundingBox;
 }

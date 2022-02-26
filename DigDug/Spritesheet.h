@@ -9,6 +9,7 @@ public:
 	Spritesheet();
 	void setupSprite(std::string, sf::Vector2i, sf::Vector2i);
 	virtual bool loadSprite(int currentSprite);
+	void setSize(sf::Vector2i, int);
 
 private:
 	sf::Texture texture;

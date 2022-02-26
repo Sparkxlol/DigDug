@@ -36,7 +36,21 @@ void Shot::shoot(sf::Vector2f playerPos, int direction)
 	setActive(true);
 
 	// Set animation to shoot in direction
-	setDirection(direction);
+	switch (direction)
+	{
+	case up:
+		spritesheet.setRotation(-90);
+		break;
+	case down:
+		spritesheet.setRotation(90);
+		break;
+	case left:
+		spritesheet.setRotation(180);
+		break;
+	default:
+
+	}
+	
 	anim.setAnimation(2, 3, .2f, true);
 }
 
@@ -51,7 +65,10 @@ void Shot::update()
 
 	// If animation is done and nothing is hit, set not active
 	if (anim.getFinished())
+	{
+		spritesheet.setRotation(0);
 		setActive(false);
+	}
 }
 
 
