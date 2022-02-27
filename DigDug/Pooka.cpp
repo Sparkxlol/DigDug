@@ -26,9 +26,9 @@ Pooka::Pooka(sf::RenderWindow* win, Game* game)
 
 void Pooka::update()
 {
-	// Update movement
-
 	// Check collisions
+
+	// Update movement
 
 	// Update animator
 	

@@ -10,6 +10,7 @@ int main()
     Game* game = new Game(&window);
 
     window.setSize(sf::Vector2u(sf::VideoMode::getDesktopMode().height - 200, sf::VideoMode::getDesktopMode().height - 200));
+    window.setFramerateLimit(120);
 
     while (window.isOpen())
     {

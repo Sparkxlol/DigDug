@@ -153,7 +153,7 @@ void Sand::changeSand(sf::Vector2f playerPos, int dir)
 }
 
 
-void Sand::reset(int spriteIndex, sf::Vector2f pos, int initialFore, int initialBack)
+void Sand::reset(int level, int backIndex, sf::Vector2f pos, int initialFore, int initialBack)
 {
 	// Resets the values of sand to load for the next level. 
 	// Sprite index is for color changes.
@@ -162,16 +162,29 @@ void Sand::reset(int spriteIndex, sf::Vector2f pos, int initialFore, int initial
 	background.setPosition(pos);
 	background2.setPosition(pos);
 	background2.setTextureRect(sf::IntRect(initialFore, initialBack, 16, 16));
-	background2.loadSprite(spriteIndex);
-	background.loadSprite(spriteIndex);
+	background.loadSprite(0);
+	background2.loadSprite(0);
+	foreground.loadSprite(backIndex);
+	if (backIndex != 15)
+		background2.setColor(sf::Color::Transparent);
+}
+
+
+// Returns the collider/FloatRect of the object to check
+// collisions with player.
+sf::FloatRect& Sand::getBackCollider()
+{
+	boundingBox = background.getGlobalBounds();
+
+	return boundingBox;
 }
 
 
 // Returns the collider/FloatRect of the object to check
 // collisions with other objects.
-sf::FloatRect& Sand::getCollider()
+sf::FloatRect& Sand::getForeCollider()
 {
-	boundingBox = background.getGlobalBounds();
+	boundingBox = background2.getGlobalBounds();
 
 	return boundingBox;
 }

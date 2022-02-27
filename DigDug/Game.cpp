@@ -34,20 +34,6 @@ Game::~Game()
 		delete scores.at(i);
 	}
 
-
-	/* use to delete if above doesn't work
-	for (auto fygar : fygars)
-		delete fygar;
-	for (auto pooka : pookas)
-		delete pooka;
-	for (auto rock : rocks)
-		delete rock;
-	for (auto s : sand)
-		delete s;
-	for (auto score : scores)
-		delete score;
-	*/
-
 	fygars.clear();
 	pookas.clear();
 	rocks.clear();
@@ -80,6 +66,8 @@ int Game::getArrLength(const Game::Object& object) const
 		return rocks.size();
 	case Object::sand:
 		return sand.size();
+	case Object::sand2:
+		return sand.size();
 	}
 }
 
@@ -87,7 +75,9 @@ int Game::getArrLength(const Game::Object& object) const
 sf::FloatRect& Game::getCollider(const Game::Object& object, const int& index) const
 {
 	if (object == Game::Object::sand)
-		return sand.at(index)->getCollider();
+		return sand.at(index)->getBackCollider();
+	else if (object == Game::Object::sand2)
+		return sand.at(index)->getForeCollider();
 	return getObject(object, index).getCollider();
 }
 
@@ -154,6 +144,7 @@ void Game::setupLevels()
 {
 	// Create levels and pass in position of level file.
 	levelLocations.push_back("Levels/Level1.txt");
+	sandLocations.push_back("Levels/Sand1.txt");
 }
 
 
@@ -177,15 +168,16 @@ void Game::loadLevel(int index)
 {
 	// Load level from level class at specified index.
 	std::ifstream levelFile(levelLocations.at(index));
+	std::ifstream sandFile(sandLocations.at(index));
 
-	if (!levelFile.is_open())
+	if (!levelFile.is_open() || !sandFile.is_open())
 	{
 		std::cerr << "Level at " << levelLocations.at(index) << "couldn't be opened!";
 	}
 
 	int value;
 	int currentX = 0;
-	int currentY = 0;
+	int currentY = 48;
 	int currentPooka = 0;
 	int currentFygar = 0;
 	int currentRock = 0;
@@ -193,27 +185,8 @@ void Game::loadLevel(int index)
 
 	while (levelFile >> value)
 	{
-		currentX /= 16;
-		currentY /= 16;
-
-		if (currentX < 11)
-			currentX++;
-		else
-		{
-			currentX = 0;
-			currentY++;
-		}
-
-		currentX *= 16;
-		currentY *= 16;
-
 		switch (value)
 		{
-		case 1:
-			sand.at(currentSand)->setActive(true);
-			sand.at(currentSand)->reset(0, sf::Vector2f(currentX, currentY), 0, 0);
-			currentSand++;
-			break;
 		case 2:
 			digDug->setActive(true);
 			digDug->setPosition(sf::Vector2f(currentX, currentY));
@@ -237,9 +210,49 @@ void Game::loadLevel(int index)
 			// Do nothing
 			break;
 		}
+
+		currentX /= 16;
+		currentY /= 16;
+
+		if (currentX < 11)
+			currentX++;
+		else
+		{
+			currentX = 0;
+			currentY++;
+		}
+
+		currentX *= 16;
+		currentY *= 16;
 	}
 
 	levelFile.close();
+
+
+	currentX = 0;
+	currentY = 48;
+
+	while (sandFile >> value)
+	{
+		sand.at(currentSand)->reset(0, value, sf::Vector2f(currentX, currentY), 0, 0);
+
+		sand.at(currentSand)->setActive(true);
+		currentSand++;
+
+		currentX /= 16;
+		currentY /= 16;
+
+		if (currentX < 11)
+			currentX++;
+		else
+		{
+			currentX = 0;
+			currentY++;
+		}
+
+		currentX *= 16;
+		currentY *= 16;
+	}
 }
 
 

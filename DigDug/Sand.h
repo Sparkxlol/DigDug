@@ -9,11 +9,12 @@ public:
 	Sand(sf::RenderWindow*);
 
 	void changeSand(sf::Vector2f, int dir);
-	void reset(int spriteIndex, sf::Vector2f, int initialFore, int initialBack);
+	void reset(int foreIndex, int backIndex, sf::Vector2f, int initialFore, int initialBack);
 	void setActive(const bool&);
 	bool getActive();
 
-	sf::FloatRect& getCollider();
+	sf::FloatRect& getBackCollider();
+	sf::FloatRect& getForeCollider();
 	void drawObject();
 private:
 	sf::RenderWindow* window;

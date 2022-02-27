@@ -23,7 +23,7 @@ DigDug::DigDug(sf::RenderWindow* win, Game* game)
 	spritesheet.setupSprite("Images/digDugSpritesheet.png",
 		sf::Vector2i(256, 80), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
-	speed = .025f;
+	speed = .25f;
 	shooting = false;
 }
 

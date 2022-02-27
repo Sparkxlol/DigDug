@@ -14,7 +14,7 @@ public:
 	Game();
 	~Game();
 
-	enum class Object { dig, fygar, pooka, rock, sand };
+	enum class Object { dig, fygar, pooka, rock, sand, sand2 };
 
 	int getArrLength(const Game::Object&) const;
 	sf::FloatRect& getCollider(const Game::Object&, const int&) const; // Used by objects
@@ -47,5 +47,6 @@ private:
 	//UI* ui;
 	sf::RenderWindow* window;
 	std::vector<std::string> levelLocations;
+	std::vector<std::string> sandLocations;
 };
 

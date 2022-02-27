@@ -48,7 +48,7 @@ void Shot::shoot(sf::Vector2f playerPos, int direction)
 		spritesheet.setRotation(180);
 		break;
 	default:
-
+		break;
 	}
 	
 	anim.setAnimation(2, 3, .2f, true);
