@@ -11,7 +11,8 @@ public:
 	void changeSand(sf::Vector2f, int dir);
 	void reset(int foreIndex, int backIndex, sf::Vector2f, int initialFore, int initialBack);
 	void setActive(const bool&);
-	bool getActive();
+	bool getBackActive();
+	bool getTopActive();
 
 	sf::FloatRect& getBackCollider();
 	sf::FloatRect& getForeCollider();
@@ -28,6 +29,7 @@ private:
 	int rightMask = 0;
 	int initialForeground;
 	int initialBackground;
-	bool isActive;
+	bool backActive;
+	bool topActive;
 };
 

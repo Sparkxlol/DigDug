@@ -62,7 +62,7 @@ void DigDug::drawObject()
 	if (getActive())
 	{
 		window->draw(spritesheet);
-		shot.drawObject();
+		GameObject::drawObject();
 	}
 }
 
@@ -87,12 +87,27 @@ void DigDug::collide()
 	{
 		if (getCollider().intersects(game->getCollider(Game::Object::fygar, i)))
 		{
-			//
+			die();
+		}
+	}
+
+	for (int i = 0; i < game->getArrLength(Game::Object::pooka); i++)
+	{
+		if (getCollider().intersects(game->getCollider(Game::Object::pooka, i)))
+		{
+			die();
 		}
 	}
 
 	// Checks collision with rock, dies if rock is falling.
-
+	for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
+	{
+		if (getCollider().intersects(game->getCollider(Game::Object::rock, i))
+			&& game->getRockPointer(i)->getFall())
+		{
+			die();
+		}
+	}
 }
 
 
@@ -148,7 +163,7 @@ void DigDug::playerMovement(const int& input)
 
 	//!!Might need to change pos to 0 properly if off-sync!!
 
-	sf::Vector2f upV = sf::Vector2f(0, -speed);
+	sf::Vector2f upV = sf::Vector2f(0, -speed); // Change to GameObject move class
 	sf::Vector2f downV = sf::Vector2f(0, speed);
 	sf::Vector2f leftV = sf::Vector2f(-speed, 0);
 	sf::Vector2f rightV = sf::Vector2f(speed, 0);

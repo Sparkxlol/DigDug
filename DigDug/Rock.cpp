@@ -25,6 +25,11 @@ Rock::Rock(sf::RenderWindow* win, Game* game)
 }
 
 
+bool Rock::getFall() const
+{
+	return isFalling;
+}
+
 
 void Rock::startFall()
 {

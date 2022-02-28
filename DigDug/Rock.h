@@ -8,6 +8,8 @@ public:
 	~Rock();
 	Rock(sf::RenderWindow*, Game* game);
 
+	bool getFall() const;
+
 	void startFall();
 	void fall();
 

@@ -27,8 +27,10 @@ Pooka::Pooka(sf::RenderWindow* win, Game* game)
 void Pooka::update()
 {
 	// Check collisions
+	collide();
 
 	// Update movement
+	movement();
 
 	// Update animator
 	
@@ -37,13 +39,54 @@ void Pooka::update()
 
 void Pooka::collide()
 {
-	//
+	Enemy::collide();
 }
 
 
 void Pooka::movement()
 {
+	std::cout << getSandCollided() << std::endl;
+
 	// Moves until hits wall, using collision checks
+	if (getSandCollided())
+	{
+		switch (getDirection())
+		{
+		case up:
+			setDirection(down);
+			break;
+		case down:
+			setDirection(up);
+			break;
+		case left:
+			setDirection(right);
+			break;
+		case right:
+			setDirection(left);
+			break;
+		}
+	}
+
+	sf::Vector2f upV = sf::Vector2f(0, -getSpeed());
+	sf::Vector2f downV = sf::Vector2f(0, getSpeed());
+	sf::Vector2f leftV = sf::Vector2f(-getSpeed(), 0);
+	sf::Vector2f rightV = sf::Vector2f(getSpeed(), 0);
+
+	switch (getDirection())
+	{
+	case up:
+		move(upV);
+		break;
+	case down:
+		move(downV);
+		break;
+	case left:
+		move(leftV);
+		break;
+	case right:
+		move(rightV);
+		break;
+	}
 
 	// When stuck floats periodically
 

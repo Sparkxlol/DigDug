@@ -18,7 +18,8 @@ Sand::Sand() : Sand(nullptr)
 	// Allow for correct positioning on the mask/texture.
 	initialBackground = 0;
 	initialForeground = 0;
-	isActive = false;
+	backActive = false;
+	topActive = false;
 }
 
 
@@ -46,7 +47,8 @@ Sand::Sand(sf::RenderWindow* win)
 	// Allow for correct positioning on the mask/texture.
 	initialBackground = 0;
 	initialForeground = 0;
-	isActive = false;
+	backActive = false;
+	topActive = false;
 }
 
 
@@ -166,7 +168,10 @@ void Sand::reset(int level, int backIndex, sf::Vector2f pos, int initialFore, in
 	background2.loadSprite(0);
 	foreground.loadSprite(backIndex);
 	if (backIndex != 15)
+	{
 		background2.setColor(sf::Color::Transparent);
+		topActive = false;
+	}
 }
 
 
@@ -192,7 +197,7 @@ sf::FloatRect& Sand::getForeCollider()
 
 void Sand::drawObject()
 {
-	if (getActive())
+	if (getBackActive())
 	{
 		window->draw(background);
 		window->draw(foreground);
@@ -202,11 +207,18 @@ void Sand::drawObject()
 
 void Sand::setActive(const bool& active)
 {
-	isActive = active;
+	backActive = active;
+	topActive = active;
 }
 
 
-bool Sand::getActive()
+bool Sand::getBackActive()
 {
-	return isActive;
+	return backActive;
+}
+
+
+bool Sand::getTopActive()
+{
+	return topActive;
 }
