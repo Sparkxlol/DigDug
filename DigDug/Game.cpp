@@ -82,6 +82,12 @@ sf::FloatRect& Game::getCollider(const Game::Object& object, const int& index) c
 }
 
 
+DigDug* Game::getDigDugPointer()
+{
+	return digDug;
+}
+
+
 Sand* Game::getSandPointer(const int index)
 {
 	return sand.at(index);
@@ -123,7 +129,7 @@ void Game::setupObjects()
 		pookas.push_back(new Pooka(window, this));
 	}
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		rocks.push_back(new Rock(window, this));
 	}

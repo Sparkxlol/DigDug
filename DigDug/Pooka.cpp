@@ -1,4 +1,5 @@
 #include "Pooka.h"
+#include "Game.h"
 
 
 Pooka::Pooka() : Pooka(nullptr, nullptr)
@@ -45,7 +46,59 @@ void Pooka::collide()
 
 void Pooka::movement()
 {
-	std::cout << getSandCollided() << std::endl;
+	//std::cout << getSandCollided() << std::endl;
+
+	//Get player position
+	sf::Vector2f playerPos = game->getDigDugPointer()->getPosition();
+	sf::Vector2f currentPos = getPosition();
+
+	if (currentPos.x > playerPos.x)
+	{
+		if (currentPos.y > playerPos.y)
+		{
+
+		}
+		else if(currentPos.y < playerPos.y)
+		{
+
+		}
+
+		else
+		{
+
+		}
+	}
+	else if (currentPos.x < playerPos.x)
+	{
+		if (currentPos.y > playerPos.y)
+		{
+
+		}
+		else if(currentPos.y < playerPos.y)
+		{
+
+		}
+		else
+		{
+
+		}
+	}
+	else 
+	{
+		if (currentPos.y > playerPos.y)
+		{
+
+		}
+		else if(currentPos.y < playerPos.y)
+		{
+
+		}
+		else
+		{
+
+		}
+	}
+
 
 	// Moves until hits wall, using collision checks
 	if (getSandCollided())

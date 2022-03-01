@@ -18,6 +18,7 @@ public:
 
 	int getArrLength(const Game::Object&) const;
 	sf::FloatRect& getCollider(const Game::Object&, const int&) const; // Used by objects
+	DigDug* getDigDugPointer();
 	Sand* getSandPointer(const int);
 	Fygar* getFygarPointer(const int);
 	Pooka* getPookaPointer(const int);

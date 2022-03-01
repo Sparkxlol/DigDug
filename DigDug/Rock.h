@@ -10,8 +10,10 @@ public:
 
 	bool getFall() const;
 
+	sf::FloatRect& getCollider();
+
 	void startFall();
-	void fall();
+	void die();
 
 	virtual void update();
 	virtual void collide();

@@ -43,7 +43,7 @@ void Enemy::collide()
 
 	for (int i = 0; i < game->getArrLength(Game::Object::sand); i++)
 	{
-		if (getCollider().intersects(game->getCollider(Game::Object::sand, i)))
+		if (getCollider().intersects(game->getCollider(Game::Object::sand2, i)))
 		{
 			if (game->getSandPointer(i)->getTopActive())
 				sandCollided = true;

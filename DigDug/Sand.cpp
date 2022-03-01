@@ -167,6 +167,7 @@ void Sand::reset(int level, int backIndex, sf::Vector2f pos, int initialFore, in
 	background.loadSprite(0);
 	background2.loadSprite(0);
 	foreground.loadSprite(backIndex);
+	topActive = true;
 	if (backIndex != 15)
 	{
 		background2.setColor(sf::Color::Transparent);
@@ -208,7 +209,6 @@ void Sand::drawObject()
 void Sand::setActive(const bool& active)
 {
 	backActive = active;
-	topActive = active;
 }
 
 
