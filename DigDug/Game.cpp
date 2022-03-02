@@ -34,6 +34,8 @@ Game::~Game()
 		delete scores.at(i);
 	}
 
+	delete ui;
+
 	fygars.clear();
 	pookas.clear();
 	rocks.clear();
@@ -143,6 +145,8 @@ void Game::setupObjects()
 	{
 		scores.push_back(new Score(window));
 	}
+
+	ui = new UI(window, 0);
 }
 
 
@@ -183,7 +187,7 @@ void Game::loadLevel(int index)
 
 	int value;
 	int currentX = 0;
-	int currentY = 48;
+	int currentY = 32;
 	int currentPooka = 0;
 	int currentFygar = 0;
 	int currentRock = 0;
@@ -236,7 +240,7 @@ void Game::loadLevel(int index)
 
 
 	currentX = 0;
-	currentY = 48;
+	currentY = 32;
 
 	while (sandFile >> value)
 	{
@@ -301,6 +305,8 @@ void Game::updateObjects()
 void Game::drawObjects()
 {
 	// Run all draw object method.
+
+	ui->drawObject();
 
 	for (auto& s : sand)
 		s->drawObject();

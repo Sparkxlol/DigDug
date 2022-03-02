@@ -2,7 +2,7 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(14 * 16, 15 * 16), "DigDug");
+    sf::RenderWindow window(sf::VideoMode(15 * 16, 14 * 16), "DigDug");
 
     sf::Clock clock;
     int frames = 0;
@@ -10,7 +10,7 @@ int main()
     Game* game = new Game(&window);
 
     window.setSize(sf::Vector2u(sf::VideoMode::getDesktopMode().height - 200, sf::VideoMode::getDesktopMode().height - 200));
-    window.setFramerateLimit(120);
+    window.setFramerateLimit(100);
 
     while (window.isOpen())
     {

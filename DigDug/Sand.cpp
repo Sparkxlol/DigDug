@@ -61,6 +61,51 @@ void Sand::changeSand(sf::Vector2f playerPos, int dir)
 	int xChange = playerPos.x - background.getPosition().x + 16;
 	int yChange = playerPos.y - background.getPosition().y + 16;
 
+	// Finds out which sprite to load based on the current corresponding masking.
+	// Should be optimized, probably >.<
+
+	if (yChange < 15.5)
+		upMove = true;
+	else if (yChange > 16.5)
+		downMove = true;
+
+	if (xChange < 15.5)
+		leftMove = true;
+	else if (xChange > 16.5)
+		rightMove = true;
+
+	if (upMove && downMove && rightMove && leftMove)
+		foreground.loadSprite(14);
+	else if (upMove && downMove && leftMove)
+		foreground.loadSprite(12);
+	else if (upMove && downMove && rightMove)
+		foreground.loadSprite(13);
+	else if (downMove && leftMove && rightMove)
+		foreground.loadSprite(10);
+	else if (upMove && leftMove && rightMove)
+		foreground.loadSprite(11);
+	else if (upMove && rightMove)
+		foreground.loadSprite(8);
+	else if (upMove && leftMove)
+		foreground.loadSprite(9);
+	else if (downMove && rightMove)
+		foreground.loadSprite(6);
+	else if (downMove && leftMove)
+		foreground.loadSprite(7);
+	else if (leftMove && rightMove)
+		foreground.loadSprite(5);
+	else if (upMove && downMove)
+		foreground.loadSprite(4);
+	else if (rightMove)
+		foreground.loadSprite(2);
+	else if (leftMove)
+		foreground.loadSprite(3);
+	else if (downMove)
+		foreground.loadSprite(0);
+	else
+		foreground.loadSprite(1);
+
+
 	switch (dir)
 	{
 	case 0:
@@ -82,57 +127,10 @@ void Sand::changeSand(sf::Vector2f playerPos, int dir)
 		break;
 	case 3:
 		// Works same as topMask case, just with leftMask instead.
-		if (xChange < 32 - rightMask && xChange > leftMask)	
+		if (xChange < 32 - rightMask && xChange > leftMask)
 			leftMask = (leftMask > xChange) ? leftMask : xChange;
 		break;
 	}
-
-	// Finds out which sprite to load based on the current corresponding masking.
-	// Should be optimized, probably >.<
-
-	if (leftMask >= 31)
-	{
-		leftMask = 30;
-		rightMask = 1;
-	}
-	if (rightMask >= 31)
-	{
-		rightMask = 30;
-		leftMask = 1;
-	}
-	if (topMask >= 31)
-	{
-		topMask = 30;
-		bottomMask = 1;
-	}
-	if (bottomMask >= 31)
-	{
-		bottomMask = 30;
-		topMask = 1;
-	}
-
-	if (topMask > 0 && bottomMask > 0 && leftMask > 0 && rightMask > 0)
-		foreground.loadSprite(15);
-	else if (topMask > 0 && bottomMask > 0 && leftMask > 0)
-		foreground.loadSprite(13);
-	else if (topMask > 0 && bottomMask > 0 && rightMask > 0)
-		foreground.loadSprite(14);
-	else if (bottomMask > 0 && leftMask > 0 && rightMask > 0)
-		foreground.loadSprite(11);
-	else if (topMask > 0 && leftMask > 0 && rightMask > 0)
-		foreground.loadSprite(12);
-	else if (topMask > 0 && rightMask > 0)
-		foreground.loadSprite(9);
-	else if (topMask > 0 && leftMask > 0)
-		foreground.loadSprite(10);
-	else if (bottomMask > 0 && rightMask > 0)
-		foreground.loadSprite(7);
-	else if (bottomMask > 0 && leftMask > 0)
-		foreground.loadSprite(8);
-	else if (leftMask > 0 || rightMask > 0)
-		foreground.loadSprite(5);
-	else if (topMask > 0 || bottomMask > 0)
-		foreground.loadSprite(4);
 
 	// Make sure that the current height and width is not greater than 16.
 	int height = (topMask + bottomMask > 16) ? 0 : 16 - topMask - bottomMask;

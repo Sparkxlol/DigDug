@@ -43,9 +43,9 @@ private:
 	std::vector<Rock*> rocks;
 	std::vector<Sand*> sand;
 	std::vector<Score*> scores;
+	UI* ui;
 
 	int currentLevel;
-	//UI* ui;
 	sf::RenderWindow* window;
 	std::vector<std::string> levelLocations;
 	std::vector<std::string> sandLocations;

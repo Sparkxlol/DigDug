@@ -27,6 +27,10 @@ private:
 	int bottomMask = 0;
 	int leftMask = 0; // Pixels that the TextureRect will show vertically on background.
 	int rightMask = 0;
+	bool upMove = false;
+	bool downMove = false;
+	bool leftMove = false;
+	bool rightMove = false;
 	int initialForeground;
 	int initialBackground;
 	bool backActive;
