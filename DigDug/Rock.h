@@ -12,7 +12,7 @@ public:
 
 	sf::FloatRect& getCollider();
 
-	void startFall();
+	void fall();
 	void die();
 
 	virtual void update();
@@ -20,5 +20,8 @@ public:
 
 private:
 	bool isFalling;
+	float speed;
+	bool normalCollider, bottomCollider;
+	//sf::RectangleShape* bottom;
 };
 
