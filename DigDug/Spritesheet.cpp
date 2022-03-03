@@ -7,7 +7,6 @@ Spritesheet::Spritesheet()
 	totalSize = sf::Vector2i(0, 0);
 	spriteSize = sf::Vector2i(0, 0);
 	textureFile = "unset";
-	scale(4, 4);
 	setTexture(texture);
 }
 
@@ -32,9 +31,9 @@ bool Spritesheet::loadSprite(int currentSprite)
 
 	if (spriteSize.x != 0)
 	{
-		xTile = ((static_cast<float>(currentSprite) / spriteSize.x)
-			- (currentSprite / spriteSize.x)) * spriteSize.x;
-		yTile = currentSprite / spriteSize.x;
+		xTile = ((static_cast<float>(currentSprite) / totalSize.x)
+			- (currentSprite / totalSize.x)) * totalSize.x;
+		yTile = currentSprite / totalSize.x;
 	}
 
 	// Catches out of bound attempts.

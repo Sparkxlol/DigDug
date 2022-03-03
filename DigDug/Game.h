@@ -46,6 +46,7 @@ private:
 	UI* ui;
 
 	int currentLevel;
+	int currentLives;
 	sf::RenderWindow* window;
 	std::vector<std::string> levelLocations;
 	std::vector<std::string> sandLocations;

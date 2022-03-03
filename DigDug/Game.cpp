@@ -45,7 +45,7 @@ Game::~Game()
 
 
 Game::Game(sf::RenderWindow* window)
-	: window(window), currentLevel(1) 
+	: window(window), currentLevel(1), currentLives(2)
 {
 	// Create UI and DigDug
 	setupObjects();
@@ -146,7 +146,7 @@ void Game::setupObjects()
 		scores.push_back(new Score(window));
 	}
 
-	ui = new UI(window, 0);
+	ui = new UI(window);
 }
 
 
