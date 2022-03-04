@@ -51,9 +51,11 @@ UI::UI(sf::RenderWindow* window)
 
 	// Sets initial lives to 2, score to 0,
 	// highScore to previous score, and round to 1
+	currentScore = 0;
+	currentLives = 0;
 	setupHighscore();
-	setLives(2);
-	setScore(0);
+	addLives(2);
+	addScore(0);
 	setRound(28);
 }
 
@@ -66,9 +68,10 @@ UI::~UI()
 
 
 // Sets UI score to inputted value and if greater than high score, sets that.
-void UI::setScore(int value)
+void UI::addScore(int value)
 {
-	changeSprites(score, 6, value);
+	currentScore += value;
+	changeSprites(score, 6, currentScore);
 	if (value > highScore)
 		setHighScore(value);
 }
@@ -95,15 +98,17 @@ void UI::setRound(int roundNum)
 
 
 // Sets the current amount of lives shown in the UI to inputted value.
-void UI::setLives(int curLives)
+void UI::addLives(int live)
 {
+	currentLives += live;
+
 	// Prevents 0 or more than 9 lives from showing, 0 dealt with in game.
-	if (curLives > 0 && curLives <= 9) 
+	if (currentLives > 0 && currentLives <= 9)
 	{
 		// 3 x 3 grid of lives with 3 seperate images
 		// Height is amount of images and width is lives per image used.
-		int height = curLives / 3 + 1;
-		int width = curLives % 3;
+		int height = currentLives / 3 + 1;
+		int width = currentLives % 3;
 
 		for (int i = 0; i < 3; i++)
 		{

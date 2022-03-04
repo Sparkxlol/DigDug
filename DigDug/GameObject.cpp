@@ -71,7 +71,6 @@ sf::FloatRect& GameObject::getCollider()
 	return boundingBox;
 }
 
-
 /*
 // Returns the animator to set animations / frame changes
 Animator* GameObject::getAnimator()
@@ -137,8 +136,7 @@ void GameObject::move(sf::Vector2f amount)
 // Draws the object onto the window.
 void GameObject::drawObject()
 {
-	if(isActive)
-		window->draw(spritesheet);
+	window->draw(spritesheet);
 
 	return;
 }

@@ -25,6 +25,7 @@ DigDug::DigDug(sf::RenderWindow* win, Game* game)
 	anim.setSprite(&spritesheet);
 	speed = .25f;
 	shooting = false;
+	setDirection(right);
 }
 
 
@@ -59,11 +60,9 @@ void DigDug::update()
 // Draws digDug but also calls the shot's drawObject.
 void DigDug::drawObject()
 {
-	if (getActive())
-	{
-		window->draw(spritesheet);
-		GameObject::drawObject();
-	}
+	if (shot.getActive())
+		shot.drawObject();
+	GameObject::drawObject();
 }
 
 
@@ -74,9 +73,9 @@ void DigDug::collide()
 	// move the direction of previous input, based on sand
 	// mask. When moving towards sand, should run sand mask variable
 	// with player direction and position. 
-	for (int i = 0; i < game->getArrLength(Game::Object::sand); i++)
+	for (int i = 0; i < game->getArrLength(Game::Object::sandPath); i++)
 	{
-		if (getCollider().intersects(game->getCollider(Game::Object::sand, i)))
+		if (game->checkCollision(getCollider(), Game::Object::sandPath, i))
 		{
 			game->getSandPointer(i)->changeSand(getPosition(), getDirection());
 		}
@@ -85,7 +84,7 @@ void DigDug::collide()
 	// Checks collision with enemy, dies if touches.
 	for (int i = 0; i < game->getArrLength(Game::Object::fygar); i++)
 	{
-		if (getCollider().intersects(game->getCollider(Game::Object::fygar, i)))
+		if (game->checkCollision(getCollider(), Game::Object::fygar, i))
 		{
 			die();
 		}
@@ -93,7 +92,7 @@ void DigDug::collide()
 
 	for (int i = 0; i < game->getArrLength(Game::Object::pooka); i++)
 	{
-		if (getCollider().intersects(game->getCollider(Game::Object::pooka, i)))
+		if (game->checkCollision(getCollider(), Game::Object::pooka, i))
 		{
 			die();
 		}
@@ -102,7 +101,7 @@ void DigDug::collide()
 	// Checks collision with rock, dies if rock is falling.
 	for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
 	{
-		if (getCollider().intersects(game->getCollider(Game::Object::rock, i))
+		if (game->checkCollision(getCollider(), Game::Object::rock, i)
 			&& game->getRockPointer(i)->getFall())
 		{
 			die();
@@ -117,7 +116,9 @@ void DigDug::playerInput()
 {
 	int input;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+		input = z;
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 		input = right;
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		input = left;
@@ -125,14 +126,11 @@ void DigDug::playerInput()
 		input = up;
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 		input = down;
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
-	{
-		input = z;
-	}
 	else
-	{
 		input = none;
-	}
+
+	if (!shot.getActive())
+		setCanMove(true);
 
 	switch(input)
 	{
@@ -140,15 +138,18 @@ void DigDug::playerInput()
 	case down:
 	case right:
 	case left:
-		playerMovement(input);
-		break;
+		if (getCanMove())
+			playerMovement(input);
+	break;
 	case z:
-		setCanMove(false);
-		shoot();
+		if (!shot.getActive())
+		{
+			anim.setActive(false);
+			setCanMove(false);
+			shoot();
+		}
 		break; 
 	default:
-		if (!shot.getActive())
-			setCanMove(true);
 		anim.setActive(false);
 		break;
 	}
@@ -161,7 +162,7 @@ void DigDug::playerMovement(const int& input)
 	//direction and instead move digdug to a multiple of 16
 	//ex. moves right from 0 to 12, tries to move up, move digdug to 16 then allow to move up
 
-	//!!Might need to change pos to 0 properly if off-sync!!
+	//!! Might need to change pos to 0 properly if off-sync !!
 
 	sf::Vector2f upV = sf::Vector2f(0, -speed); // Change to GameObject move class
 	sf::Vector2f downV = sf::Vector2f(0, speed);

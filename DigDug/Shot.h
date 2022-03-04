@@ -10,5 +10,8 @@ public:
 	void shoot(sf::Vector2f, int);
 	void update() override;
 	void collide() override;
+private:
+	int currentMask;
+	sf::Vector2f playerPos;
 };
 

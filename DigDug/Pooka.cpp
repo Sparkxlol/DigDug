@@ -31,7 +31,10 @@ void Pooka::update()
 	collide();
 
 	// Update movement
-	movement();
+	if (getCurrentPump() <= 0)
+		movement();
+	else
+		pumpUpdate();
 
 	// Update animator
 	

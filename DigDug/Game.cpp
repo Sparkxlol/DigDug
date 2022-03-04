@@ -66,21 +66,34 @@ int Game::getArrLength(const Game::Object& object) const
 		return pookas.size();
 	case Object::rock:
 		return rocks.size();
-	case Object::sand:
+	case Object::sandPath:
 		return sand.size();
-	case Object::sand2:
+	case Object::sandSand:
 		return sand.size();
 	}
 }
 
 
-sf::FloatRect& Game::getCollider(const Game::Object& object, const int& index) const
+bool Game::checkCollision(const sf::FloatRect& collider, 
+	const Game::Object& object, const int& index) const
 {
-	if (object == Game::Object::sand)
-		return sand.at(index)->getBackCollider();
-	else if (object == Game::Object::sand2)
-		return sand.at(index)->getForeCollider();
-	return getObject(object, index).getCollider();
+	switch (object)
+	{
+	case Game::Object::sandPath:
+		if (sand.at(index)->getBackActive())
+			return collider.intersects(sand.at(index)->getBackCollider());
+		break;
+	case Game::Object::sandSand:
+		if (sand.at(index)->getTopActive())
+			return collider.intersects(sand.at(index)->getForeCollider());
+		break;
+	default:
+		if (getObject(object, index).getActive())
+			return collider.intersects(getObject(object, index).getCollider());
+		break;
+	}
+
+	return false;
 }
 
 
@@ -114,6 +127,19 @@ Rock* Game::getRockPointer(const int index)
 }
 
 
+void Game::createScore(sf::Vector2f pos, std::string type)
+{
+	for (int i = 0; i < scores.size(); i++)
+	{
+		if (!scores.at(i)->getActive())
+		{
+			scores.at(i)->changeScore(pos, type);
+			return;
+		}
+	}
+}
+
+
 bool Game::getActive(const Game::Object& object, const int& index) const
 {
 	return getObject(object, index).getActive();
@@ -124,6 +150,8 @@ void Game::setupObjects()
 {
 	digDug = new DigDug(window, this);
 	digDug->setActive(true);
+
+	ui = new UI(window);
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -143,10 +171,8 @@ void Game::setupObjects()
 
 	for (int i = 0; i < 7; i++)
 	{
-		scores.push_back(new Score(window));
+		scores.push_back(new Score(window, ui));
 	}
-
-	ui = new UI(window);
 }
 
 
@@ -289,16 +315,32 @@ void Game::update()
 
 void Game::updateObjects()
 {
-	digDug->update();
+	if (digDug->getActive())
+		digDug->update();
 
 	for (auto& fygar : fygars)
-		fygar->update();
+	{
+		if (fygar->getActive())
+			fygar->update();
+	}
 
 	for (auto& pooka : pookas)
-		pooka->update();
+	{
+		if (pooka->getActive())
+			pooka->update();
+	}
 
 	for (auto& rock : rocks)
-		rock->update();
+	{
+		if (rock->getActive())
+			rock->update();
+	}
+
+	for (auto& score : scores)
+	{
+		if (score->getActive())
+			score->update();
+	}
 }
 
 
@@ -309,16 +351,35 @@ void Game::drawObjects()
 	ui->drawObject();
 
 	for (auto& s : sand)
-		s->drawObject();
+	{
+		if (s->getBackActive())
+			s->drawObject();
+	}
 
-	digDug->drawObject();
+	if (digDug->getActive())
+		digDug->drawObject();
 
 	for (auto& fygar : fygars)
-		fygar->drawObject();
+	{
+		if (fygar->getActive())
+			fygar->drawObject();
+	}
 
 	for (auto& pooka : pookas)
-		pooka->drawObject();
+	{
+		if (pooka->getActive())
+			pooka->drawObject();
+	}
 
 	for (auto& rock : rocks)
-		rock->drawObject();
+	{
+		if (rock->getActive())
+			rock->drawObject();
+	}
+
+	for (auto& score : scores)
+	{
+		if (score->getActive())
+			score->drawObject();
+	}
 }

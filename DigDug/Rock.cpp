@@ -88,9 +88,9 @@ void Rock::collide()
 
 
 	// Check collision of sand under rock, if doesn't collide, fall.
-	for (int i = 0; i < game->getArrLength(Game::Object::sand); i++)
+	for (int i = 0; i < game->getArrLength(Game::Object::sandPath); i++)
 	{
-		if (GameObject::getCollider().intersects(game->getCollider(Game::Object::sand, i)))
+		if (game->checkCollision(GameObject::getCollider(), Game::Object::sandPath, i))
 		{
 			normalCollider = true;
 		}
@@ -99,7 +99,7 @@ void Rock::collide()
 			normalCollider = false;
 		}
 			
-		if (getCollider().intersects(game->getCollider(Game::Object::sand, i)))
+		if (game->checkCollision(getCollider(), Game::Object::sandPath, i))
 		{
 			bottomCollider = true;
 		}

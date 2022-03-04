@@ -49,7 +49,8 @@ void Fygar::update()
 void Fygar::drawObject()
 {
 	// Calls overrided draw, but also calls the fires
-	fire.drawObject();
+	if(fire.getActive())
+		fire.drawObject();
 	GameObject::drawObject();
 }
 

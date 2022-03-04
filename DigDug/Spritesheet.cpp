@@ -26,14 +26,13 @@ void Spritesheet::setupSprite(std::string textureFile, sf::Vector2i totalSize, s
 
 bool Spritesheet::loadSprite(int currentSprite)
 {
-	int xTile = startPos.x;
-	int yTile = startPos.y;
+	int xTile = 0;
+	int yTile = 0;
 
 	if (spriteSize.x != 0)
 	{
-		xTile = ((static_cast<float>(currentSprite) / totalSize.x)
-			- (currentSprite / totalSize.x)) * totalSize.x;
-		yTile = currentSprite / totalSize.x;
+		xTile = ((currentSprite * spriteSize.x) % totalSize.x) / spriteSize.x;
+		yTile = static_cast<float>(currentSprite * spriteSize.x / totalSize.x);
 	}
 
 	// Catches out of bound attempts.
@@ -47,7 +46,7 @@ bool Spritesheet::loadSprite(int currentSprite)
 
 	// Sets the sprite to the correponding tile based on currentSprite.
 	// IntRect has xPos, yPos, width, height.
-	setTextureRect(sf::IntRect(xTile * spriteSize.x, yTile * spriteSize.y, 
+	setTextureRect(sf::IntRect(xTile * spriteSize.x + startPos.x, yTile * spriteSize.y + startPos.y, 
 		spriteSize.x, spriteSize.y));
 
 	return true;

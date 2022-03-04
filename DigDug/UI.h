@@ -8,9 +8,9 @@ public:
 	UI(sf::RenderWindow*);
 	~UI();
 
-	void setScore(int);
+	void addScore(int);
 	void setRound(int);
-	void setLives(int);
+	void addLives(int);
 	void setHighScore(int);
 	void drawObject();
 
@@ -21,6 +21,8 @@ private:
 	void setFlowers(int);
 
 	int highScore;
+	int currentScore;
+	int currentLives;
 	sf::RenderWindow* win;
 	Spritesheet hiScoreText;
 	Spritesheet roundText;
