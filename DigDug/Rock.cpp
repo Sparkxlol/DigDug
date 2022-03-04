@@ -86,32 +86,20 @@ void Rock::collide()
 	//GameObject::getCollider() -- base collider, used when falling
 	//getCollider() -- overriden collider, offset down to allow falling to work
 
+	normalCollider = false;
+	bottomCollider = false;
 
 	// Check collision of sand under rock, if doesn't collide, fall.
 	for (int i = 0; i < game->getArrLength(Game::Object::sandPath); i++)
 	{
-		if (game->checkCollision(GameObject::getCollider(), Game::Object::sandPath, i))
-		{
-			normalCollider = true;
-		}
-		else
-		{
-			normalCollider = false;
-		}
-			
-		if (game->checkCollision(getCollider(), Game::Object::sandPath, i))
-		{
-			bottomCollider = true;
-		}
-		else
-		{
-			bottomCollider = false;
-		}
-			
+		if (!normalCollider)
+			normalCollider = game->checkCollision(GameObject::getCollider(), Game::Object::sandPath, i);
+		if (!bottomCollider)
+			bottomCollider = game->checkCollision(getCollider(), Game::Object::sandPath, i);
 	}
 
 
-	if(!isFalling && !bottomCollider)//initial check if sand below
+	if(!bottomCollider)//initial check if sand below
 	{
 		isFalling = true;
 	}
