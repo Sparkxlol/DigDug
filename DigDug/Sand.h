@@ -16,6 +16,7 @@ public:
 
 	sf::FloatRect& getBackCollider();
 	sf::FloatRect& getForeCollider();
+	sf::Vector2f getPosition();
 	void drawObject();
 private:
 	sf::RenderWindow* window;

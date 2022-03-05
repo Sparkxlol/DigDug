@@ -4,7 +4,6 @@
 
 Enemy::Enemy() : Enemy(nullptr, nullptr)
 {
-	sandCollided = false;
 	speed = 0.0f;
 }
 
@@ -18,7 +17,6 @@ Enemy::~Enemy()
 Enemy::Enemy(sf::RenderWindow* win, Game* game)
 	: GameObject(win, game), currentPump(0), canFloat(false)
 {
-	sandCollided = false;
 	speed = .25f;
 }
 
@@ -85,13 +83,25 @@ void Enemy::pumpUpdate()
 
 void Enemy::collide()
 {
-	sandCollided = false;
+	largeCollider = spritesheet.getGlobalBounds();
+	boundingBox.left -= .125f;
+	boundingBox.width += .25f;
+	boundingBox.top -= .125f;
+	boundingBox.height += .25f;
 
 	for (int i = 0; i < game->getArrLength(Game::Object::sandSand); i++)
 	{
-		if (game->checkCollision(getCollider(), Game::Object::sandSand, i))
+		if (game->checkCollision(largeCollider, Game::Object::sandSand, i))
 		{
-			sandCollided = true;
+			sf::Vector2f sandPos = game->getSandPointer(i)->getPosition();
+			if (sandPos.y > getPosition().y)
+				sandCollided[0] = true;
+			else if (sandPos.y < getPosition().y)
+				sandCollided[1] = true;
+			else if (sandPos.x < getPosition().x)
+				sandCollided[2] = true;
+			else if (sandPos.x > getPosition().x)
+				sandCollided[3] = true;
 		}
 	}
 }
@@ -100,4 +110,60 @@ void Enemy::collide()
 float Enemy::getSpeed()
 {
 	return speed;
+}
+
+
+int Enemy::moveTowardPlayer()
+{
+	sf::Vector2f playerPos = game->getDigDugPointer()->getPosition();
+	sf::Vector2f currentPos = getPosition();
+	int moveDir = -1;
+
+	if (playerPos.y < currentPos.y && !sandCollided[up])
+		moveDir = up;
+	else if (playerPos.y > currentPos.y && !sandCollided[down])
+		moveDir = down;
+	else if (playerPos.x < currentPos.x && !sandCollided[left])
+		moveDir = left;
+	else if (playerPos.x > currentPos.x && !sandCollided[right])
+		moveDir = right;
+	else
+	{
+		int randNums[4] = { -1, -1, -1, -1 };
+		int randNum;
+		bool continueLoop;
+
+		for (int i = 0; i < 4; i++)
+		{
+			do
+			{
+				continueLoop = false;
+				randNum = rand() % 4;
+
+				for (int j = 0; j < 4; j++)
+				{
+					if (randNums[j] == randNum)
+						continueLoop = true;
+				}
+			} while (continueLoop);
+		}
+	}
+}
+
+
+int Enemy::moveAwayPlayer()
+{
+
+}
+
+
+int Enemy::runFromRock()
+{
+
+}
+
+
+int Enemy::escapeLevel()
+{
+
 }

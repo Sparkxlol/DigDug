@@ -20,11 +20,17 @@ public:
 	virtual void update() = 0;
 	virtual void movement() = 0;
 
+	int moveTowardPlayer();
+	int moveAwayPlayer();
+	int runFromRock();
+	int escapeLevel();
+
 private:
 	sf::Clock pumpClock;
+	sf::FloatRect largeCollider;
+	bool sandCollided[4];
 	bool canFloat;
 	int currentPump;
-	int sandCollided;
 	float speed;
 };
 

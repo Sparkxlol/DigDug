@@ -7,7 +7,7 @@ Rock::Rock() : Rock(nullptr, nullptr)
 		sf::Vector2i(64, 16), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
 	isFalling = false;
-	speed = .25f;
+	speed = .5f;
 	bottomCollider = false;
 	normalCollider = false;
 }
@@ -25,7 +25,7 @@ Rock::Rock(sf::RenderWindow* win, Game* game)
 	spritesheet.setupSprite("Images/rockSpritesheet.png",
 		sf::Vector2i(64, 16), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
-	speed = .25f;
+	speed = .5f;
 	isFalling = false;
 	normalCollider = false;
 	bottomCollider = false;
@@ -44,11 +44,10 @@ sf::FloatRect& Rock::getCollider()
 {
 	// Smaller than sprite to allow objects to not collide
 	// with things with tiny extrusions. Ex. Dig Dug & Sand
-	boundingBox = spritesheet.getGlobalBounds();
-	boundingBox.top += 16.125;
-	boundingBox.height -= .25f;
-	boundingBox.left += .125f;
-	boundingBox.width -= .25f;
+	boundingBox.top = getPosition().y + 16.05f;
+	boundingBox.height = .125f;
+	boundingBox.left = getPosition().x + .125f;
+	boundingBox.width = 15.875f;
 
 	return boundingBox;
 }
@@ -87,17 +86,17 @@ void Rock::collide()
 	//getCollider() -- overriden collider, offset down to allow falling to work
 
 	normalCollider = false;
-	bottomCollider = false;
+	bottomCollider = game->checkCollision(getCollider(), Game::Object::dig, 0);
 
 	// Check collision of sand under rock, if doesn't collide, fall.
+
 	for (int i = 0; i < game->getArrLength(Game::Object::sandPath); i++)
 	{
 		if (!normalCollider)
-			normalCollider = game->checkCollision(GameObject::getCollider(), Game::Object::sandPath, i);
+			normalCollider = game->checkCollision(GameObject::getCollider(), Game::Object::sandSand, i);
 		if (!bottomCollider)
-			bottomCollider = game->checkCollision(getCollider(), Game::Object::sandPath, i);
+			bottomCollider = game->checkCollision(getCollider(), Game::Object::sandSand, i);
 	}
-
 
 	if(!bottomCollider)//initial check if sand below
 	{
@@ -107,6 +106,7 @@ void Rock::collide()
 	{
 		die();
 	}
+
 	// Check collision with enemies/player, run death functions.
 
 	//if rock is not falling, use bigger collider that extends lower into sand below

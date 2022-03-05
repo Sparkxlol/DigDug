@@ -220,3 +220,9 @@ bool Sand::getTopActive()
 {
 	return topActive;
 }
+
+
+sf::Vector2f Sand::getPosition()
+{
+	return background.getPosition();
+}

@@ -49,104 +49,26 @@ void Pooka::collide()
 
 void Pooka::movement()
 {
-	//std::cout << getSandCollided() << std::endl;
+	int moveDir = up;
 
 	//Get player position
-	sf::Vector2f playerPos = game->getDigDugPointer()->getPosition();
-	sf::Vector2f currentPos = getPosition();
 
-	if (currentPos.x > playerPos.x)
+	switch (moveDir)
 	{
-		if (currentPos.y > playerPos.y)
-		{
-
-		}
-		else if(currentPos.y < playerPos.y)
-		{
-
-		}
-
-		else
-		{
-
-		}
-	}
-	else if (currentPos.x < playerPos.x)
-	{
-		if (currentPos.y > playerPos.y)
-		{
-
-		}
-		else if(currentPos.y < playerPos.y)
-		{
-
-		}
-		else
-		{
-
-		}
-	}
-	else 
-	{
-		if (currentPos.y > playerPos.y)
-		{
-
-		}
-		else if(currentPos.y < playerPos.y)
-		{
-
-		}
-		else
-		{
-
-		}
-	}
-
-	sf::Vector2f upV = sf::Vector2f(0, -getSpeed());
-	sf::Vector2f downV = sf::Vector2f(0, getSpeed());
-	sf::Vector2f leftV = sf::Vector2f(-getSpeed(), 0);
-	sf::Vector2f rightV = sf::Vector2f(getSpeed(), 0);
-
-	// Moves until hits wall, using collision checks
-	if (getSandCollided())
-	{
-		switch (getDirection())
-		{
-		case up:
-			move(downV);
-			setDirection(right);
-			break;
-		case down:
-			move(upV);
-			setDirection(left);
-			break;
-		case left:
-			move(rightV);
-			setDirection(up);
-			break;
-		case right:
-			move(leftV);
-			setDirection(down);
-			break;
-		}
-	}
-	else
-	{
-		switch (getDirection())
-		{
-		case up:
-			move(upV);
-			break;
-		case down:
-			move(downV);
-			break;
-		case left:
-			move(leftV);
-			break;
-		case right:
-			move(rightV);
-			break;
-		}
+	case up:
+		move(sf::Vector2f(0, -getSpeed()));
+		break;
+	case down:
+		move(sf::Vector2f(0, getSpeed()));
+		break;
+	case left:
+		move(sf::Vector2f(-getSpeed(), 0));
+		break;
+	case right:
+		move(sf::Vector2f(getSpeed(), 0));
+		break;
+	default:
+		std::cout << "Invalid enemy movement direction!\n";
 	}
 
 	// When stuck floats periodically
