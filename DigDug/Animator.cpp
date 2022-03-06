@@ -37,8 +37,10 @@ void Animator::setAnimation(int minIndex, int maxIndex,
 	currentIndex = minIndex;
 	this->frameLength = frameLength;
 	this->active = active;
+	animFinished = false;
 
 	sprite->loadSprite(currentIndex);
+	clock.restart();
 }
 
 

@@ -1,4 +1,5 @@
 #include "Fygar.h"
+#include "Game.h"
 
 
 Fygar::Fygar() : Fygar(nullptr, nullptr)
@@ -25,24 +26,22 @@ Fygar::Fygar(sf::RenderWindow* win, Game* game)
 }
 
 
-void Fygar::shootFire()
-{
-	// Sets fire active and uses its shoot method
-	fire.setActive(true);
-	fire.shoot(getPosition(), getDirection());
-}
-
-
 void Fygar::update()
 {
-	// Update movement
-
-	// Check collisions
 	collide();
-	// Update animator
+
+	// Update movement
+	if (getCurrentPump() <= 0)
+	{
+		if (!fire.getActive())
+			movement();
+	}
+	else
+		pumpUpdate();
 
 	// Updates fire
-	fire.update();
+	if (fire.getActive())
+		fire.update();
 }
 
 
@@ -55,17 +54,22 @@ void Fygar::drawObject()
 }
 
 
-void Fygar::collide()
+void Fygar::movement()
 {
-	//
+	int randChoice = rand() % 1000 + 1;
+	float xChange = getPosition().x - game->getDigDugPointer()->getPosition().x;
+	float yChange = getPosition().y - game->getDigDugPointer()->getPosition().y;
+
+	if (randChoice <= 1)
+		shootFire();
+	else
+		Enemy::movement();
 }
 
 
-void Fygar::movement()
+void Fygar::shootFire()
 {
-	// Moves until hits wall, using collision checks
-
-	// When stuck floats periodically
-	
-	// If in range of player moves toward player and shoots fire.
+	// Sets fire active and uses its shoot method
+	fire.setActive(true);
+	fire.shoot(getPosition(), getDirection());
 }

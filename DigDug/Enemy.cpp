@@ -66,6 +66,12 @@ bool Enemy::getSandCollided()
 }
 
 
+float Enemy::getSpeed()
+{
+	return speed;
+}
+
+
 void Enemy::pumpUpdate()
 {
 	if (getCurrentPump() > 0)
@@ -83,33 +89,92 @@ void Enemy::pumpUpdate()
 
 void Enemy::collide()
 {
-	largeCollider = spritesheet.getGlobalBounds();
-	boundingBox.left -= .125f;
-	boundingBox.width += .25f;
-	boundingBox.top -= .125f;
-	boundingBox.height += .25f;
+	for (int i = 0; i < 4; i++)
+		sandCollided[i] = false;
 
+	sf::FloatRect topCollider = getCollider();
+	topCollider.top -= .25f;
+
+	sf::FloatRect bottomCollider = getCollider();
+	bottomCollider.height += .25f;
+
+	sf::FloatRect leftCollider = getCollider();
+	leftCollider.left -= .25f;
+
+	sf::FloatRect rightCollider = getCollider();
+	rightCollider.width += .25f;
+
+	// Performance tanker...
 	for (int i = 0; i < game->getArrLength(Game::Object::sandSand); i++)
 	{
-		if (game->checkCollision(largeCollider, Game::Object::sandSand, i))
+		if (game->getActive(Game::Object::sandSand, i))
 		{
-			sf::Vector2f sandPos = game->getSandPointer(i)->getPosition();
-			if (sandPos.y > getPosition().y)
+			if (game->getSandPointer(i)->checkTopCollider(topCollider))
 				sandCollided[0] = true;
-			else if (sandPos.y < getPosition().y)
+			if (game->getSandPointer(i)->checkTopCollider(bottomCollider))
 				sandCollided[1] = true;
-			else if (sandPos.x < getPosition().x)
+			if (game->getSandPointer(i)->checkTopCollider(leftCollider))
 				sandCollided[2] = true;
-			else if (sandPos.x > getPosition().x)
+			if (game->getSandPointer(i)->checkTopCollider(rightCollider))
 				sandCollided[3] = true;
 		}
 	}
 }
 
 
-float Enemy::getSpeed()
+void Enemy::movement()
 {
-	return speed;
+	int moveDir = -1;
+	float rockDifference;
+
+	if (sandCollided[getDirection()])
+	{
+		for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
+		{
+			if (game->getRockPointer(i)->getFall())
+			{
+				rockDifference = getPosition().x - game->getRockPointer(i)->getPosition().x;
+				if (rockDifference <= 16.0f && rockDifference >= -16.0f)
+				{
+					moveDir = moveFromRock(game->getRockPointer(i)->getPosition());
+				}
+			}
+		}
+
+		if (moveDir == -1)
+		{
+			int randomChoice = rand() % 15 + 1;
+
+			if (escapeTimer.getElapsedTime().asSeconds() > 30.0f)
+				moveDir = escapeLevel();
+			else if (randomChoice > 1)
+				moveDir = moveTowardPlayer();
+			else if (randomChoice <= 1)
+				moveDir = moveAwayPlayer();
+		}
+	}
+	else
+		moveDir = getDirection();
+
+	switch (moveDir)
+	{
+	case up:
+		move(sf::Vector2f(0, -getSpeed()));
+		break;
+	case down:
+		move(sf::Vector2f(0, getSpeed()));
+		break;
+	case left:
+		move(sf::Vector2f(-getSpeed(), 0));
+		break;
+	case right:
+		move(sf::Vector2f(getSpeed(), 0));
+		break;
+	default:
+		std::cout << "Invalid enemy movement direction!\n";
+	}
+
+	setDirection(moveDir);
 }
 
 
@@ -128,42 +193,85 @@ int Enemy::moveTowardPlayer()
 	else if (playerPos.x > currentPos.x && !sandCollided[right])
 		moveDir = right;
 	else
-	{
-		int randNums[4] = { -1, -1, -1, -1 };
-		int randNum;
-		bool continueLoop;
+		moveDir = moveRandom();
 
-		for (int i = 0; i < 4; i++)
-		{
-			do
-			{
-				continueLoop = false;
-				randNum = rand() % 4;
-
-				for (int j = 0; j < 4; j++)
-				{
-					if (randNums[j] == randNum)
-						continueLoop = true;
-				}
-			} while (continueLoop);
-		}
-	}
+	return moveDir;
 }
 
 
 int Enemy::moveAwayPlayer()
 {
+	sf::Vector2f playerPos = game->getDigDugPointer()->getPosition();
+	sf::Vector2f currentPos = getPosition();
+	int moveDir = -1;
 
+	if (playerPos.y > currentPos.y && !sandCollided[up])
+		moveDir = up;
+	else if (playerPos.y < currentPos.y && !sandCollided[down])
+		moveDir = down;
+	else if (playerPos.x > currentPos.x && !sandCollided[left])
+		moveDir = left;
+	else if (playerPos.x < currentPos.x && !sandCollided[right])
+		moveDir = right;
+	else
+		moveDir = moveRandom();
+
+	return moveDir;
 }
 
 
-int Enemy::runFromRock()
+int Enemy::moveRandom()
 {
+	// Might have slight up -> right bias due to this method.
+	int randomDir[4] = { up, down, left, right };
 
+	for (int i = 0; i < 4; i++)
+	{
+		int randNum = rand() % 4;
+		int temp = randomDir[i];
+		randomDir[i] = randomDir[randNum];
+		randomDir[randNum] = temp;
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (!sandCollided[randomDir[i]])
+			return randomDir[i];
+	}
+
+	return -1;
+}
+
+
+int Enemy::moveFromRock(sf::Vector2f rockPos)
+{
+	int moveDir = -1;
+
+	if (!sandCollided[left])
+		moveDir = left;
+	else if (!sandCollided[right])
+		moveDir = right;
+	else if (!sandCollided[down])
+		moveDir = down;
+	else if (!sandCollided[up])
+		moveDir = up;
+
+	return moveDir;
 }
 
 
 int Enemy::escapeLevel()
 {
+	int moveDir = -1;
 
+	if (!sandCollided[up])
+		moveDir = up;
+	else if (!sandCollided[left])
+		moveDir = left;
+	else if (!sandCollided[right])
+		moveDir = right;
+	else if (!sandCollided[down])
+		moveDir = down;
+
+	return moveDir;
 }

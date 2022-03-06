@@ -18,16 +18,17 @@ public:
 
 	virtual void collide();
 	virtual void update() = 0;
-	virtual void movement() = 0;
+	virtual void movement();
 
 	int moveTowardPlayer();
 	int moveAwayPlayer();
-	int runFromRock();
+	int moveRandom();
+	int moveFromRock(sf::Vector2f);
 	int escapeLevel();
 
 private:
 	sf::Clock pumpClock;
-	sf::FloatRect largeCollider;
+	sf::Clock escapeTimer;
 	bool sandCollided[4];
 	bool canFloat;
 	int currentPump;

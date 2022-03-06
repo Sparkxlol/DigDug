@@ -10,6 +10,7 @@ public:
 	void setupSprite(std::string, sf::Vector2i, sf::Vector2i);
 	virtual bool loadSprite(int currentSprite);
 	void setSize(sf::Vector2i, sf::Vector2i, int);
+	sf::Vector2f getIndex();
 
 private:
 	sf::Texture texture;
@@ -17,5 +18,7 @@ private:
 	sf::Vector2i spriteSize;
 	std::string textureFile;
 	sf::Vector2i startPos;
+	int xTile;
+	int yTile;
 };
 

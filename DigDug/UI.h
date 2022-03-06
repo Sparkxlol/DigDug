@@ -15,6 +15,7 @@ public:
 	void drawObject();
 
 private:
+	void setupBackground(int);
 	void setupHighscore();
 	void recordHighscore();
 	void changeSprites(Spritesheet[], int, int);
@@ -32,5 +33,6 @@ private:
 	Spritesheet round[2];
 	Spritesheet lives[3];
 	Spritesheet flowers[12];
+	Spritesheet background;
 };
 

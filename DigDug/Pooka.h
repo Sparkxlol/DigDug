@@ -10,7 +10,5 @@ public:
 	~Pooka();
 	Pooka(sf::RenderWindow*, Game*);
 	void update() override;
-	void collide() override;
-	void movement() override;
 };
 

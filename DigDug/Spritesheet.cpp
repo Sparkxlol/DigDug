@@ -8,6 +8,8 @@ Spritesheet::Spritesheet()
 	spriteSize = sf::Vector2i(0, 0);
 	textureFile = "unset";
 	setTexture(texture);
+	xTile = 0;
+	yTile = 0;
 }
 
 
@@ -26,8 +28,8 @@ void Spritesheet::setupSprite(std::string textureFile, sf::Vector2i totalSize, s
 
 bool Spritesheet::loadSprite(int currentSprite)
 {
-	int xTile = 0;
-	int yTile = 0;
+	xTile = 0;
+	yTile = 0;
 
 	if (spriteSize.x != 0)
 	{
@@ -61,4 +63,10 @@ void Spritesheet::setSize(sf::Vector2i size, sf::Vector2i start, int index)
 		spriteSize = size;
 		loadSprite(index);
 	}
+}
+
+
+sf::Vector2f Spritesheet::getIndex()
+{
+	return sf::Vector2f(xTile, yTile);
 }

@@ -49,6 +49,10 @@ UI::UI(sf::RenderWindow* window)
 		lives[i].setPosition(12 * 16, (9 + i) * 16);
 	}
 
+	background.setupSprite("Images/uiBackgroundSpritesheet.png",
+		sf::Vector2i(192, 576), sf::Vector2i(192, 192));
+	background.setPosition(sf::Vector2f(0, 32));
+
 	// Sets initial lives to 2, score to 0,
 	// highScore to previous score, and round to 1
 	currentScore = 0;
@@ -56,7 +60,7 @@ UI::UI(sf::RenderWindow* window)
 	setupHighscore();
 	addLives(2);
 	addScore(0);
-	setRound(28);
+	setRound(1);
 }
 
 
@@ -94,6 +98,8 @@ void UI::setRound(int roundNum)
 		changeSprites(round, 2, roundNum);
 		setFlowers(roundNum);
 	}
+
+	setupBackground(roundNum);
 }
 
 
@@ -183,6 +189,8 @@ void UI::drawObject()
 
 	for (int i = 0; i < 12; i++)
 		win->draw(flowers[i]);
+
+	win->draw(background);
 }
 
 
@@ -217,6 +225,19 @@ void UI::changeSprites(Spritesheet arr[], int size, int value)
 			arr[digit].setColor(sf::Color::Transparent);
 		digit--;
 	}
+}
+
+
+void UI::setupBackground(int round)
+{
+	int lowerRound = round % 12;
+
+	if (lowerRound >= 1 || lowerRound < 5)
+		background.loadSprite(0);
+	else if (lowerRound >= 5 || lowerRound < 9)
+		background.loadSprite(1);
+	else
+		background.loadSprite(2);
 }
 
 

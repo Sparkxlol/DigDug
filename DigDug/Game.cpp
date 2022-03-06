@@ -166,7 +166,7 @@ void Game::setupObjects()
 
 	for (int i = 0; i < 224; i++)
 	{
-		sand.push_back(new Sand(window));
+		sand.push_back(new Sand(window, this));
 	}
 
 	for (int i = 0; i < 7; i++)
@@ -180,7 +180,18 @@ void Game::setupLevels()
 {
 	// Create levels and pass in position of level file.
 	levelLocations.push_back("Levels/Level1.txt");
-	sandLocations.push_back("Levels/Sand1.txt");
+}
+
+
+void Game::setupSand()
+{
+	for (Sand*& s : sand)
+	{
+		if (s->getBackActive())
+		{
+			s->reset(currentLevel);
+		}
+	}
 }
 
 
@@ -204,9 +215,8 @@ void Game::loadLevel(int index)
 {
 	// Load level from level class at specified index.
 	std::ifstream levelFile(levelLocations.at(index));
-	std::ifstream sandFile(sandLocations.at(index));
 
-	if (!levelFile.is_open() || !sandFile.is_open())
+	if (!levelFile.is_open())
 	{
 		std::cerr << "Level at " << levelLocations.at(index) << "couldn't be opened!";
 	}
@@ -223,24 +233,44 @@ void Game::loadLevel(int index)
 	{
 		switch (value)
 		{
+		case 0:
+			sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
+			currentSand++;
+			break;
+		case 1:
+			sand.at(currentSand)->preReset(true, sf::Vector2f(currentX, currentY));
+			currentSand++;
+			break;
 		case 2:
 			digDug->setActive(true);
 			digDug->setPosition(sf::Vector2f(currentX, currentY));
+
+			sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
+			currentSand++;
 			break;
 		case 3:
 			pookas.at(currentPooka)->setActive(true);
 			pookas.at(currentPooka)->setPosition(sf::Vector2f(currentX, currentY));
 			currentPooka++;
+
+			sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
+			currentSand++;
 			break;
 		case 4:
 			fygars.at(currentFygar)->setActive(true);
 			fygars.at(currentFygar)->setPosition(sf::Vector2f(currentX, currentY));
 			currentFygar++;
+
+			sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
+			currentSand++;
 			break;
 		case 5:
 			rocks.at(currentRock)->setActive(true);
 			rocks.at(currentRock)->setPosition(sf::Vector2f(currentX, currentY));
 			currentRock++;
+
+			sand.at(currentSand)->preReset(true, sf::Vector2f(currentX, currentY));
+			currentSand++;
 			break;
 		default:
 			// Do nothing
@@ -264,38 +294,30 @@ void Game::loadLevel(int index)
 
 	levelFile.close();
 
+	ui->setRound(index + 1);
+	currentLevel = index;
 
-	currentX = 0;
-	currentY = 32;
-
-	while (sandFile >> value)
-	{
-		sand.at(currentSand)->reset(0, value, sf::Vector2f(currentX, currentY), 0, 0);
-
-		sand.at(currentSand)->setActive(true);
-		currentSand++;
-
-		currentX /= 16;
-		currentY /= 16;
-
-		if (currentX < 11)
-			currentX++;
-		else
-		{
-			currentX = 0;
-			currentY++;
-		}
-
-		currentX *= 16;
-		currentY *= 16;
-	}
+	setupSand();
 }
 
 
 bool Game::enemiesLeft()
 {
-	// Check through each array for any active enemies.
-	return 0;
+	int enemiesLeft = false;
+
+	for (Pooka*& pooka : pookas)
+	{
+		if (pooka->getActive())
+			enemiesLeft = true;
+	}
+
+	for (Fygar*& fygar : fygars)
+	{
+		if (fygar->getActive())
+			enemiesLeft = true;
+	}
+
+	return enemiesLeft;
 }
 
 
@@ -306,7 +328,10 @@ void Game::update()
 
 	// Check if player is dead or if all enemies are dead,
 	// and load current/next level.
-	//
+	if (!digDug->getActive())
+		loadLevel(currentLevel);
+	else if (!enemiesLeft())
+		loadLevel(currentLevel + 1);
 
 	// Draw objects
 	drawObjects();
