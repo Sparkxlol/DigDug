@@ -9,6 +9,7 @@ DigDug::DigDug() : DigDug(nullptr, nullptr)
 	anim.setSprite(&spritesheet);
 	speed = 0.0f;
 	shooting = false;
+
 }
 
 DigDug::~DigDug()
@@ -26,12 +27,18 @@ DigDug::DigDug(sf::RenderWindow* win, Game* game)
 	speed = .25f;
 	shooting = false;
 	setDirection(right);
+
+	maxLeftMove = 0;
+	maxRightMove = window->getSize().x - 48;
+	maxTopMove = 16;
+	maxBottomMove = window->getSize().y;
 }
 
 
 // Runs the shoot method from shot.
 void DigDug::shoot()
 {
+	//"fling sprite"
 	shot.shoot(getPosition(), getDirection());
 	shooting = true;
 }
@@ -168,19 +175,37 @@ void DigDug::playerMovement(const int& input)
 	sf::Vector2f downV = sf::Vector2f(0, speed);
 	sf::Vector2f leftV = sf::Vector2f(-speed, 0);
 	sf::Vector2f rightV = sf::Vector2f(speed, 0);
-
+	
 	float xPos = getPosition().x / 16 - (static_cast<int>(getPosition().x) / 16);
 	float yPos = getPosition().y / 16 - (static_cast<int>(getPosition().y) / 16);
 
 	xPos = (xPos < .002f || xPos > .998f) ? 0.0f : xPos;
 	yPos = (yPos < .002f || yPos > .998f) ? 0.0f : yPos;
 
+
+	/*
+	WIP Eric
+
+	maxLeftMove = 0;
+	maxRightMove = window->getSize().x - 48;
+	maxTopMove = 16;
+	maxBottomMove = window->getSize().y;
+	up down left right
+	
+
+	bool valid[4];
+	if (getPosition().x == maxLeftMove && getDirection() == left)
+		valid[left] = false;
+	else
+		valid[left] = true;
+	*/
+
 	if (input == up || input == down)
 	{
 		if (xPos != 0)
 		{
 			if (getDirection() == left)
-				move(leftV);
+				move(leftV); 
 			else
 				move(rightV);
 		}

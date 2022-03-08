@@ -63,7 +63,15 @@ void Fygar::movement()
 	if (randChoice <= 1)
 		shootFire();
 	else
+	{
 		Enemy::movement();
+		
+		// Set animator to correct animation based on movement direction
+		if (getDirection() == right)
+			spritesheet.loadSprite(0);
+		else
+			spritesheet.loadSprite(8);
+	}
 }
 
 

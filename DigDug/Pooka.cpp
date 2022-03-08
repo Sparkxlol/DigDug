@@ -32,7 +32,14 @@ void Pooka::update()
 
 	// Update movement
 	if (getCurrentPump() <= 0)
+	{
 		movement();
+		// Set animator to correct animation based on movement direction
+		if (getDirection() == right)
+			spritesheet.loadSprite(0);
+		else
+			spritesheet.loadSprite(7);
+	}
 	else
 		pumpUpdate();
 
