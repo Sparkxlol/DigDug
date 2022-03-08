@@ -54,10 +54,7 @@ sf::FloatRect& Rock::getCollider()
 
 void Rock::fall()
 {
-	if (isFalling)
-	{
-		move(sf::Vector2f(0, speed));
-	}
+	move(sf::Vector2f(0, speed));
 }
 
 
@@ -75,8 +72,9 @@ void Rock::update()
 {
 	// Check collisions
 	collide();
-	
-	fall();
+
+	if (isFalling)
+		fall();
 }
 
 

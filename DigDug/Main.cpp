@@ -9,8 +9,15 @@ int main()
 
     Game* game = new Game(&window);
 
-    window.setSize(sf::Vector2u(sf::VideoMode::getDesktopMode().height - 200, sf::VideoMode::getDesktopMode().height - 200));
+    window.setSize(sf::Vector2u(sf::VideoMode::getDesktopMode().height - 200,
+        sf::VideoMode::getDesktopMode().height - 200));
     window.setFramerateLimit(100);
+
+
+    //centers window on screen
+    window.setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width * 0.5
+        - window.getSize().x * 0.5, sf::VideoMode::getDesktopMode().height * 0.5
+        - window.getSize().y * 0.5));
 
     srand(time(NULL));
 
