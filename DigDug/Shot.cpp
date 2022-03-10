@@ -7,8 +7,7 @@ Shot::Shot() : Shot(nullptr, nullptr)
 	spritesheet.setupSprite("Images/shotSpritesheet.png",
 		sf::Vector2i(64, 48), sf::Vector2i(64, 48));
 	anim.setSprite(&spritesheet);
-	setActive(false);
-	currentMask = 3;
+	reset(sf::Vector2f(0, 0));
 }
 
 
@@ -24,8 +23,7 @@ Shot::Shot(sf::RenderWindow* win, Game* game)
 	spritesheet.setupSprite("Images/shotSpritesheet.png",
 		sf::Vector2i(8, 48), sf::Vector2i(8, 0));
 	anim.setSprite(&spritesheet);
-	setActive(false);
-	currentMask = 3;
+	reset(sf::Vector2f(0, 0));
 }
 
 
@@ -126,4 +124,14 @@ void Shot::collide()
 			return;
 		}
 	}
+}
+
+
+void Shot::reset(sf::Vector2f pos)
+{
+	GameObject::reset(pos);
+
+	setActive(false);
+	currentMask = 3;
+	playerPos = pos;
 }

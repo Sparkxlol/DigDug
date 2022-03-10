@@ -10,5 +10,6 @@ public:
 	~Pooka();
 	Pooka(sf::RenderWindow*, Game*);
 	void update() override;
+	void reset(sf::Vector2f) override;
 };
 
