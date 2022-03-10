@@ -16,6 +16,7 @@ public:
 	void update() override;
 	void drawObject() override;
 	void collide() override;
+	void reset(sf::Vector2f) override;
 
 private:
 	void playerMovement(const int&);

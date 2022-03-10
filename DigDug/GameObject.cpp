@@ -140,3 +140,12 @@ void GameObject::drawObject()
 
 	return;
 }
+
+
+void GameObject::reset(sf::Vector2f pos)
+{
+	setDirection(right);
+	setActive(true);
+	setPosition(pos);
+	setCanMove(true);
+}

@@ -7,8 +7,7 @@ DigDug::DigDug() : DigDug(nullptr, nullptr)
 	spritesheet.setupSprite("Images/digDugSpritesheet.png",
 		sf::Vector2i(256, 80), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
-	speed = 0.0f;
-	shooting = false;
+	reset(sf::Vector2f(0, 0));
 }
 
 DigDug::~DigDug()
@@ -23,9 +22,7 @@ DigDug::DigDug(sf::RenderWindow* win, Game* game)
 	spritesheet.setupSprite("Images/digDugSpritesheet.png",
 		sf::Vector2i(256, 80), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
-	speed = .25f;
-	shooting = false;
-	setDirection(right);
+	reset(sf::Vector2f(0, 0));
 }
 
 
@@ -84,7 +81,8 @@ void DigDug::collide()
 	// Checks collision with enemy, dies if touches.
 	for (int i = 0; i < game->getArrLength(Game::Object::fygar); i++)
 	{
-		if (game->checkCollision(getCollider(), Game::Object::fygar, i))
+		if (game->checkCollision(getCollider(), Game::Object::fygar, i)
+			&& game->getFygarPointer(i)->getCurrentPump() <= 0)
 		{
 			die();
 		}
@@ -92,7 +90,8 @@ void DigDug::collide()
 
 	for (int i = 0; i < game->getArrLength(Game::Object::pooka); i++)
 	{
-		if (game->checkCollision(getCollider(), Game::Object::pooka, i))
+		if (game->checkCollision(getCollider(), Game::Object::pooka, i)
+			&& game->getPookaPointer(i)->getCurrentPump() <= 0)
 		{
 			die();
 		}
@@ -239,4 +238,16 @@ void DigDug::playerMovement(const int& input)
 	}
 
 	return;
+}
+
+
+void DigDug::reset(sf::Vector2f pos)
+{
+	GameObject::reset(pos);
+
+	shooting = false;
+	speed = .25f;
+	shot.reset(pos);
+
+	anim.setAnimation(0, 1, .2f, false);
 }

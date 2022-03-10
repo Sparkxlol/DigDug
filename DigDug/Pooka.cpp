@@ -17,7 +17,7 @@ Pooka::~Pooka()
 
 
 Pooka::Pooka(sf::RenderWindow* win, Game* game)
-	: Enemy(win, game)
+	: Enemy(win, game, EnemyType::pooka)
 {
 	spritesheet.setupSprite("Images/pookaSpritesheet.png",
 		sf::Vector2i(112, 96), sf::Vector2i(16, 16));
@@ -37,5 +37,13 @@ void Pooka::update()
 		pumpUpdate();
 
 	// Update animator
-	
+	anim.playAnimation();
+}
+
+
+void Pooka::reset(sf::Vector2f pos)
+{
+	Enemy::reset(pos);
+
+	anim.setAnimation(0, 1, .2f, false);
 }
