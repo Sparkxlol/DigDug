@@ -6,7 +6,10 @@ Rock::Rock() : Rock(nullptr, nullptr)
 	spritesheet.setupSprite("Images/rockSpritesheet.png",
 		sf::Vector2i(64, 16), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
-	reset(sf::Vector2f(0, 0));
+	isFalling = false;
+	speed = .5f;
+	bottomCollider = false;
+	normalCollider = false;
 }
 
 
@@ -22,7 +25,10 @@ Rock::Rock(sf::RenderWindow* win, Game* game)
 	spritesheet.setupSprite("Images/rockSpritesheet.png",
 		sf::Vector2i(64, 16), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
-	reset(sf::Vector2f(0, 0));
+	speed = .5f;
+	isFalling = false;
+	normalCollider = false;
+	bottomCollider = false;
 	//bottom = new sf::RectangleShape(sf::Vector2f(15.75, 15.75));
 }
 
@@ -109,15 +115,4 @@ void Rock::collide()
 	//if rock is falling, use smaller collider to allow proper collision with enemies/digdug
 
 	//if digdug is below rock and looking up when sand is broken, don't fall until digdug turns a different direction
-}
-
-
-void Rock::reset(sf::Vector2f pos)
-{
-	GameObject::reset(pos);
-
-	isFalling = false;
-	speed = .5f;
-	normalCollider = false;
-	bottomCollider = false;
 }

@@ -17,7 +17,6 @@ public:
 
 	virtual void update();
 	virtual void collide();
-	virtual void reset(sf::Vector2f) override;
 
 private:
 	bool isFalling;

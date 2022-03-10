@@ -7,7 +7,8 @@ Fire::Fire() : Fire(nullptr, nullptr)
 	spritesheet.setupSprite("Images/fireSpritesheet.png",
 		sf::Vector2i(96, 32), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
-	reset(sf::Vector2f(0, 0));
+	setActive(false);
+	frame = 0;
 }
 
 
@@ -23,7 +24,8 @@ Fire::Fire(sf::RenderWindow* win, Game* game)
 	spritesheet.setupSprite("Images/fireSpritesheet.png",
 		sf::Vector2i(96, 32), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
-	reset(sf::Vector2f(0, 0));
+	setActive(false);
+	frame = 0;
 }
 
 
@@ -71,7 +73,7 @@ void Fire::update()
 		{
 			spritesheet.setSize(sf::Vector2i((frame + 1) * 16, 16), sf::Vector2i(startX, 0), 0);
 		}
-		else if (getDirection() == left)
+		else if (getDirection() == left);
 		{
 			move(sf::Vector2f(-16, 0));
 			spritesheet.setSize(sf::Vector2i((frame + 1) * 16, 16), sf::Vector2i(startX, 16), 0);
@@ -86,14 +88,4 @@ void Fire::collide()
 	{
 		game->getDigDugPointer()->die();
 	}
-}
-
-
-void Fire::reset(sf::Vector2f pos)
-{
-	GameObject::reset(pos);
-
-	setActive(false);
-	clock.restart();
-	frame = 0;
 }

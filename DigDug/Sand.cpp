@@ -14,8 +14,8 @@ Sand::Sand() : Sand(nullptr, nullptr)
 	background2.loadSprite(0);
 
 	// Allow for correct positioning on the mask/texture.
-	topActive = true;
-	reset(1, true);
+	backActive = false;
+	topActive = false;
 }
 
 
@@ -38,8 +38,8 @@ Sand::Sand(sf::RenderWindow* win, Game* game)
 	background2.loadSprite(0);
 
 	// Allow for correct positioning on the mask/texture.
-	topActive = true;
-	reset(1, true);
+	backActive = false;
+	topActive = false;
 }
 
 
@@ -114,114 +114,102 @@ void Sand::changeSand(sf::Vector2f playerPos, int dir)
 }
 
 
-void Sand::reset(int round, bool full)
+void Sand::reset(int round)
 {
-	if (full)
+	int lowerRound = round % 12;
+	int sandPos = (getPosition().y - 32) / 16 / 3;
+	int sandChoice = 0;
+
+	if (lowerRound >= 1 || lowerRound < 5)
 	{
-		topMask = 0; 
-		bottomMask = 0;
-		leftMask = 0; 
-		rightMask = 0;
-		upMove = false;
-		downMove = false;
-		leftMove = false;
-		rightMove = false;
-
-		int lowerRound = round % 12;
-		int sandPos = (getPosition().y - 32) / 16 / 3;
-		int sandChoice = 0;
-
-		if (lowerRound >= 1 || lowerRound < 5)
-		{
-			if (sandPos == 0)
-				sandChoice = 0;
-			else if (sandPos == 1)
-				sandChoice = 1;
-			else if (sandPos == 2)
-				sandChoice = 2;
-			else
-				sandChoice = 3;
-		}
-		else if (lowerRound >= 5 || lowerRound < 9)
-		{
-			if (sandPos == 0)
-				sandChoice = 4;
-			else if (sandPos == 1)
-				sandChoice = 5;
-			else if (sandPos == 2)
-				sandChoice = 6;
-			else
-				sandChoice = 7;
-		}
+		if (sandPos == 0)
+			sandChoice = 0;
+		else if (sandPos == 1)
+			sandChoice = 1;
+		else if (sandPos == 2)
+			sandChoice = 2;
 		else
+			sandChoice = 3;
+	}
+	else if (lowerRound >= 5 || lowerRound < 9)
+	{
+		if (sandPos == 0)
+			sandChoice = 4;
+		else if (sandPos == 1)
+			sandChoice = 5;
+		else if (sandPos == 2)
+			sandChoice = 6;
+		else
+			sandChoice = 7;
+	}
+	else
+	{
+		if (sandPos == 0)
+			sandChoice = 8;
+		else if (sandPos == 1)
+			sandChoice = 9;
+		else if (sandPos == 2)
+			sandChoice = 10;
+		else
+			sandChoice = 11;
+	}
+
+	background2.loadSprite(sandChoice);
+
+	if (!getTopActive())
+	{
+		bool sandCollided[4];
+
+		for (int i = 0; i < 4; i++)
+			sandCollided[i] = false;
+
+		sf::FloatRect mainCollider = getBackCollider();
+		mainCollider.left += .125f;
+		mainCollider.width -= .25f;
+		mainCollider.top += .125f;
+		mainCollider.height -= .25f;
+
+		sf::FloatRect topCollider = mainCollider;
+		topCollider.top -= .25f;
+
+		sf::FloatRect bottomCollider = mainCollider;
+		bottomCollider.height += .25f;
+
+		sf::FloatRect leftCollider = mainCollider;
+		leftCollider.left -= .25f;
+
+		sf::FloatRect rightCollider = mainCollider;
+		rightCollider.width += .25f;
+
+		for (int i = 0; i < game->getArrLength(Game::Object::sandSand); i++)
 		{
-			if (sandPos == 0)
-				sandChoice = 8;
-			else if (sandPos == 1)
-				sandChoice = 9;
-			else if (sandPos == 2)
-				sandChoice = 10;
-			else
-				sandChoice = 11;
+			if (game->checkCollision(topCollider, Game::Object::sandSand, i))
+				sandCollided[0] = true;
+			if (game->checkCollision(bottomCollider, Game::Object::sandSand, i))
+				sandCollided[1] = true;
+			if (game->checkCollision(leftCollider, Game::Object::sandSand, i))
+				sandCollided[2] = true;
+			if (game->checkCollision(rightCollider, Game::Object::sandSand, i))
+				sandCollided[3] = true;
 		}
 
-		background2.loadSprite(sandChoice);
+		if (sandCollided[0])
+			bottomMask = 16;
+		if (sandCollided[1])
+			topMask = 16;
+		if (sandCollided[2])
+			rightMask = 16;
+		if (sandCollided[3])
+			leftMask = 16;
 
-		if (!getTopActive())
-		{
-			bool sandCollided[4];
+		upMove = !sandCollided[0];
+		downMove = !sandCollided[1];
+		leftMove = !sandCollided[2];
+		rightMove = !sandCollided[3];
 
-			for (int i = 0; i < 4; i++)
-				sandCollided[i] = false;
-
-			sf::FloatRect mainCollider = getBackCollider();
-			mainCollider.left += .125f;
-			mainCollider.width -= .25f;
-			mainCollider.top += .125f;
-			mainCollider.height -= .25f;
-
-			sf::FloatRect topCollider = mainCollider;
-			topCollider.top -= .25f;
-
-			sf::FloatRect bottomCollider = mainCollider;
-			bottomCollider.height += .25f;
-
-			sf::FloatRect leftCollider = mainCollider;
-			leftCollider.left -= .25f;
-
-			sf::FloatRect rightCollider = mainCollider;
-			rightCollider.width += .25f;
-
-			for (int i = 0; i < game->getArrLength(Game::Object::sandSand); i++)
-			{
-				if (game->checkCollision(topCollider, Game::Object::sandSand, i))
-					sandCollided[0] = true;
-				if (game->checkCollision(bottomCollider, Game::Object::sandSand, i))
-					sandCollided[1] = true;
-				if (game->checkCollision(leftCollider, Game::Object::sandSand, i))
-					sandCollided[2] = true;
-				if (game->checkCollision(rightCollider, Game::Object::sandSand, i))
-					sandCollided[3] = true;
-			}
-
-			if (sandCollided[0])
-				bottomMask = 16;
-			if (sandCollided[1])
-				topMask = 16;
-			if (sandCollided[2])
-				rightMask = 16;
-			if (sandCollided[3])
-				leftMask = 16;
-
-			upMove = !sandCollided[0];
-			downMove = !sandCollided[1];
-			leftMove = !sandCollided[2];
-			rightMove = !sandCollided[3];
-
-			background2.setTextureRect(sf::IntRect(0, 0, 0, 0));
-
-			setSprite();
-		}
+		background2.setTextureRect(sf::IntRect(0, 0, 0, 0));
+		
+		setSprite();
 	}
 }
 

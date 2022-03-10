@@ -1,46 +1,37 @@
 #pragma once
-#include <cmath>
 #include "GameObject.h"
 
 class Enemy : public GameObject
 {
 public:
-	enum class EnemyType { pooka, fygar };
-
 	Enemy();
 	~Enemy();
-	Enemy(sf::RenderWindow*, Game*, EnemyType);
+	Enemy(sf::RenderWindow*, Game*);
 
 	void changeCurrentPump(int);
 	int getCurrentPump();
 	bool getSandCollided();
 	float getSpeed();
-	bool getFloat();
 
 	void pumpUpdate();
 	void die(std::string);
 
 	virtual void collide();
 	virtual void update() = 0;
-	void movement();
-	void reset(sf::Vector2f);
+	virtual void movement();
 
 	int moveTowardPlayer();
 	int moveAwayPlayer();
 	int moveRandom();
 	int moveFromRock(sf::Vector2f);
 	int escapeLevel();
-	int moveFloat();
 
 private:
-	EnemyType type; // Type of enemy: Pooka or Fygar
-	sf::Clock pumpClock; // Pump clock to determine deflation.
-	sf::Clock escapeTimer; // Timer until enemy escapes level.
-	bool sandCollided[4]; // Bool for each side of collision with sand.
-	bool canFloat; // If enemy can float through sand or not.
-	// Current target for where to float to if not just player.
-	sf::Vector2f floatTarget;
-	int currentPump; // Current amount enemy has been attacked up to 3.
-	float speed; // Speed at which enemy moves per frame.
+	sf::Clock pumpClock;
+	sf::Clock escapeTimer;
+	bool sandCollided[4];
+	bool canFloat;
+	int currentPump;
+	float speed;
 };
 

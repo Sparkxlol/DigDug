@@ -12,8 +12,7 @@ public:
 
 	void update() override;
 	void drawObject() override;
-	void movement();
-	void reset(sf::Vector2f) override;
+	void movement() override;
 
 	void shootFire();
 private:

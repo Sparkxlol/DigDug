@@ -10,7 +10,6 @@ public:
 	void shoot(sf::Vector2f, int);
 	void update() override;
 	void collide() override;
-	void reset(sf::Vector2f) override;
 private:
 	sf::Clock clock;
 	int frame;

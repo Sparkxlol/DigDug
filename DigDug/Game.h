@@ -34,6 +34,7 @@ private:
 	void updateObjects();
 	void setupObjects();
 	void setupLevels();
+	void setupSand();
 	GameObject& getObject(const Game::Object&, const int&) const;
 	void loadLevel(int); // input is level number 
 

@@ -149,34 +149,29 @@ bool Game::getActive(const Game::Object& object, const int& index) const
 void Game::setupObjects()
 {
 	digDug = new DigDug(window, this);
-	digDug->setActive(false);
+	digDug->setActive(true);
 
 	ui = new UI(window);
 
 	for (int i = 0; i < 3; i++)
 	{
 		fygars.push_back(new Fygar(window, this));
-		fygars.at(i)->setActive(false);
 		pookas.push_back(new Pooka(window, this));
-		pookas.at(i)->setActive(false);
 	}
 
 	for (int i = 0; i < 5; i++)
 	{
 		rocks.push_back(new Rock(window, this));
-		rocks.at(i)->setActive(false);
 	}
 
 	for (int i = 0; i < 224; i++)
 	{
 		sand.push_back(new Sand(window, this));
-		sand.at(i)->setActive(false);
 	}
 
 	for (int i = 0; i < 7; i++)
 	{
 		scores.push_back(new Score(window, ui));
-		scores.at(i)->setActive(false);
 	}
 }
 
@@ -185,6 +180,18 @@ void Game::setupLevels()
 {
 	// Create levels and pass in position of level file.
 	levelLocations.push_back("Levels/Level1.txt");
+}
+
+
+void Game::setupSand()
+{
+	for (Sand*& s : sand)
+	{
+		if (s->getBackActive())
+		{
+			s->reset(currentLevel);
+		}
+	}
 }
 
 
@@ -208,7 +215,6 @@ void Game::loadLevel(int index)
 {
 	// Load level from level class at specified index.
 	std::ifstream levelFile(levelLocations.at(index));
-	bool sandResetLevel = (currentLevel == index) ? false : true;
 
 	if (!levelFile.is_open())
 	{
@@ -228,44 +234,42 @@ void Game::loadLevel(int index)
 		switch (value)
 		{
 		case 0:
-			if (sandResetLevel)
-				sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
+			sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
 			currentSand++;
 			break;
 		case 1:
-			if (sandResetLevel)
-				sand.at(currentSand)->preReset(true, sf::Vector2f(currentX, currentY));
+			sand.at(currentSand)->preReset(true, sf::Vector2f(currentX, currentY));
 			currentSand++;
 			break;
 		case 2:
-			digDug->reset(sf::Vector2f(currentX, currentY));
+			digDug->setActive(true);
+			digDug->setPosition(sf::Vector2f(currentX, currentY));
 
-			if (sandResetLevel)
-				sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
+			sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
 			currentSand++;
 			break;
 		case 3:
-			pookas.at(currentPooka)->reset(sf::Vector2f(currentX, currentY));
+			pookas.at(currentPooka)->setActive(true);
+			pookas.at(currentPooka)->setPosition(sf::Vector2f(currentX, currentY));
 			currentPooka++;
 
-			if (sandResetLevel)
-				sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
+			sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
 			currentSand++;
 			break;
 		case 4:
-			fygars.at(currentFygar)->reset(sf::Vector2f(currentX, currentY));
+			fygars.at(currentFygar)->setActive(true);
+			fygars.at(currentFygar)->setPosition(sf::Vector2f(currentX, currentY));
 			currentFygar++;
 
-			if (sandResetLevel)
-				sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
+			sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
 			currentSand++;
 			break;
 		case 5:
-			rocks.at(currentRock)->reset(sf::Vector2f(currentX, currentY));
+			rocks.at(currentRock)->setActive(true);
+			rocks.at(currentRock)->setPosition(sf::Vector2f(currentX, currentY));
 			currentRock++;
 
-			if (sandResetLevel)
-				sand.at(currentSand)->preReset(true, sf::Vector2f(currentX, currentY));
+			sand.at(currentSand)->preReset(true, sf::Vector2f(currentX, currentY));
 			currentSand++;
 			break;
 		default:
@@ -291,16 +295,9 @@ void Game::loadLevel(int index)
 	levelFile.close();
 
 	ui->setRound(index + 1);
-
 	currentLevel = index;
 
-	for (Sand*& s : sand)
-	{
-		if (s->getBackActive())
-		{
-			s->reset(currentLevel, sandResetLevel);
-		}
-	}
+	setupSand();
 }
 
 

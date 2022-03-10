@@ -7,7 +7,6 @@ Fygar::Fygar() : Fygar(nullptr, nullptr)
 	spritesheet.setupSprite("Images/fygarSpritesheet.png",
 		sf::Vector2i(128, 96), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
-	reset(sf::Vector2f(0, 0));
 }
 
 
@@ -18,12 +17,12 @@ Fygar::~Fygar()
 
 
 Fygar::Fygar(sf::RenderWindow* win, Game* game)
-	: Enemy(win, game, EnemyType::fygar), fire(win, game)
+	: Enemy(win, game), fire(win, game)
 {
 	spritesheet.setupSprite("Images/fygarSpritesheet.png",
 		sf::Vector2i(128, 96), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
-	reset(sf::Vector2f(0, 0));
+
 }
 
 
@@ -39,8 +38,6 @@ void Fygar::update()
 	}
 	else
 		pumpUpdate();
-
-	anim.playAnimation();
 
 	// Updates fire
 	if (fire.getActive())
@@ -63,7 +60,7 @@ void Fygar::movement()
 	float xChange = getPosition().x - game->getDigDugPointer()->getPosition().x;
 	float yChange = getPosition().y - game->getDigDugPointer()->getPosition().y;
 
-	if (randChoice <= 1 && !getFloat())
+	if (randChoice <= 1)
 		shootFire();
 	else
 	{
@@ -83,13 +80,4 @@ void Fygar::shootFire()
 	// Sets fire active and uses its shoot method
 	fire.setActive(true);
 	fire.shoot(getPosition(), getDirection());
-}
-
-
-void Fygar::reset(sf::Vector2f pos)
-{
-	Enemy::reset(pos);
-
-	anim.setAnimation(0, 1, .2f, false);
-	fire.reset(pos);
 }
