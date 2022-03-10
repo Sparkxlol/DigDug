@@ -28,6 +28,7 @@ public:
 	virtual void update() = 0; // Runs every frame and should update collisions, but not draw object.
 	virtual void drawObject();
 	virtual void collide() = 0; // Checks collisions with objects that most affect player.
+	virtual void reset(sf::Vector2f);
 	// Collide levels (meaning who should be the collision checker):
 	// Player
 	// Enemies

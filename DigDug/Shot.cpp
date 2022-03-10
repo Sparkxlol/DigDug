@@ -7,8 +7,7 @@ Shot::Shot() : Shot(nullptr, nullptr)
 	spritesheet.setupSprite("Images/shotSpritesheet.png",
 		sf::Vector2i(64, 48), sf::Vector2i(64, 48));
 	anim.setSprite(&spritesheet);
-	setActive(false);
-	currentMask = 3;
+	reset(sf::Vector2f(0, 0));
 }
 
 
@@ -24,8 +23,7 @@ Shot::Shot(sf::RenderWindow* win, Game* game)
 	spritesheet.setupSprite("Images/shotSpritesheet.png",
 		sf::Vector2i(8, 48), sf::Vector2i(8, 0));
 	anim.setSprite(&spritesheet);
-	setActive(false);
-	currentMask = 3;
+	reset(sf::Vector2f(0, 0));
 }
 
 
@@ -116,4 +114,28 @@ void Shot::collide()
 			return;
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	// Checks collision with sand, if collides, shot stops
+	for (int i = 0;i < game->getArrLength(Game::Object::sandSand);i++)
+	{
+		if (game->checkCollision(getCollider(), Game::Object::sandSand, i))
+		{
+			currentMask = 0;
+			setActive(false);
+			return;
+		}
+	}
+}
+
+
+void Shot::reset(sf::Vector2f pos)
+{
+	GameObject::reset(pos);
+
+	setActive(false);
+	currentMask = 3;
+	playerPos = pos;
+>>>>>>> parent of 88a42f8 (Revert "Merge branch 'master' of https://github.com/Sparkxlol/DigDug")
 }
