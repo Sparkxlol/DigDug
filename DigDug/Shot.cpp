@@ -105,22 +105,12 @@ void Shot::collide()
 		}
 	}
 
+
 	for (int i = 0; i < game->getArrLength(Game::Object::pooka); i++)
 	{
 		if (game->checkCollision(getCollider(), Game::Object::pooka, i))
 		{
 			game->getPookaPointer(i)->changeCurrentPump(1);
-			currentMask = 0;
-			setActive(false);
-			return;
-		}
-	}
-
-	// Checks collision with sand, if collides, shot stops
-	for (int i = 0;i < game->getArrLength(Game::Object::sandSand);i++)
-	{
-		if (game->checkCollision(getCollider(), Game::Object::sandSand, i))
-		{
 			currentMask = 0;
 			setActive(false);
 			return;

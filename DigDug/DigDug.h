@@ -20,10 +20,6 @@ public:
 private:
 	void playerMovement(const int&);
 
-	float maxLeftMove;
-	float maxRightMove;
-	float maxTopMove;
-	float maxBottomMove;
 	bool shooting;
 	Shot shot;
 	float speed;

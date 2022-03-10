@@ -54,8 +54,6 @@ sf::FloatRect& Rock::getCollider()
 
 void Rock::fall()
 {
-	anim.setAnimation(0, 1, .2f, true);
-	
 	move(sf::Vector2f(0, speed));
 }
 
@@ -75,8 +73,7 @@ void Rock::update()
 	// Check collisions
 	collide();
 
-	if(isFalling)
-		anim.playAnimation();
+	if (isFalling)
 		fall();
 }
 
