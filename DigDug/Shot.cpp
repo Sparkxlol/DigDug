@@ -114,8 +114,6 @@ void Shot::collide()
 			return;
 		}
 	}
-<<<<<<< HEAD
-=======
 
 	// Checks collision with sand, if collides, shot stops
 	for (int i = 0;i < game->getArrLength(Game::Object::sandSand);i++)
@@ -137,5 +135,4 @@ void Shot::reset(sf::Vector2f pos)
 	setActive(false);
 	currentMask = 3;
 	playerPos = pos;
->>>>>>> parent of 88a42f8 (Revert "Merge branch 'master' of https://github.com/Sparkxlol/DigDug")
 }

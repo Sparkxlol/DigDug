@@ -7,12 +7,7 @@ DigDug::DigDug() : DigDug(nullptr, nullptr)
 	spritesheet.setupSprite("Images/digDugSpritesheet.png",
 		sf::Vector2i(256, 80), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
-<<<<<<< HEAD
-	speed = 0.0f;
-	shooting = false;
-=======
 	reset(sf::Vector2f(0, 0));
->>>>>>> parent of 88a42f8 (Revert "Merge branch 'master' of https://github.com/Sparkxlol/DigDug")
 }
 
 DigDug::~DigDug()
@@ -27,13 +22,7 @@ DigDug::DigDug(sf::RenderWindow* win, Game* game)
 	spritesheet.setupSprite("Images/digDugSpritesheet.png",
 		sf::Vector2i(256, 80), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
-<<<<<<< HEAD
-	speed = .25f;
-	shooting = false;
-	setDirection(right);
-=======
 	reset(sf::Vector2f(0, 0));
->>>>>>> parent of 88a42f8 (Revert "Merge branch 'master' of https://github.com/Sparkxlol/DigDug")
 }
 
 
