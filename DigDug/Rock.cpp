@@ -67,8 +67,41 @@ void Rock::update()
 	// Check collisions
 	collide();
 
+	if (!checkedBottom)
+	{
+		checkedBottom = true;
+		if (!bottomCollider)
+			setActive(false); // This method is a bit glitchy to prevent rocks from spawning on non-ground areas.
+	}
+
+	if (!bottomCollider && !isFalling && !startFalling)//initial check if sand below
+	{
+		startFalling = true;
+		fallClock.restart();
+		anim.setAnimation(0, 1, .2f, true);
+	}
+	else if (startFalling && fallClock.getElapsedTime().asSeconds() > 1.0f)
+	{
+		isFalling = true;
+		startFalling = false;
+		anim.setAnimation(0, 0, 0, false);
+	}
+	else if (endFalling)
+	{
+		if (anim.getFinished())
+			die();
+	}
+	else if (isFalling && bottomCollider)//kills rock if collides with bottom sand
+	{
+		isFalling = false;
+		endFalling = true;
+		anim.setAnimation(0, 3, .2f, true);
+	}
+
 	if (isFalling)
 		fall();
+
+	anim.playAnimation();
 }
 
 
@@ -90,15 +123,6 @@ void Rock::collide()
 			bottomCollider = game->checkCollision(getCollider(), Game::Object::sandSand, i);
 	}
 
-	if(!bottomCollider)//initial check if sand below
-	{
-		isFalling = true;
-	}
-	else if(isFalling && bottomCollider)//kills rock if collides with bottom sand
-	{
-		die();
-	}
-
 	// Check collision with enemies/player, run death functions.
 
 	//if rock is not falling, use bigger collider that extends lower into sand below
@@ -113,8 +137,12 @@ void Rock::reset(sf::Vector2f pos)
 {
 	GameObject::reset(pos);
 
+	fallClock.restart();
+	startFalling = false;
 	isFalling = false;
+	endFalling = false;
 	speed = .5f;
 	normalCollider = false;
 	bottomCollider = false;
+	checkedBottom = false;
 }

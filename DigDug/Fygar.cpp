@@ -82,6 +82,6 @@ void Fygar::reset(sf::Vector2f pos)
 {
 	Enemy::reset(pos);
 
-	anim.setAnimation(0, 1, .2f, false);
 	fire.reset(pos);
+	anim.setAnimation(0, 1, .2f, false);
 }

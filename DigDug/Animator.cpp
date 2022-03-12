@@ -61,9 +61,9 @@ void Animator::playAnimation()
 	{
 		if (clock.getElapsedTime().asSeconds() >= frameLength)
 		{
+			nextFrame();
 			if (getFrame() == maxIndex)
 				animFinished = true;
-			nextFrame();
 			clock.restart(); // Restarts clock to 0.
 		}
 		else

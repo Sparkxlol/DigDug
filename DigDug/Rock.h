@@ -20,9 +20,13 @@ public:
 	virtual void reset(sf::Vector2f) override;
 
 private:
+	sf::Clock fallClock;
+	bool startFalling;
 	bool isFalling;
+	bool endFalling;
 	float speed;
 	bool normalCollider, bottomCollider;
-	//sf::RectangleShape* bottom;
+	
+	bool checkedBottom;
 };
 

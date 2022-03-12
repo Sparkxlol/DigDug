@@ -156,14 +156,17 @@ void Enemy::collide()
 void Enemy::movement()
 {
 	// 1/randomFloatTime to float on every frame.
-	static const int randomFloatTime = 2500;
+	static const int randomFloatPercent = 5000;
+	static const float randomFloatTime = 10.0f;
 	int moveDir = -1; // Direction to move.
 	float rockDifference; // Distance from the rock.
-	int randFloat = rand() % randomFloatTime + 1;
+	int randFloat = rand() % randomFloatPercent + 1;
 	bool formerCanFloat = canFloat; // Checks if enemy was just floating.
 
 	// If floating then moveFloat.
-	if (randFloat == randomFloatTime || canFloat)
+	if ((randFloat == randomFloatPercent
+		&& escapeTimer.getElapsedTime().asSeconds() > randomFloatTime)
+		|| canFloat)
 		moveDir = moveFloat();
 	// If cannot keep moving in current direction, change move type.
 	else if (sandCollided[getDirection()]) // !!! Might want to change to every 16x16 block for more varience. !!!
