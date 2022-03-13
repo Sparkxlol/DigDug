@@ -19,11 +19,11 @@ public:
 	int getArrLength(const Game::Object&) const;
 	bool checkCollision(const sf::FloatRect&,
 		const Game::Object&, const int&) const; // Used by objects
-	DigDug* getDigDugPointer();
-	Sand* getSandPointer(const int);
-	Fygar* getFygarPointer(const int);
-	Pooka* getPookaPointer(const int);
-	Rock* getRockPointer(const int);
+	DigDug* const getDigDugPointer();
+	Sand* const getSandPointer(const int);
+	Fygar* const getFygarPointer(const int);
+	Pooka* const getPookaPointer(const int);
+	Rock* const getRockPointer(const int);
 	void createScore(sf::Vector2f, std::string);
 	bool getActive(const Game::Object&, const int&) const;
 

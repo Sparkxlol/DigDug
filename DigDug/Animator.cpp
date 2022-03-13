@@ -32,15 +32,22 @@ void Animator::setSprite(Spritesheet* s)
 void Animator::setAnimation(int minIndex, int maxIndex,
 	float frameLength, bool active)
 {
-	this->maxIndex = maxIndex;
-	this->minIndex = minIndex;
-	currentIndex = minIndex;
-	this->frameLength = frameLength;
-	this->active = active;
-	animFinished = false;
+	// Prevents changing the animation to the exact same animation,
+	// which allows easier animation setting and switching.
+	if (this->minIndex != minIndex || this->maxIndex != maxIndex ||
+		this->frameLength != frameLength)
+	{
+		this->maxIndex = maxIndex;
+		this->minIndex = minIndex;
+		currentIndex = minIndex;
+		this->frameLength = frameLength;
+		animFinished = false;
 
-	sprite->loadSprite(currentIndex);
-	clock.restart();
+		sprite->loadSprite(currentIndex);
+		clock.restart();
+	}
+
+	this->active = active;
 }
 
 

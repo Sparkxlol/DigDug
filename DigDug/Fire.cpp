@@ -84,7 +84,7 @@ void Fire::collide()
 {
 	if (game->checkCollision(getCollider(), Game::Object::dig, 0))
 	{
-		game->getDigDugPointer()->die();
+		game->getDigDugPointer()->die("enemy");
 	}
 }
 

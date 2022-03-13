@@ -156,47 +156,51 @@ void Enemy::collide()
 void Enemy::movement()
 {
 	// 1/randomFloatTime to float on every frame.
-	static const int randomFloatPercent = 5000;
+	static const int randomFloatPercent = 15;
 	static const float randomFloatTime = 10.0f;
 	int moveDir = -1; // Direction to move.
 	float rockDifference; // Distance from the rock.
-	int randFloat = rand() % randomFloatPercent + 1;
 	bool formerCanFloat = canFloat; // Checks if enemy was just floating.
 
 	// If floating then moveFloat.
-	if ((randFloat == randomFloatPercent
-		&& escapeTimer.getElapsedTime().asSeconds() > randomFloatTime)
-		|| canFloat)
+	if (canFloat)
 		moveDir = moveFloat();
 	// If cannot keep moving in current direction, change move type.
 	else if (sandCollided[getDirection()]) // !!! Might want to change to every 16x16 block for more varience. !!!
 	{
-		// Checks for each rock if enemy is near, and if so, run from the rock.
-		for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
+		int randFloat = rand() % randomFloatPercent + 1;
+
+		if (randFloat == randomFloatPercent && escapeTimer.getElapsedTime().asSeconds() > randomFloatTime)
+			moveDir = moveFloat();
+		else
 		{
-			if (game->getRockPointer(i)->getFall())
+			// Checks for each rock if enemy is near, and if so, run from the rock.
+			for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
 			{
-				rockDifference = getPosition().x - game->getRockPointer(i)->getPosition().x;
-				if (rockDifference <= 16.0f && rockDifference >= -16.0f)
+				if (game->getRockPointer(i)->getFall())
 				{
-					moveDir = moveFromRock(game->getRockPointer(i)->getPosition());
+					rockDifference = getPosition().x - game->getRockPointer(i)->getPosition().x;
+					if (rockDifference <= 16.0f && rockDifference >= -16.0f)
+					{
+						moveDir = moveFromRock(game->getRockPointer(i)->getPosition());
+					}
 				}
 			}
-		}
 
-		// If time after level load is 30 seconds, escape from level.
-		// If not, randomChance/15 chance to move towards player,
-		// otherwise move away.
-		if (moveDir == -1)
-		{
-			static const int randomChoice = rand() % 15 + 1;
+			// If time after level load is 30 seconds, escape from level.
+			// If not, randomChance/15 chance to move towards player,
+			// otherwise move away.
+			if (moveDir == -1)
+			{
+				static const int randomChoice = rand() % 15 + 1;
 
-			if (escapeTimer.getElapsedTime().asSeconds() > 30.0f)
-				moveDir = escapeLevel();
-			else if (randomChoice > 1)
-				moveDir = moveTowardPlayer();
-			else if (randomChoice <= 1)
-				moveDir = moveAwayPlayer();
+				if (escapeTimer.getElapsedTime().asSeconds() > 30.0f)
+					moveDir = escapeLevel();
+				else if (randomChoice > 1)
+					moveDir = moveTowardPlayer();
+				else if (randomChoice <= 1)
+					moveDir = moveAwayPlayer();
+			}
 		}
 	}
 	else // If not stopped, keep moving in current direction.
@@ -357,13 +361,11 @@ int Enemy::moveFloat()
 	sf::Vector2f playerPos = (floatTarget.x != -1)
 		? floatTarget : game->getDigDugPointer()->getPosition();
 	sf::Vector2f currentPos = getPosition();
-	bool nearPlayer = false;
 
 	// Checks if the enemy is near the player and sets the target to the former playerPos.
-	if (abs(currentPos.x - playerPos.x) < 32 && abs(currentPos.y - playerPos.y) < 32)
+	if (abs(currentPos.x - playerPos.x) < 48 && abs(currentPos.y - playerPos.y) < 48)
 	{
-		nearPlayer = true;
-		if (floatTarget.x != -1)
+		if (floatTarget.x == -1)
 			floatTarget = playerPos;
 	}
 
@@ -380,8 +382,7 @@ int Enemy::moveFloat()
 	}
 
 	// If not colliding at all and at any time near the player, stop floating.
-	if (!sandCollided[0] && !sandCollided[1] &&
-		!sandCollided[2] && !sandCollided[3] && nearPlayer)
+	if (currentPos == playerPos)
 		canFloat = false;
 
 	// If still floating move towards player ignoring collisions,
@@ -422,6 +423,8 @@ void Enemy::reset(sf::Vector2f pos)
 	floatTarget = sf::Vector2f(-1, -1);
 	currentPump = 0;
 	speed = .25f;
+
+	spritesheet.setSize(sf::Vector2i(16, 16), sf::Vector2i(0, 0), 0);
 
 	for (int i = 0; i < 4; i++)
 		sandCollided[i] = false;

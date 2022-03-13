@@ -11,7 +11,7 @@ public:
 
 	void shoot();
 	void playerInput();
-	void die();
+	void die(std::string);
 
 	void update() override;
 	void drawObject() override;
@@ -20,9 +20,14 @@ public:
 
 private:
 	void playerMovement(const int&);
+	void setAnimations(const int&);
 
 	bool shooting;
 	Shot shot;
 	float speed;
+
+	bool dead;
+	sf::Clock deathWait;
+	int sandCollided;
 };
 

@@ -97,31 +97,31 @@ bool Game::checkCollision(const sf::FloatRect& collider,
 }
 
 
-DigDug* Game::getDigDugPointer()
+DigDug* const Game::getDigDugPointer()
 {
 	return digDug;
 }
 
 
-Sand* Game::getSandPointer(const int index)
+Sand* const Game::getSandPointer(const int index)
 {
 	return sand.at(index);
 }
 
 
-Fygar* Game::getFygarPointer(const int index)
+Fygar* const Game::getFygarPointer(const int index)
 {
 	return fygars.at(index);
 }
 
 
-Pooka* Game::getPookaPointer(const int index)
+Pooka* const Game::getPookaPointer(const int index)
 {
 	return pookas.at(index);
 }
 
 
-Rock* Game::getRockPointer(const int index)
+Rock* const Game::getRockPointer(const int index)
 {
 	return rocks.at(index);
 }
@@ -153,7 +153,7 @@ void Game::setupObjects()
 
 	ui = new UI(window);
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		fygars.push_back(new Fygar(window, this));
 		fygars.at(i)->setActive(false);
@@ -185,6 +185,17 @@ void Game::setupLevels()
 {
 	// Create levels and pass in position of level file.
 	levelLocations.push_back("Levels/Level1.txt");
+	levelLocations.push_back("Levels/Level2.txt");
+	levelLocations.push_back("Levels/Level3.txt");
+	levelLocations.push_back("Levels/Level4.txt");
+	levelLocations.push_back("Levels/Level5.txt");
+	levelLocations.push_back("Levels/Level6.txt");
+	levelLocations.push_back("Levels/Level7.txt");
+	levelLocations.push_back("Levels/Level8.txt");
+	levelLocations.push_back("Levels/Level9.txt");
+	levelLocations.push_back("Levels/Level10.txt");
+	levelLocations.push_back("Levels/Level11.txt");
+	levelLocations.push_back("Levels/Level12.txt");
 }
 
 

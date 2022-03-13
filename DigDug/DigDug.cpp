@@ -34,9 +34,16 @@ void DigDug::shoot()
 }
 
 
-void DigDug::die()
+void DigDug::die(std::string type)
 {
-	setActive(false);
+	if (dead == false)
+	{
+		dead = true;
+		deathWait.restart();
+
+		if (type == "rock")
+			setActive(false);
+	}
 }
 
 
@@ -48,6 +55,11 @@ void DigDug::update()
 	// Checks player inputs
 	playerInput();
 	shot.update();
+
+	if (deathWait.getElapsedTime().asSeconds() > 2.0f && dead)
+		setActive(false);
+	else if (anim.getFinished() && dead)
+		anim.setActive(false);
 
 	// Updates animator
 	anim.playAnimation();
@@ -70,11 +82,18 @@ void DigDug::collide()
 	// move the direction of previous input, based on sand
 	// mask. When moving towards sand, should run sand mask variable
 	// with player direction and position. 
+
+	// Frames of leniency between each animation changing from
+	// walking to digging.
+	if (sandCollided > 0)
+		sandCollided--;
+
 	for (int i = 0; i < game->getArrLength(Game::Object::sandPath); i++)
 	{
 		if (game->checkCollision(getCollider(), Game::Object::sandPath, i))
 		{
-			game->getSandPointer(i)->changeSand(getPosition(), getDirection());
+			if (game->getSandPointer(i)->changeSand(getPosition(), getDirection()))
+				sandCollided = 5;
 		}
 	}
 
@@ -84,7 +103,7 @@ void DigDug::collide()
 		if (game->checkCollision(getCollider(), Game::Object::fygar, i)
 			&& game->getFygarPointer(i)->getCurrentPump() <= 0)
 		{
-			die();
+			die("enemy");
 		}
 	}
 
@@ -93,7 +112,7 @@ void DigDug::collide()
 		if (game->checkCollision(getCollider(), Game::Object::pooka, i)
 			&& game->getPookaPointer(i)->getCurrentPump() <= 0)
 		{
-			die();
+			die("enemy");
 		}
 	}
 
@@ -103,7 +122,7 @@ void DigDug::collide()
 		if (game->checkCollision(getCollider(), Game::Object::rock, i)
 			&& game->getRockPointer(i)->getFall())
 		{
-			die();
+			die("rock");
 		}
 	}
 }
@@ -129,29 +148,37 @@ void DigDug::playerInput()
 		input = none;
 
 	if (!shot.getActive())
-		setCanMove(true);
-
-	switch(input)
 	{
-	case up:
-	case down:
-	case right:
-	case left:
-		if (getCanMove())
-			playerMovement(input);
-	break;
-	case z:
-		if (!shot.getActive())
-		{
-			anim.setActive(false);
-			setCanMove(false);
-			shoot();
-		}
-		break; 
-	default:
-		anim.setActive(false);
-		break;
+		shooting = false;
+		setCanMove(true);
 	}
+
+	if (!dead)
+	{
+		switch (input)
+		{
+		case up:
+		case down:
+		case right:
+		case left:
+			if (getCanMove())
+				playerMovement(input);
+			break;
+		case z:
+			if (!shot.getActive())
+			{
+				anim.setActive(false);
+				setCanMove(false);
+			}
+			shoot();
+			break;
+		default:
+			anim.setActive(false);
+			break;
+		}
+	}
+
+	setAnimations(input);
 }
 
 
@@ -188,20 +215,12 @@ void DigDug::playerMovement(const int& input)
 			if (input == up)
 			{
 				move(upV);
-				if (getDirection() != up || anim.getActive() == false)
-				{
-					setDirection(up);
-					anim.setAnimation(2, 3, .2f, true);
-				}
+				setDirection(up);
 			}
 			else
 			{
 				move(downV);
-				if (getDirection() != down || anim.getActive() == false)
-				{
-					setDirection(down);
-					anim.setAnimation(6, 7, .2f, true);
-				}
+				setDirection(down);
 			}
 		}
 	}
@@ -219,20 +238,12 @@ void DigDug::playerMovement(const int& input)
 			if (input == left)
 			{
 				move(leftV);
-				if (getDirection() != left || anim.getActive() == false)
-				{
-					setDirection(left);
-					anim.setAnimation(4, 5, .2f, true);
-				}
+				setDirection(left);
 			}
 			else
 			{
 				move(rightV);
-				if (getDirection() != right || anim.getActive() == false)
-				{
-					setDirection(right);
-					anim.setAnimation(0, 1, .2f, true);
-				}
+				setDirection(right);
 			}
 		}
 	}
@@ -241,10 +252,74 @@ void DigDug::playerMovement(const int& input)
 }
 
 
+void DigDug::setAnimations(const int& input)
+{
+	anim.setActive(false);
+
+	switch (getDirection())
+	{
+	case up:
+		if (dead)
+			anim.setAnimation(60, 63, .2f, true);
+		else if (shooting)
+			spritesheet.loadSprite(25);
+		else if (input != none && input != z)
+		{
+			if (sandCollided > 0 && input != z)
+				anim.setAnimation(10, 11, .2f, true);
+			else
+				anim.setAnimation(2, 3, .2f, true);
+		}
+		break;
+	case down:
+		if (dead)
+			anim.setAnimation(68, 71, .2f, true);
+		else if (shooting)
+			spritesheet.loadSprite(27);
+		else if (input != none && input != z)
+		{
+			if (sandCollided > 0)
+				anim.setAnimation(14, 15, .2f, true);
+			else
+				anim.setAnimation(6, 7, .2f, true);
+		}
+		break;
+	case left:
+		if (dead)
+			anim.setAnimation(64, 67, .2f, true);
+		else if (shooting)
+			spritesheet.loadSprite(26);
+		else if (input != none && input != z)
+		{
+			if (sandCollided > 0)
+				anim.setAnimation(12, 13, .2f, true);
+			else
+				anim.setAnimation(4, 5, .2f, true);
+		}
+		break;
+	case right:
+		if (dead)
+			anim.setAnimation(56, 59, .2f, true);
+		else if (shooting)
+			spritesheet.loadSprite(24);
+		else if (input != none && input != z)
+		{
+			if (sandCollided > 0)
+				anim.setAnimation(8, 9, .2f, true);
+			else
+				anim.setAnimation(0, 1, .2f, true);
+		}
+		break;
+	}
+}
+
+
 void DigDug::reset(sf::Vector2f pos)
 {
 	GameObject::reset(pos);
 
+	dead = false;
+	sandCollided = false;
 	shooting = false;
 	speed = .25f;
 	shot.reset(pos);

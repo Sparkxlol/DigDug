@@ -10,7 +10,7 @@ public:
 	~Sand();
 	Sand(sf::RenderWindow*, Game*);
 
-	void changeSand(sf::Vector2f, int dir);
+	bool changeSand(sf::Vector2f, int dir);
 	void reset(int round, bool);
 	void setActive(const bool&);
 	void preReset(const bool&, sf::Vector2f); // Sets if full sand or partial sand at start

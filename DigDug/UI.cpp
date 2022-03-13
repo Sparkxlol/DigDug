@@ -50,8 +50,8 @@ UI::UI(sf::RenderWindow* window)
 	}
 
 	background.setupSprite("Images/uiBackgroundSpritesheet.png",
-		sf::Vector2i(192, 576), sf::Vector2i(192, 192));
-	background.setPosition(sf::Vector2f(0, 32));
+		sf::Vector2i(192, 672), sf::Vector2i(192, 224));
+	background.setPosition(sf::Vector2f(0, 0));
 
 	// Sets initial lives to 2, score to 0,
 	// highScore to previous score, and round to 1

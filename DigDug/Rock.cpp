@@ -23,7 +23,6 @@ Rock::Rock(sf::RenderWindow* win, Game* game)
 		sf::Vector2i(64, 16), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
 	reset(sf::Vector2f(0, 0));
-	//bottom = new sf::RectangleShape(sf::Vector2f(15.75, 15.75));
 }
 
 

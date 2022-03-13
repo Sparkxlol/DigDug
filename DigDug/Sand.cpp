@@ -45,7 +45,8 @@ Sand::Sand(sf::RenderWindow* win, Game* game)
 
 // Changes the top background mask to the correct size based on current mask and inputted position/direction.
 // Moves this mask into the correct position and chooses the correct foreground sprite for the "path".
-void Sand::changeSand(sf::Vector2f playerPos, int dir)
+// Returns true if the sand was changed, false if not.
+bool Sand::changeSand(sf::Vector2f playerPos, int dir)
 {
 	// Finds x and y change from the player to the top left of the
 	// sand object and adds 16 to prevent negatives -> 32.
@@ -111,6 +112,9 @@ void Sand::changeSand(sf::Vector2f playerPos, int dir)
 	background2.setPosition(
 		sf::Vector2f(foreground.getPosition().x + leftMask, foreground.getPosition().y + topMask)
 	);
+
+	// Returns if sand is changed from start or not.
+	return !(height == 0 || width == 0);
 }
 
 
