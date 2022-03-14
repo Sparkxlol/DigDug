@@ -51,6 +51,7 @@ void Shot::shoot(sf::Vector2f playerPos, int direction)
 		setActive(true);
 		setDirection(direction);
 		currentMask = 3;
+		updateMask();
 	}
 
 }
@@ -81,27 +82,13 @@ void Shot::update()
 void Shot::collide()
 {
 	// Checks collision with enemy, if collides, "attack" enemy.
-	for (int i = 0; i < game->getArrLength(Game::Object::fygar); i++)
+	for (int i = 0; i < game->getArrLength(Game::Object::enemy); i++)
 	{
-		if (game->checkCollision(getCollider(), Game::Object::fygar, i)
-			&& game->getFygarPointer(i)->getCurrentPump() <= 3)
+		if (game->checkCollision(getCollider(), Game::Object::enemy, i)
+			&& game->getEnemyPointer(i)->getCurrentPump() <= 3)
 		{
 			attached = true;
-			attachedEnemy = game->getFygarPointer(i);
-			attachedEnemy->changeCurrentPump(1);
-			shootWait.restart();
-			return;
-		}
-	}
-
-
-	for (int i = 0; i < game->getArrLength(Game::Object::pooka); i++)
-	{
-		if (game->checkCollision(getCollider(), Game::Object::pooka, i)
-			&& game->getPookaPointer(i)->getCurrentPump() <= 3)
-		{
-			attached = true;
-			attachedEnemy = game->getPookaPointer(i);
+			attachedEnemy = game->getEnemyPointer(i);
 			attachedEnemy->changeCurrentPump(1);
 			shootWait.restart();
 			return;
@@ -161,6 +148,12 @@ void Shot::updateMask()
 	}
 	else
 		setActive(false);
+}
+
+
+bool Shot::getAttached()
+{
+	return attached;
 }
 
 

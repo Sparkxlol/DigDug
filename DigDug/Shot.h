@@ -12,6 +12,8 @@ public:
 	void update() override;
 	void collide() override;
 	void reset(sf::Vector2f) override;
+
+	bool getAttached();
 private:
 	void updateMask();
 

@@ -88,7 +88,16 @@ void Rock::update()
 	else if (endFalling)
 	{
 		if (anim.getFinished())
+		{
 			die();
+			if (game->checkCollision(GameObject::getCollider(), Game::Object::dig, 0))
+				game->getDigDugPointer()->setActive(false);
+			for (int i = 0; i < game->getArrLength(Game::Object::enemy); i++)
+			{
+				if (game->checkCollision(GameObject::getCollider(), Game::Object::enemy, i))
+					game->getEnemyPointer(i)->setActive(false);
+			}
+		}
 	}
 	else if (isFalling && bottomCollider)//kills rock if collides with bottom sand
 	{
@@ -101,6 +110,7 @@ void Rock::update()
 		fall();
 
 	anim.playAnimation();
+
 }
 
 
@@ -110,7 +120,8 @@ void Rock::collide()
 	//getCollider() -- overriden collider, offset down to allow falling to work
 
 	normalCollider = false;
-	bottomCollider = game->checkCollision(getCollider(), Game::Object::dig, 0);
+	bottomCollider = false;
+	//bottomCollider = game->checkCollision(getCollider(), Game::Object::dig, 0);
 
 	// Check collision of sand under rock, if doesn't collide, fall.
 
@@ -120,6 +131,30 @@ void Rock::collide()
 			normalCollider = game->checkCollision(GameObject::getCollider(), Game::Object::sandSand, i);
 		if (!bottomCollider)
 			bottomCollider = game->checkCollision(getCollider(), Game::Object::sandSand, i);
+	}
+
+	if (isFalling)
+	{
+		for (int i = 0; i < game->getArrLength(Game::Object::enemy); i++)
+		{
+			if (game->checkCollision(getCollider(), Game::Object::enemy, i))
+			{
+				Enemy* const currentEnemy = game->getEnemyPointer(i);
+				currentEnemy->die("rock");
+				currentEnemy->setPosition(sf::Vector2f(currentEnemy->getPosition().x, getPosition().y + 8.0f));
+				if (anim.getFinished())
+					currentEnemy->setActive(false);
+			}
+		}
+
+		if (game->checkCollision(getCollider(), Game::Object::dig, 0))
+		{
+			DigDug* const currentDig = game->getDigDugPointer();
+			currentDig->die("rock");
+			currentDig->setPosition(sf::Vector2f(currentDig->getPosition().x, getPosition().y + 8.0f));
+			if (anim.getFinished())
+				currentDig->setActive(false);
+		}
 	}
 
 	// Check collision with enemies/player, run death functions.

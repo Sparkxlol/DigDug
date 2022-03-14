@@ -26,7 +26,7 @@ private:
 	Shot shot;
 	float speed;
 
-	bool dead;
+	std::string deathType;
 	sf::Clock deathWait;
 	int sandCollided;
 };

@@ -358,12 +358,14 @@ int Enemy::moveFloat()
 	// !!! Doesn't work properly !!!
 	// If ever close to player during current flight, move to former position.
 	// Otherwise move towards the general position of the player.
+	static const int floatDistance = 64;
 	sf::Vector2f playerPos = (floatTarget.x != -1)
 		? floatTarget : game->getDigDugPointer()->getPosition();
 	sf::Vector2f currentPos = getPosition();
 
 	// Checks if the enemy is near the player and sets the target to the former playerPos.
-	if (abs(currentPos.x - playerPos.x) < 48 && abs(currentPos.y - playerPos.y) < 48)
+	if (abs(currentPos.x - playerPos.x) < floatDistance 
+		&& abs(currentPos.y - playerPos.y) < floatDistance)
 	{
 		if (floatTarget.x == -1)
 			floatTarget = playerPos;

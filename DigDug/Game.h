@@ -14,15 +14,14 @@ public:
 	Game();
 	~Game();
 
-	enum class Object { dig, fygar, pooka, rock, sandPath, sandSand };
+	enum class Object { dig, enemy, rock, sandPath, sandSand };
 
 	int getArrLength(const Game::Object&) const;
 	bool checkCollision(const sf::FloatRect&,
 		const Game::Object&, const int&) const; // Used by objects
 	DigDug* const getDigDugPointer();
 	Sand* const getSandPointer(const int);
-	Fygar* const getFygarPointer(const int);
-	Pooka* const getPookaPointer(const int);
+	Enemy* const getEnemyPointer(const int);
 	Rock* const getRockPointer(const int);
 	void createScore(sf::Vector2f, std::string);
 	bool getActive(const Game::Object&, const int&) const;
@@ -40,8 +39,7 @@ private:
 	bool enemiesLeft();
 
 	DigDug* digDug;
-	std::vector<Fygar*> fygars;
-	std::vector<Pooka*> pookas;
+	std::vector<Enemy*> enemies;
 	std::vector<Rock*> rocks;
 	std::vector<Sand*> sand;
 	std::vector<Score*> scores;

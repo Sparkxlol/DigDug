@@ -36,13 +36,12 @@ void DigDug::shoot()
 
 void DigDug::die(std::string type)
 {
-	if (dead == false)
+	if (deathType == "none")
 	{
-		dead = true;
 		deathWait.restart();
 
-		if (type == "rock")
-			setActive(false);
+		std::cout << type;
+		deathType = type;		
 	}
 }
 
@@ -50,15 +49,16 @@ void DigDug::die(std::string type)
 void DigDug::update()
 {
 	// Checks collision
-	collide();
+	if (deathType == "none")
+		collide();
 
 	// Checks player inputs
 	playerInput();
 	shot.update();
 
-	if (deathWait.getElapsedTime().asSeconds() > 2.0f && dead)
+	if (deathWait.getElapsedTime().asSeconds() > 2.0f && deathType == "enemy")
 		setActive(false);
-	else if (anim.getFinished() && dead)
+	else if (anim.getFinished() && deathType == "enemy")
 		anim.setActive(false);
 
 	// Updates animator
@@ -98,31 +98,12 @@ void DigDug::collide()
 	}
 
 	// Checks collision with enemy, dies if touches.
-	for (int i = 0; i < game->getArrLength(Game::Object::fygar); i++)
+	for (int i = 0; i < game->getArrLength(Game::Object::enemy); i++)
 	{
-		if (game->checkCollision(getCollider(), Game::Object::fygar, i)
-			&& game->getFygarPointer(i)->getCurrentPump() <= 0)
+		if (game->checkCollision(getCollider(), Game::Object::enemy, i)
+			&& game->getEnemyPointer(i)->getCurrentPump() <= 0)
 		{
 			die("enemy");
-		}
-	}
-
-	for (int i = 0; i < game->getArrLength(Game::Object::pooka); i++)
-	{
-		if (game->checkCollision(getCollider(), Game::Object::pooka, i)
-			&& game->getPookaPointer(i)->getCurrentPump() <= 0)
-		{
-			die("enemy");
-		}
-	}
-
-	// Checks collision with rock, dies if rock is falling.
-	for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
-	{
-		if (game->checkCollision(getCollider(), Game::Object::rock, i)
-			&& game->getRockPointer(i)->getFall())
-		{
-			die("rock");
 		}
 	}
 }
@@ -149,11 +130,15 @@ void DigDug::playerInput()
 
 	if (!shot.getActive())
 	{
-		shooting = false;
-		setCanMove(true);
+		if (shooting)
+		{
+			shot.reset(getPosition());
+			shooting = false;
+			setCanMove(true);
+		}
 	}
 
-	if (!dead)
+	if (deathType == "none")
 	{
 		switch (input)
 		{
@@ -201,50 +186,75 @@ void DigDug::playerMovement(const int& input)
 	xPos = (xPos < .002f || xPos > .998f) ? 0.0f : xPos;
 	yPos = (yPos < .002f || yPos > .998f) ? 0.0f : yPos;
 
+
 	if (input == up || input == down)
 	{
-		if (xPos != 0)
-		{
-			if (getDirection() == left)
-				move(leftV);
-			else
-				move(rightV);
-		}
-		else
+		if (xPos == 0)
 		{
 			if (input == up)
-			{
-				move(upV);
 				setDirection(up);
-			}
 			else
-			{
-				move(downV);
 				setDirection(down);
-			}
 		}
 	}
 	else
 	{
-		if (yPos != 0)
-		{
-			if (getDirection() == up)
-				move(upV);
-			else
-				move(downV);
-		}
-		else
+		if (yPos == 0)
 		{
 			if (input == left)
-			{
-				move(leftV);
 				setDirection(left);
-			}
 			else
-			{
-				move(rightV);
 				setDirection(right);
-			}
+		}
+	}
+
+	sf::FloatRect largeCollider = getCollider();
+	bool collided = false;
+
+	switch (getDirection())
+	{
+	case up:
+		largeCollider.top += .25f;
+		largeCollider.height -= 5.0f;
+		break;
+	case down:
+		largeCollider.height -= 4.75f;
+		largeCollider.top += 5.0f;
+		break;
+	case left:
+		largeCollider.left += .25f;
+		largeCollider.width -= 5.0f;
+		break;
+	case right:
+		largeCollider.width -= 4.75f;
+		largeCollider.left += 5.0f;
+		break;
+	}
+
+	for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
+	{
+		if (game->checkCollision(largeCollider, Game::Object::rock, i))
+		{
+			collided = true;
+		}
+	}
+
+	if (!collided)
+	{
+		switch (getDirection())
+		{
+		case up:
+			move(upV);
+			break;
+		case down:
+			move(downV);
+			break;
+		case left:
+			move(leftV);
+			break;
+		case right:
+			move(rightV);
+			break;
 		}
 	}
 
@@ -259,10 +269,22 @@ void DigDug::setAnimations(const int& input)
 	switch (getDirection())
 	{
 	case up:
-		if (dead)
+		if (deathType == "enemy")
 			anim.setAnimation(60, 63, .2f, true);
+		else if (deathType == "rock")
+		{
+			if (anim.getFrame() == 51)
+				anim.setActive(false);
+			else
+				anim.setAnimation(50, 51, .2f, true);
+		}
 		else if (shooting)
-			spritesheet.loadSprite(25);
+		{
+			if (!shot.getAttached())
+				spritesheet.loadSprite(25);
+			else
+				anim.setAnimation(34, 35, .5f, true);
+		}
 		else if (input != none && input != z)
 		{
 			if (sandCollided > 0 && input != z)
@@ -272,10 +294,22 @@ void DigDug::setAnimations(const int& input)
 		}
 		break;
 	case down:
-		if (dead)
+		if (deathType == "enemy")
 			anim.setAnimation(68, 71, .2f, true);
+		else if (deathType == "rock")
+		{
+			if (anim.getFrame() == 55)
+				anim.setActive(false);
+			else
+				anim.setAnimation(54, 55, .2f, true);
+		}
 		else if (shooting)
-			spritesheet.loadSprite(27);
+		{
+			if (!shot.getAttached())
+				spritesheet.loadSprite(27);
+			else
+				anim.setAnimation(38, 39, .5f, true);
+		}
 		else if (input != none && input != z)
 		{
 			if (sandCollided > 0)
@@ -285,10 +319,22 @@ void DigDug::setAnimations(const int& input)
 		}
 		break;
 	case left:
-		if (dead)
+		if (deathType == "enemy")
 			anim.setAnimation(64, 67, .2f, true);
+		else if (deathType == "rock")
+		{
+			if (anim.getFrame() == 53)
+				anim.setActive(false);
+			else
+				anim.setAnimation(52, 53, .2f, true);
+		}
 		else if (shooting)
-			spritesheet.loadSprite(26);
+		{
+			if (!shot.getAttached())
+				spritesheet.loadSprite(26);
+			else
+				anim.setAnimation(36, 37, .5f, true);
+		}
 		else if (input != none && input != z)
 		{
 			if (sandCollided > 0)
@@ -298,10 +344,22 @@ void DigDug::setAnimations(const int& input)
 		}
 		break;
 	case right:
-		if (dead)
+		if (deathType == "enemy")
 			anim.setAnimation(56, 59, .2f, true);
+		else if (deathType == "rock")
+		{
+			if (anim.getFrame() == 49)
+				anim.setActive(false);
+			else
+				anim.setAnimation(48, 49, .2f, true);
+		}
 		else if (shooting)
-			spritesheet.loadSprite(24);
+		{
+			if (!shot.getAttached())
+				spritesheet.loadSprite(24);
+			else
+				anim.setAnimation(32, 33, .5f, true);
+		}
 		else if (input != none && input != z)
 		{
 			if (sandCollided > 0)
@@ -318,7 +376,7 @@ void DigDug::reset(sf::Vector2f pos)
 {
 	GameObject::reset(pos);
 
-	dead = false;
+	deathType = "none";
 	sandCollided = false;
 	shooting = false;
 	speed = .25f;

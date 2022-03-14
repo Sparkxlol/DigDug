@@ -9,14 +9,9 @@ Game::~Game()
 {
 	delete digDug;
 
-	for(int i = 0; i < fygars.size(); i++)
+	for(int i = 0; i < enemies.size(); i++)
 	{
-		delete fygars.at(i);
-	}
-
-	for(int i = 0; i < pookas.size(); i++)
-	{
-		delete pookas.at(i);
+		delete enemies.at(i);
 	}
 
 	for(int i = 0; i < rocks.size(); i++)
@@ -36,8 +31,7 @@ Game::~Game()
 
 	delete ui;
 
-	fygars.clear();
-	pookas.clear();
+	enemies.clear();
 	rocks.clear();
 	sand.clear();
 	scores.clear();
@@ -60,10 +54,8 @@ int Game::getArrLength(const Game::Object& object) const
 	{
 	case Object::dig:
 		return 1;
-	case Object::fygar:
-		return fygars.size();
-	case Object::pooka:
-		return pookas.size();
+	case Object::enemy:
+		return enemies.size();
 	case Object::rock:
 		return rocks.size();
 	case Object::sandPath:
@@ -109,15 +101,9 @@ Sand* const Game::getSandPointer(const int index)
 }
 
 
-Fygar* const Game::getFygarPointer(const int index)
+Enemy* const Game::getEnemyPointer(const int index)
 {
-	return fygars.at(index);
-}
-
-
-Pooka* const Game::getPookaPointer(const int index)
-{
-	return pookas.at(index);
+	return enemies.at(index);
 }
 
 
@@ -155,10 +141,14 @@ void Game::setupObjects()
 
 	for (int i = 0; i < 4; i++)
 	{
-		fygars.push_back(new Fygar(window, this));
-		fygars.at(i)->setActive(false);
-		pookas.push_back(new Pooka(window, this));
-		pookas.at(i)->setActive(false);
+		enemies.push_back(new Fygar(window, this));
+		enemies.at(i)->setActive(false);
+	}
+
+	for (int i = 4; i < 8; i++)
+	{
+		enemies.push_back(new Pooka(window, this));
+		enemies.at(i)->setActive(false);
 	}
 
 	for (int i = 0; i < 5; i++)
@@ -205,21 +195,23 @@ GameObject& Game::getObject(const Game::Object& object, const int& index) const
 	{
 	case Object::dig:
 		return *digDug;
-	case Object::fygar:
-		return *fygars.at(index);
-	case Object::pooka:
-		return *pookas.at(index);
+	case Object::enemy:
+		return *enemies.at(index);
 	case Object::rock:
 		return *rocks.at(index);
 	}
 }
 
 
-void Game::loadLevel(int index)
+void Game::loadLevel(int currentLevel)
 {
-	// Load level from level class at specified index.
+	if (currentLevel > 98)
+		currentLevel = 0;
+
+	// Load level from level class at specified index, resetting at 12.
+	int index = currentLevel % 12;
 	std::ifstream levelFile(levelLocations.at(index));
-	bool sandResetLevel = (currentLevel == index) ? false : true;
+	bool sandResetLevel = (this->currentLevel == currentLevel) ? false : true;
 
 	if (!levelFile.is_open())
 	{
@@ -229,7 +221,7 @@ void Game::loadLevel(int index)
 	int value;
 	int currentX = 0;
 	int currentY = 32;
-	int currentPooka = 0;
+	int currentPooka = 4;
 	int currentFygar = 0;
 	int currentRock = 0;
 	int currentSand = 0;
@@ -256,7 +248,7 @@ void Game::loadLevel(int index)
 			currentSand++;
 			break;
 		case 3:
-			pookas.at(currentPooka)->reset(sf::Vector2f(currentX, currentY));
+			enemies.at(currentPooka)->reset(sf::Vector2f(currentX, currentY));
 			currentPooka++;
 
 			if (sandResetLevel)
@@ -264,7 +256,7 @@ void Game::loadLevel(int index)
 			currentSand++;
 			break;
 		case 4:
-			fygars.at(currentFygar)->reset(sf::Vector2f(currentX, currentY));
+			enemies.at(currentFygar)->reset(sf::Vector2f(currentX, currentY));
 			currentFygar++;
 
 			if (sandResetLevel)
@@ -301,9 +293,9 @@ void Game::loadLevel(int index)
 
 	levelFile.close();
 
-	ui->setRound(index + 1);
+	ui->setRound(currentLevel);
 
-	currentLevel = index;
+	this->currentLevel = currentLevel;
 
 	for (Sand*& s : sand)
 	{
@@ -319,15 +311,9 @@ bool Game::enemiesLeft()
 {
 	int enemiesLeft = false;
 
-	for (Pooka*& pooka : pookas)
+	for (Enemy*& enemy : enemies)
 	{
-		if (pooka->getActive())
-			enemiesLeft = true;
-	}
-
-	for (Fygar*& fygar : fygars)
-	{
-		if (fygar->getActive())
+		if (enemy->getActive())
 			enemiesLeft = true;
 	}
 
@@ -357,16 +343,10 @@ void Game::updateObjects()
 	if (digDug->getActive())
 		digDug->update();
 
-	for (auto& fygar : fygars)
+	for (auto& enemy : enemies)
 	{
-		if (fygar->getActive())
-			fygar->update();
-	}
-
-	for (auto& pooka : pookas)
-	{
-		if (pooka->getActive())
-			pooka->update();
+		if (enemy->getActive())
+			enemy->update();
 	}
 
 	for (auto& rock : rocks)
@@ -398,16 +378,10 @@ void Game::drawObjects()
 	if (digDug->getActive())
 		digDug->drawObject();
 
-	for (auto& fygar : fygars)
+	for (auto& enemy : enemies)
 	{
-		if (fygar->getActive())
-			fygar->drawObject();
-	}
-
-	for (auto& pooka : pookas)
-	{
-		if (pooka->getActive())
-			pooka->drawObject();
+		if (enemy->getActive())
+			enemy->drawObject();
 	}
 
 	for (auto& rock : rocks)
