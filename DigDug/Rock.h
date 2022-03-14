@@ -25,7 +25,7 @@ private:
 	bool isFalling;
 	bool endFalling;
 	float speed;
-	bool normalCollider, bottomCollider;
+	bool bottomCollider;
 	
 	bool checkedBottom;
 };

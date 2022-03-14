@@ -18,23 +18,27 @@ Score::~Score()
 }
 
 
+// Returns if a score is currently active.
 bool Score::getActive()
 {
 	return isActive;
 }
 
 
+// Sets the score active.
 void Score::setActive(const bool& active)
 {
 	isActive = active;
 }
 
 
+// Changes the score appearance based on the position and type given.
 void Score::changeScore(sf::Vector2f pos, std::string type)
 {
 	totalScore = 0;
 	int initialYPos = pos.y / 16;
 
+	// The score is found based on depth of enemy and score.
 	if (initialYPos < 5)
 		totalScore += 200;
 	else if (initialYPos < 8)
@@ -44,9 +48,11 @@ void Score::changeScore(sf::Vector2f pos, std::string type)
 	else if (initialYPos < 14)
 		totalScore += 500;
 
+	// If enemy is crushed by rock score is x2.
 	if (type == "rock")
 		totalScore *= 2;
 
+	// A sprite is loaded for each possible score.
 	switch (totalScore)
 	{
 	case 200:
@@ -80,6 +86,8 @@ void Score::changeScore(sf::Vector2f pos, std::string type)
 }
 
 
+// If score is ever set active, the clock is reset for
+// its deletion after 1 seconds of activity.
 void Score::update()
 {
 	if (getActive())
@@ -93,6 +101,7 @@ void Score::update()
 }
 
 
+// Draws the score.
 void Score::drawObject()
 {
 	window->draw(spritesheet);

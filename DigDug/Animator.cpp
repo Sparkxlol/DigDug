@@ -69,7 +69,8 @@ void Animator::playAnimation()
 		if (clock.getElapsedTime().asSeconds() >= frameLength)
 		{
 			nextFrame();
-			if (getFrame() == maxIndex)
+			// If animation is at the end of the last index in an animation
+			if (getFrame() == maxIndex) 
 				animFinished = true;
 			clock.restart(); // Restarts clock to 0.
 		}
@@ -88,6 +89,7 @@ void Animator::playAnimation(float newFrameLength)
 }
 
 
+// Returns true if the animation is finished/end of last frame.
 bool Animator::getFinished()
 {
 	return animFinished;
@@ -100,7 +102,7 @@ void Animator::setActive(bool active)
 	this->active = active;
 }
 
-
+// Returns if the animator of a object is active.
 bool Animator::getActive()
 {
 	return active;

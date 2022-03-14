@@ -16,7 +16,7 @@ public:
 	bool getActive();
 	sf::Vector2f getPosition();
 	bool getCanMove();
-	sf::FloatRect& getCollider(); // Could all be protected instead of get/set :)
+	sf::FloatRect& getCollider();
 
 	void setDirection(const int&);
 	void setActive(const bool&);
@@ -25,14 +25,16 @@ public:
 
 	void move(sf::Vector2f);
 
-	virtual void update() = 0; // Runs every frame and should update collisions, but not draw object.
+	// Runs every frame and should update collisions, but not draw object.
+	virtual void update() = 0; 
 	virtual void drawObject();
-	virtual void collide() = 0; // Checks collisions with objects that most affect player.
+	// Checks collisions with objects that most affect player.
+	virtual void collide() = 0; 
 	virtual void reset(sf::Vector2f);
-	// Collide levels (meaning who should be the collision checker):
+	// Collide levels (who should be the collision checker for most cases):
+	// Rock
 	// Player
 	// Enemies
-	// Rock
 	// Sand
 
 protected:

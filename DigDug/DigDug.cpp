@@ -34,6 +34,10 @@ void DigDug::shoot()
 }
 
 
+/* Sets the death type to the corresponding given type:
+* "rock": death by falling rock; "enemy": death by enemy/fire.
+* Restarts death time so the player can be set non-active
+* either after an animation or when the rock hits the floor. */
 void DigDug::die(std::string type)
 {
 	if (deathType == "none")
@@ -46,22 +50,24 @@ void DigDug::die(std::string type)
 }
 
 
+// Updates digDug, doing collision, input, animation updates
+// as well as checking for death and updating shot.
 void DigDug::update()
 {
-	// Checks collision
+	// Checks collision if not dead.
 	if (deathType == "none")
 		collide();
 
-	// Checks player inputs
 	playerInput();
 	shot.update();
 
+	// If dead by enemy, wait 2 seconds and then restart level.
 	if (deathWait.getElapsedTime().asSeconds() > 2.0f && deathType == "enemy")
 		setActive(false);
+	// If dead by enemy animation is finished, prevent loops.
 	else if (anim.getFinished() && deathType == "enemy")
 		anim.setActive(false);
 
-	// Updates animator
 	anim.playAnimation();
 }
 
@@ -75,29 +81,27 @@ void DigDug::drawObject()
 }
 
 
+// Checks collision with sand and enemy, either changing how sand looks
+// or killing digDug.
 void DigDug::collide()
-{
-	// Checks collision with sand using input of direction.
-	// If alligned properly with sand move toward sand, if not
-	// move the direction of previous input, based on sand
-	// mask. When moving towards sand, should run sand mask variable
-	// with player direction and position. 
-
-	// Frames of leniency between each animation changing from
-	// walking to digging.
+{	
+	// Leniency for the sand digging animation.
+	// Allows 5 frames of leniency between when animation switches from
+	// digging back to walking.
 	if (sandCollided > 0)
 		sandCollided--;
 
+	// Checks each sand and changes it if collided based on player position.
 	for (int i = 0; i < game->getArrLength(Game::Object::sandPath); i++)
 	{
 		if (game->checkCollision(getCollider(), Game::Object::sandPath, i))
 		{
 			if (game->getSandPointer(i)->changeSand(getPosition(), getDirection()))
-				sandCollided = 5;
+				sandCollided = 5; // Shows digging animation.
 		}
 	}
 
-	// Checks collision with enemy, dies if touches.
+	// Checks collision with enemy, dies if enemy is not pumped.
 	for (int i = 0; i < game->getArrLength(Game::Object::enemy); i++)
 	{
 		if (game->checkCollision(getCollider(), Game::Object::enemy, i)
@@ -128,6 +132,8 @@ void DigDug::playerInput()
 	else
 		input = none;
 
+	// If shot isn't active, resets the shot and allows movement
+	// and a new shot.
 	if (!shot.getActive())
 	{
 		if (shooting)
@@ -138,6 +144,7 @@ void DigDug::playerInput()
 		}
 	}
 
+	// If not dead, either moves player in corresponding direction or shoots.
 	if (deathType == "none")
 	{
 		switch (input)
@@ -158,37 +165,43 @@ void DigDug::playerInput()
 			shoot();
 			break;
 		default:
+			// Stops animations if staying still.
 			anim.setActive(false);
 			break;
 		}
 	}
 
+	// Sets animations based on input.
 	setAnimations(input);
 }
 
 
+// Moves based on the input but forces movement based on position
+// as well as collisions, specifically rock.
 void DigDug::playerMovement(const int& input)
 {
-	//if digdug is not on a multiple of 16, prevent movement in a different
-	//direction and instead move digdug to a multiple of 16
-	//ex. moves right from 0 to 12, tries to move up, move digdug to 16 then allow to move up
-
-	//!! Might need to change pos to 0 properly if off-sync !!
-
-	sf::Vector2f upV = sf::Vector2f(0, -speed); // Change to GameObject move class
+	// Creates movement vectors for each direction.
+	sf::Vector2f upV = sf::Vector2f(0, -speed);
 	sf::Vector2f downV = sf::Vector2f(0, speed);
 	sf::Vector2f leftV = sf::Vector2f(-speed, 0);
 	sf::Vector2f rightV = sf::Vector2f(speed, 0);
 
-	float xPos = getPosition().x / 16 - (static_cast<int>(getPosition().x) / 16);
-	float yPos = getPosition().y / 16 - (static_cast<int>(getPosition().y) / 16);
+	// Finds the distance away from a 16 (from the top & left) in both axes.
+	float xPos = (getPosition().x / 16)
+		- (static_cast<int>(getPosition().x) / 16);
+	float yPos = (getPosition().y / 16)
+		- (static_cast<int>(getPosition().y) / 16);
 
+	// If xPos/yPos is close to 0 set to 0,
+	// to check when digDug is close enough to the axis to move on that axis.
 	xPos = (xPos < .002f || xPos > .998f) ? 0.0f : xPos;
 	yPos = (yPos < .002f || yPos > .998f) ? 0.0f : yPos;
 
-
+	// If inputted up or down attempt to change direction to up/down.
+	// Otherwise try to change direction to left/right.
 	if (input == up || input == down)
 	{
+		// If on y-axis change direction to the "correct" direction.
 		if (xPos == 0)
 		{
 			if (input == up)
@@ -199,6 +212,7 @@ void DigDug::playerMovement(const int& input)
 	}
 	else
 	{
+		// If on x-axis change direction to the "correct" direction.
 		if (yPos == 0)
 		{
 			if (input == left)
@@ -208,6 +222,8 @@ void DigDug::playerMovement(const int& input)
 		}
 	}
 
+	// Creates a new collider and changes the size of it
+	// based on the current direction to check in that direction.
 	sf::FloatRect largeCollider = getCollider();
 	bool collided = false;
 
@@ -231,6 +247,7 @@ void DigDug::playerMovement(const int& input)
 		break;
 	}
 
+	// Checks collision with all active rocks in specified direction.
 	for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
 	{
 		if (game->checkCollision(largeCollider, Game::Object::rock, i))
@@ -239,6 +256,7 @@ void DigDug::playerMovement(const int& input)
 		}
 	}
 
+	// If not collided in direction with a rock, move in that direction.
 	if (!collided)
 	{
 		switch (getDirection())
@@ -262,6 +280,14 @@ void DigDug::playerMovement(const int& input)
 }
 
 
+/* Sets animation to the correct animation based on direction and variables
+* 1. If dead by enemy, sets animation to dying animation
+* 2. If dead by rock, sets animation to crushed animation or stops
+*    the animation on the last frame.
+* 3. If currently shooting, either sets to a throwing animation
+*    or a pumping animation if shot is already attached.
+* 4. Otherwise, sets animation to digging if currently digging through sand
+*    or normal walking. */
 void DigDug::setAnimations(const int& input)
 {
 	anim.setActive(false);
@@ -372,6 +398,7 @@ void DigDug::setAnimations(const int& input)
 }
 
 
+// Resets digDug to default variables and animation.
 void DigDug::reset(sf::Vector2f pos)
 {
 	GameObject::reset(pos);
@@ -382,5 +409,5 @@ void DigDug::reset(sf::Vector2f pos)
 	speed = .25f;
 	shot.reset(pos);
 
-	anim.setAnimation(0, 1, .2f, false);
+	anim.setAnimation(0, 1, .2f, false); // Walking right.
 }

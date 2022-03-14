@@ -71,21 +71,6 @@ sf::FloatRect& GameObject::getCollider()
 	return boundingBox;
 }
 
-/*
-// Returns the animator to set animations / frame changes
-Animator* GameObject::getAnimator()
-{
-	return &anim;
-}
-
-
-// Returns the window to allow overridden drawObjects to function
-sf::RenderWindow* GameObject::getWindow()
-{
-	return window;
-}
-*/
-
 
 // Sets the direction of the animation and object
 void GameObject::setDirection(const int &dir)
@@ -142,6 +127,7 @@ void GameObject::drawObject()
 }
 
 
+// Resets the object to default values.
 void GameObject::reset(sf::Vector2f pos)
 {
 	setDirection(right);

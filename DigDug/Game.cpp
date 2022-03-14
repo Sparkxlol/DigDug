@@ -5,6 +5,7 @@ Game::Game() : Game(nullptr)
 { }
 
 
+// Deletes all objects from the game and clears each array.
 Game::~Game()
 {
 	delete digDug;
@@ -38,6 +39,7 @@ Game::~Game()
 }
 
 
+// Sets up objects, levels and loads the first level.
 Game::Game(sf::RenderWindow* window)
 	: window(window), currentLevel(1), currentLives(2)
 {
@@ -48,6 +50,7 @@ Game::Game(sf::RenderWindow* window)
 }
 
 
+// Returns the length of a GameObject array, mainly for collision.
 int Game::getArrLength(const Game::Object& object) const
 {
 	switch (object)
@@ -66,21 +69,23 @@ int Game::getArrLength(const Game::Object& object) const
 }
 
 
+// Checks the collision using the passed collider
+// and the specified index and object. Only checks active objects.
 bool Game::checkCollision(const sf::FloatRect& collider, 
 	const Game::Object& object, const int& index) const
 {
 	switch (object)
 	{
-	case Game::Object::sandPath:
+	case Game::Object::sandPath: // Checks path of sand for collisions.
 		if (sand.at(index)->getBackActive())
 			return collider.intersects(sand.at(index)->getBackCollider());
 		break;
-	case Game::Object::sandSand:
-		if (sand.at(index)->getTopActive())
+	case Game::Object::sandSand: // Checks top of sand for collisions.
+		if (sand.at(index)->getTopActive()) 
 			return collider.intersects(sand.at(index)->getForeCollider());
 		break;
 	default:
-		if (getObject(object, index).getActive())
+		if (getObject(object, index).getActive()) // Checks all other objects.
 			return collider.intersects(getObject(object, index).getCollider());
 		break;
 	}
@@ -89,30 +94,36 @@ bool Game::checkCollision(const sf::FloatRect& collider,
 }
 
 
+// Returns a const pointer to digDug.
 DigDug* const Game::getDigDugPointer()
 {
 	return digDug;
 }
 
 
+// Returns a const pointer to specified sand.
 Sand* const Game::getSandPointer(const int index)
 {
 	return sand.at(index);
 }
 
 
+// Returns a const pointer to specified enemy.
 Enemy* const Game::getEnemyPointer(const int index)
 {
 	return enemies.at(index);
 }
 
 
+// Returns a const pointer to specified rock.
 Rock* const Game::getRockPointer(const int index)
 {
 	return rocks.at(index);
 }
 
 
+// Creates a score based on the passed position and type, making sure
+// it is not overriding a existing score.
 void Game::createScore(sf::Vector2f pos, std::string type)
 {
 	for (int i = 0; i < scores.size(); i++)
@@ -126,12 +137,14 @@ void Game::createScore(sf::Vector2f pos, std::string type)
 }
 
 
+// Returns the activity of a specified object and index.
 bool Game::getActive(const Game::Object& object, const int& index) const
 {
 	return getObject(object, index).getActive();
 }
 
 
+// Creates each object that the game may ever need, and sets it unactive.
 void Game::setupObjects()
 {
 	digDug = new DigDug(window, this);
@@ -171,9 +184,9 @@ void Game::setupObjects()
 }
 
 
+// Adds all 12 levels to the game from text files.
 void Game::setupLevels()
 {
-	// Create levels and pass in position of level file.
 	levelLocations.push_back("Levels/Level1.txt");
 	levelLocations.push_back("Levels/Level2.txt");
 	levelLocations.push_back("Levels/Level3.txt");
@@ -189,6 +202,7 @@ void Game::setupLevels()
 }
 
 
+// Returns the object pointer based on object and index.
 GameObject& Game::getObject(const Game::Object& object, const int& index) const
 {
 	switch (object)
@@ -203,28 +217,42 @@ GameObject& Game::getObject(const Game::Object& object, const int& index) const
 }
 
 
+// Loads the level from the information in a text file and
+// places objects, resetting sand if necessary (on new level).
 void Game::loadLevel(int currentLevel)
 {
+	// If level is 99, reset back to 0 to prevent triple digits.
 	if (currentLevel > 98)
 		currentLevel = 0;
 
 	// Load level from level class at specified index, resetting at 12.
 	int index = currentLevel % 12;
 	std::ifstream levelFile(levelLocations.at(index));
+	// Resets sand only if the passed level is not the same as the current level.
 	bool sandResetLevel = (this->currentLevel == currentLevel) ? false : true;
 
+	// If level cannot be opened, output an error.
 	if (!levelFile.is_open())
 	{
 		std::cerr << "Level at " << levelLocations.at(index) << "couldn't be opened!";
+		return;
 	}
 
-	int value;
-	int currentX = 0;
-	int currentY = 32;
-	int currentPooka = 4;
+	int value; // Corresponds to each object/value in the text file.
+	// 0 - Blank Sand, 1 - Sand, 2 - DigDug, 3 - Pooka, 4 - Fygar, 5 - Rock.
+	int currentX = 0; // Specifies current x position of window.
+	int currentY = 32; // Specifies current y position of window.
+
+	// Currents used for the position in the  
+	// array where an object should be changed.
+	int currentPooka = 4; // Begins pookas at 4 because of enemies array.
 	int currentFygar = 0;
 	int currentRock = 0;
 	int currentSand = 0;
+
+	// Reset is used to change position of object and reset it to defaults.
+	// If preReset includes a false parameter
+	// sand is not full, otherwise sand is full.
 
 	while (levelFile >> value)
 	{
@@ -272,10 +300,12 @@ void Game::loadLevel(int currentLevel)
 			currentSand++;
 			break;
 		default:
-			// Do nothing
+			// If not a recognized character, do nothing.
 			break;
 		}
 
+		// If currentX is at the 12 character in the text file,
+		// increment currentY and reset currentX.
 		currentX /= 16;
 		currentY /= 16;
 
@@ -292,11 +322,14 @@ void Game::loadLevel(int currentLevel)
 	}
 
 	levelFile.close();
-
+	
+	// Sets round to passed level.
 	ui->setRound(currentLevel);
 
 	this->currentLevel = currentLevel;
 
+	// Uses the reset of active sands after a prereset
+	// due to reset needing to know the positions of surrounding sand.
 	for (Sand*& s : sand)
 	{
 		if (s->getBackActive())
@@ -307,6 +340,7 @@ void Game::loadLevel(int currentLevel)
 }
 
 
+// Returns true if enemies are left in the array.
 bool Game::enemiesLeft()
 {
 	int enemiesLeft = false;
@@ -321,6 +355,7 @@ bool Game::enemiesLeft()
 }
 
 
+// Updates all objects.
 void Game::update()
 {
 	// Run all updates
@@ -333,11 +368,12 @@ void Game::update()
 	else if (!enemiesLeft())
 		loadLevel(currentLevel + 1);
 
-	// Draw objects
+	// Draw all objects
 	drawObjects();
 }
 
 
+// Updates each active object.
 void Game::updateObjects()
 {
 	if (digDug->getActive())
@@ -363,6 +399,7 @@ void Game::updateObjects()
 }
 
 
+// Draws each active object.
 void Game::drawObjects()
 {
 	// Run all draw object method.

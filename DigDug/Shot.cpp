@@ -30,6 +30,8 @@ Shot::Shot(sf::RenderWindow* win, Game* game)
 // "Shoots" the air pump, setting the shot active and checking collsion.
 void Shot::shoot(sf::Vector2f playerPos, int direction)
 {
+	// If already attached and have waited for .1 seconds
+	// allow another pump, and if pump is over 3, kill enemy and set unactive.
 	if (attached && shootWait.getElapsedTime().asSeconds() > .1f)
 	{
 		shootWait.restart();
@@ -41,6 +43,8 @@ void Shot::shoot(sf::Vector2f playerPos, int direction)
 			attachedEnemy = nullptr;
 		}
 	}
+	// If not attached and not yet active, reset position and direction
+	// based on the parameters and update the mask to the correct amount.
 	else if (!attached && !getActive())
 	{
 		// Set position to playerPos
@@ -57,6 +61,8 @@ void Shot::shoot(sf::Vector2f playerPos, int direction)
 }
 
 
+// Updates the shot, either checking for collisions if not attached
+// or unattaching if the enemies pump is 0.
 void Shot::update()
 {
 	if (getActive())
@@ -79,6 +85,8 @@ void Shot::update()
 }
 
 
+// Checks collision with enemies to kill them
+// or with sand to set non-active.
 void Shot::collide()
 {
 	// Checks collision with enemy, if collides, "attack" enemy.
@@ -87,6 +95,8 @@ void Shot::collide()
 		if (game->checkCollision(getCollider(), Game::Object::enemy, i)
 			&& game->getEnemyPointer(i)->getCurrentPump() <= 3)
 		{
+			// Sets the pump to attached and changes
+			// the current pump of the collided enemy.
 			attached = true;
 			attachedEnemy = game->getEnemyPointer(i);
 			attachedEnemy->changeCurrentPump(1);
@@ -108,12 +118,18 @@ void Shot::collide()
 }
 
 
+// Updates the appearance of the shot, based on the direction it is facing.
 void Shot::updateMask()
 {
 	if (currentMask <= 48)
 	{
+		// Only updates every 3 frames for more pixelated look.
 		if (currentMask % 3 == 0)
 		{
+			/* Moves the initial starting position
+			* of the shot to the correct place.
+			* If facing down or right, the shot needs to appear
+			* from the back of the sprite rather than the forwards. */
 			switch (getDirection())
 			{
 			case up:
@@ -151,12 +167,14 @@ void Shot::updateMask()
 }
 
 
+// Returns if the shot is attached.
 bool Shot::getAttached()
 {
 	return attached;
 }
 
 
+// Resets the shot the defaults, un-attached.
 void Shot::reset(sf::Vector2f pos)
 {
 	GameObject::reset(pos);

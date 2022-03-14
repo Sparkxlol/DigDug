@@ -30,7 +30,7 @@ void Pooka::update()
 	// Check collisions
 	collide();
 
-	// Update movement
+	// Update movement if not pumped, otherwise update pumped.
 	if (getCurrentPump() <= 0)
 		movement();
 	else
@@ -41,6 +41,7 @@ void Pooka::update()
 }
 
 
+// Resets pooka to default values and animation.
 void Pooka::reset(sf::Vector2f pos)
 {
 	Enemy::reset(pos);

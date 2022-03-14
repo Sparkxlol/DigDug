@@ -241,6 +241,11 @@ void Enemy::movement()
 	}
 
 	setDirection(moveDir);
+
+	// If enemy is offscreen, it is killed.
+	if (getPosition().x <= 0 || getPosition().x >= 15 * 16
+		|| getPosition().y <= 0 || getPosition().y >= 14 * 16)
+		die("offscreen");
 }
 
 
@@ -339,7 +344,7 @@ int Enemy::escapeLevel()
 {
 	int moveDir = -1;
 
-	if (!sandCollided[up])
+	if (!sandCollided[up] && getPosition().y <= 16)
 		moveDir = up;
 	else if (!sandCollided[left])
 		moveDir = left;

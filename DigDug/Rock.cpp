@@ -26,13 +26,14 @@ Rock::Rock(sf::RenderWindow* win, Game* game)
 }
 
 
+// Returns if the rock is falling.
 bool Rock::getFall() const
 {
 	return isFalling;
 }
 
 
-//overriden collider to allow rock to check collision below itself
+// Overriden collider to allow rock to check collision below itself.
 sf::FloatRect& Rock::getCollider()
 {
 	// Smaller than sprite to allow objects to not collide
@@ -45,46 +46,53 @@ sf::FloatRect& Rock::getCollider()
 	return boundingBox;
 }
 
+
+// Moves the rock down from its position.
 void Rock::fall()
 {
 	move(sf::Vector2f(0, speed));
 }
 
 
+// Kills the rock, setting it un-active.
 void Rock::die()
 {
 	isFalling = false;
-
-	//play animation
 
 	setActive(false);
 }
 
 
+// Updates the rock based on current variables.
 void Rock::update()
 {
 	// Check collisions
 	collide();
 
+	// If the bottom does not exist at the start, set active un-active.
 	if (!checkedBottom)
 	{
 		checkedBottom = true;
 		if (!bottomCollider)
-			setActive(false); // This method is a bit glitchy to prevent rocks from spawning on non-ground areas.
+			setActive(false); 
 	}
 
-	if (!bottomCollider && !isFalling && !startFalling)//initial check if sand below
+	// If bottom is not collided and hasn't started falling, fall.
+	if (!bottomCollider && !isFalling && !startFalling)
 	{
 		startFalling = true;
 		fallClock.restart();
 		anim.setAnimation(0, 1, .2f, true);
 	}
+	// If started falling and has been 1 second, begin downward movement.
 	else if (startFalling && fallClock.getElapsedTime().asSeconds() > 1.0f)
 	{
 		isFalling = true;
 		startFalling = false;
 		anim.setAnimation(0, 0, 0, false);
 	}
+	// If the rock should stop falling, and the death animation is finished,
+	// kill collided objects (enemies and digDug).
 	else if (endFalling)
 	{
 		if (anim.getFinished())
@@ -99,6 +107,7 @@ void Rock::update()
 			}
 		}
 	}
+	// If falling and has collided, end fall.
 	else if (isFalling && bottomCollider)//kills rock if collides with bottom sand
 	{
 		isFalling = false;
@@ -106,6 +115,7 @@ void Rock::update()
 		anim.setAnimation(0, 3, .2f, true);
 	}
 
+	// If just falling, continue fall. ???????
 	if (isFalling)
 		fall();
 
@@ -114,25 +124,22 @@ void Rock::update()
 }
 
 
+// Checks collisions with objects under it and 
 void Rock::collide()
 {
-	//GameObject::getCollider() -- base collider, used when falling
 	//getCollider() -- overriden collider, offset down to allow falling to work
 
-	normalCollider = false;
 	bottomCollider = false;
-	//bottomCollider = game->checkCollision(getCollider(), Game::Object::dig, 0);
 
 	// Check collision of sand under rock, if doesn't collide, fall.
-
 	for (int i = 0; i < game->getArrLength(Game::Object::sandPath); i++)
 	{
-		if (!normalCollider)
-			normalCollider = game->checkCollision(GameObject::getCollider(), Game::Object::sandSand, i);
 		if (!bottomCollider)
 			bottomCollider = game->checkCollision(getCollider(), Game::Object::sandSand, i);
 	}
 
+	// If currently falling check collisions for enemies or digDug
+	// and kill them as well as move them downward until stopping.
 	if (isFalling)
 	{
 		for (int i = 0; i < game->getArrLength(Game::Object::enemy); i++)
@@ -156,17 +163,10 @@ void Rock::collide()
 				currentDig->setActive(false);
 		}
 	}
-
-	// Check collision with enemies/player, run death functions.
-
-	//if rock is not falling, use bigger collider that extends lower into sand below
-
-	//if rock is falling, use smaller collider to allow proper collision with enemies/digdug
-
-	//if digdug is below rock and looking up when sand is broken, don't fall until digdug turns a different direction
 }
 
 
+// Resets rock to default variables.
 void Rock::reset(sf::Vector2f pos)
 {
 	GameObject::reset(pos);
@@ -176,7 +176,6 @@ void Rock::reset(sf::Vector2f pos)
 	isFalling = false;
 	endFalling = false;
 	speed = .5f;
-	normalCollider = false;
 	bottomCollider = false;
 	checkedBottom = false;
 }

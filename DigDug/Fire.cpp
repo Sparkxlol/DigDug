@@ -27,6 +27,7 @@ Fire::Fire(sf::RenderWindow* win, Game* game)
 }
 
 
+// Shoots fire in the corresponding direction and position.
 void Fire::shoot(sf::Vector2f fygarPos, int direction)
 {
 	setPosition(fygarPos);

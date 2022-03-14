@@ -228,6 +228,7 @@ void UI::changeSprites(Spritesheet arr[], int size, int value)
 }
 
 
+// Sets up the background of the texture based on level.
 void UI::setupBackground(int round)
 {
 	int lowerRound = round % 12;

@@ -13,8 +13,12 @@ Spritesheet::Spritesheet()
 }
 
 
-void Spritesheet::setupSprite(std::string textureFile, sf::Vector2i totalSize, sf::Vector2i spriteSize)
+// Sets up the sprite based on the passed file name,
+// total size of sprite and the size for each frame.
+void Spritesheet::setupSprite(std::string textureFile,
+	sf::Vector2i totalSize, sf::Vector2i spriteSize)
 {
+	// If cannot load texture, output and error.
 	if (!texture.loadFromFile(textureFile))
 		std::cerr << "Warning: Could not load " << textureFile << "!\n";
 
@@ -22,10 +26,12 @@ void Spritesheet::setupSprite(std::string textureFile, sf::Vector2i totalSize, s
 	this->spriteSize = spriteSize;
 	this->textureFile = textureFile;
 
+	// Loads initial sprite.
 	loadSprite(0);
 }
 
 
+// Loads the specified index of a spritesheet.
 bool Spritesheet::loadSprite(int currentSprite)
 {
 	xTile = 0;
@@ -33,7 +39,9 @@ bool Spritesheet::loadSprite(int currentSprite)
 
 	if (spriteSize.x != 0)
 	{
+		// Finds the xTile of the sprite, wrapping to 0 if necessary.
 		xTile = ((currentSprite * spriteSize.x) % totalSize.x) / spriteSize.x;
+		// Finds the yTile of the sprite, going down for each wrap of the x.
 		yTile = static_cast<float>(currentSprite * spriteSize.x / totalSize.x);
 	}
 
@@ -55,8 +63,11 @@ bool Spritesheet::loadSprite(int currentSprite)
 }
 
 
+// Sets/Changes the size, starting position,
+// and starting index of the spritesheet.
 void Spritesheet::setSize(sf::Vector2i size, sf::Vector2i start, int index)
 {
+	// Makes sure that the new size isn't larger than the tilesheet.
 	if (size.x <= totalSize.x && size.y <= totalSize.y)
 	{
 		startPos = start;
@@ -66,6 +77,7 @@ void Spritesheet::setSize(sf::Vector2i size, sf::Vector2i start, int index)
 }
 
 
+// Returns current position of the spritesheet.
 sf::Vector2f Spritesheet::getIndex()
 {
 	return sf::Vector2f(xTile, yTile);

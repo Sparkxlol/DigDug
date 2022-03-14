@@ -43,9 +43,11 @@ Sand::Sand(sf::RenderWindow* win, Game* game)
 }
 
 
-// Changes the top background mask to the correct size based on current mask and inputted position/direction.
-// Moves this mask into the correct position and chooses the correct foreground sprite for the "path".
-// Returns true if the sand was changed, false if not.
+/* Changes the top background mask to the correct size based 
+* on current mask and inputted position/direction.
+* Moves this mask into the correct position and chooses the
+* correct foreground sprite for the "path".
+* Returns true if the sand was changed, false if not. */
 bool Sand::changeSand(sf::Vector2f playerPos, int dir)
 {
 	// Finds x and y change from the player to the top left of the
@@ -74,7 +76,7 @@ bool Sand::changeSand(sf::Vector2f playerPos, int dir)
 		// If not moving up in the top part and not fewer than current
 		// change, make bottomMask either current size or new change from bottom.
 		if (yChange > topMask && 32 - yChange > bottomMask)
-			bottomMask = (bottomMask > 32 - yChange) ? bottomMask : 32 - yChange; // Check if this is necessary...
+			bottomMask = (bottomMask > 32 - yChange) ? bottomMask : 32 - yChange; 
 		break;
 	case 1:
 		// If not moving down at the bottom and not fewer than current
@@ -110,7 +112,8 @@ bool Sand::changeSand(sf::Vector2f playerPos, int dir)
 	// Moves the sprite so the increase doesn't always come from the bottom of the mask when
 	// the topMask is changed instead of the bottomMask.
 	background2.setPosition(
-		sf::Vector2f(foreground.getPosition().x + leftMask, foreground.getPosition().y + topMask)
+		sf::Vector2f(foreground.getPosition().x + leftMask,
+			foreground.getPosition().y + topMask)
 	);
 
 	// Returns if sand is changed from start or not.
@@ -118,8 +121,11 @@ bool Sand::changeSand(sf::Vector2f playerPos, int dir)
 }
 
 
+// Resets the sand based on the corresponding round.
 void Sand::reset(int round, bool full)
 {
+	// If a full reset (meaning different level from last)
+	// Change the path and masking based on surrounding sand.
 	if (full)
 	{
 		topMask = 0; 
@@ -131,10 +137,12 @@ void Sand::reset(int round, bool full)
 		leftMove = false;
 		rightMove = false;
 
-		int lowerRound = round % 12;
+		int lowerRound = round % 12; // Resets sand color every 12 rounds.
+		// Finds the level of the sand, 4 levels (color) in total.
 		int sandPos = (getPosition().y - 32) / 16 / 3;
 		int sandChoice = 0;
 
+		// Changes background sprite based on round and depth.
 		if (lowerRound >= 1 || lowerRound < 5)
 		{
 			if (sandPos == 0)
@@ -171,6 +179,7 @@ void Sand::reset(int round, bool full)
 
 		background2.loadSprite(sandChoice);
 
+		// If top is active from the pre-reset (not 1 in level load).
 		if (!getTopActive())
 		{
 			bool sandCollided[4];
@@ -178,6 +187,7 @@ void Sand::reset(int round, bool full)
 			for (int i = 0; i < 4; i++)
 				sandCollided[i] = false;
 
+			// Creates colliders for each side of the sand.
 			sf::FloatRect mainCollider = getBackCollider();
 			mainCollider.left += .125f;
 			mainCollider.width -= .25f;
@@ -196,18 +206,26 @@ void Sand::reset(int round, bool full)
 			sf::FloatRect rightCollider = mainCollider;
 			rightCollider.width += .25f;
 
-			for (int i = 0; i < game->getArrLength(Game::Object::sandSand); i++)
+			// Checks collision of these colliders
+			// to see where other sand is located.
+			for (int i = 0;
+				i < game->getArrLength(Game::Object::sandSand); i++)
 			{
-				if (game->checkCollision(topCollider, Game::Object::sandSand, i))
+				if (game->checkCollision(topCollider,
+					Game::Object::sandSand, i))
 					sandCollided[0] = true;
-				if (game->checkCollision(bottomCollider, Game::Object::sandSand, i))
+				if (game->checkCollision(bottomCollider,
+					Game::Object::sandSand, i))
 					sandCollided[1] = true;
-				if (game->checkCollision(leftCollider, Game::Object::sandSand, i))
+				if (game->checkCollision(leftCollider,
+					Game::Object::sandSand, i))
 					sandCollided[2] = true;
-				if (game->checkCollision(rightCollider, Game::Object::sandSand, i))
+				if (game->checkCollision(rightCollider,
+					Game::Object::sandSand, i))
 					sandCollided[3] = true;
 			}
 
+			// If collided on any side, the mask is set to allow digging.
 			if (sandCollided[0])
 				bottomMask = 16;
 			if (sandCollided[1])
@@ -217,6 +235,7 @@ void Sand::reset(int round, bool full)
 			if (sandCollided[3])
 				leftMask = 16;
 
+			// "Moves/Openings" are set to opposite of collisions.
 			upMove = !sandCollided[0];
 			downMove = !sandCollided[1];
 			leftMove = !sandCollided[2];
@@ -224,12 +243,14 @@ void Sand::reset(int round, bool full)
 
 			background2.setTextureRect(sf::IntRect(0, 0, 0, 0));
 
-			setSprite();
+			setSprite(); // Changes the sprite based on these collisions.
 		}
 	}
 }
 
 
+// Changes appearance of path based on which sides are "open"
+// or which sides can be moved towards.
 void Sand::setSprite()
 {
 	if (upMove && downMove && rightMove && leftMove)
@@ -285,6 +306,8 @@ sf::FloatRect& Sand::getForeCollider()
 }
 
 
+// Checks each side of the sand for collisions on the passed collider.
+// Uses a point on the end of the sand to check if the collider contains them.
 bool Sand::checkTopCollider(const sf::FloatRect& otherColl)
 {
 	bool collided = false;
@@ -306,6 +329,7 @@ bool Sand::checkTopCollider(const sf::FloatRect& otherColl)
 }
 
 
+// Draws both the path and the sand top.
 void Sand::drawObject()
 {
 	if (getBackActive())
@@ -315,6 +339,7 @@ void Sand::drawObject()
 	}
 }
 
+// Sets the path activity (used for drawing and collisions).
 void Sand::setActive(const bool& active)
 {
 	backActive = active;
@@ -331,18 +356,21 @@ void Sand::preReset(const bool& full, sf::Vector2f pos)
 }
 
 
+// Returns the path activity (used for drawing/collisions with enemies).
 bool Sand::getBackActive()
 {
 	return backActive;
 }
 
 
+// Returns the top sand activity (used for digDug collisions).
 bool Sand::getTopActive()
 {
 	return topActive;
 }
 
 
+// Returns the position of the sand.
 sf::Vector2f Sand::getPosition()
 {
 	return foreground.getPosition();
