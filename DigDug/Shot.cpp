@@ -32,7 +32,7 @@ void Shot::shoot(sf::Vector2f playerPos, int direction)
 {
 	// If already attached and have waited for .1 seconds
 	// allow another pump, and if pump is over 3, kill enemy and set unactive.
-	if (attached && shootWait.getElapsedTime().asSeconds() > .1f)
+	if (attached && shootWait.getElapsedTime().asSeconds() > .5f)
 	{
 		shootWait.restart();
 		attachedEnemy->changeCurrentPump(1);

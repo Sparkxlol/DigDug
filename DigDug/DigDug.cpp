@@ -23,6 +23,13 @@ DigDug::DigDug(sf::RenderWindow* win, Game* game)
 		sf::Vector2i(256, 80), sf::Vector2i(16, 16));
 	anim.setSprite(&spritesheet);
 	reset(sf::Vector2f(0, 0));
+
+	if (!theme.loadFromFile("Sounds/theme.wav"))
+		std::cout << "error loading music" << std::endl; // error
+
+	sound.setBuffer(theme);
+
+	playSound = false;
 }
 
 
@@ -57,6 +64,13 @@ void DigDug::update()
 	// Checks collision if not dead.
 	if (deathType == "none")
 		collide();
+
+	if (playSound)
+	{
+		sound.play();
+	}
+	else
+		sound.pause();
 
 	playerInput();
 	shot.update();
@@ -154,7 +168,10 @@ void DigDug::playerInput()
 		case right:
 		case left:
 			if (getCanMove())
+			{
 				playerMovement(input);
+				playSound = true;
+			}
 			break;
 		case z:
 			if (!shot.getActive())
@@ -167,6 +184,7 @@ void DigDug::playerInput()
 		default:
 			// Stops animations if staying still.
 			anim.setActive(false);
+			playSound = false;
 			break;
 		}
 	}
