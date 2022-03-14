@@ -58,7 +58,7 @@ UI::UI(sf::RenderWindow* window)
 	currentScore = 0;
 	currentLives = 0;
 	setupHighscore();
-	addLives(2);
+	setLives(2);
 	addScore(0);
 	setRound(1);
 }
@@ -104,9 +104,9 @@ void UI::setRound(int roundNum)
 
 
 // Sets the current amount of lives shown in the UI to inputted value.
-void UI::addLives(int live)
+void UI::setLives(int live)
 {
-	currentLives += live;
+	currentLives = live;
 
 	// Prevents 0 or more than 9 lives from showing, 0 dealt with in game.
 	if (currentLives > 0 && currentLives <= 9)

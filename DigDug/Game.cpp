@@ -221,6 +221,19 @@ GameObject& Game::getObject(const Game::Object& object, const int& index) const
 // places objects, resetting sand if necessary (on new level).
 void Game::loadLevel(int currentLevel)
 {
+	// Resets sand only if the passed level is not the same as the current level.
+	bool sandResetLevel = (this->currentLevel == currentLevel) ? false : true;
+
+	// If the level loaded is the same as previous, remove life.
+	if (!sandResetLevel)
+		currentLives--;
+	if (currentLives == 0) // If lives are 0, reset game to level 1.
+	{
+		currentLives = 2;
+		currentLevel = 0;
+		sandResetLevel = true;
+	}
+
 	// If level is 99, reset back to 0 to prevent triple digits.
 	if (currentLevel > 98)
 		currentLevel = 0;
@@ -228,8 +241,6 @@ void Game::loadLevel(int currentLevel)
 	// Load level from level class at specified index, resetting at 12.
 	int index = currentLevel % 12;
 	std::ifstream levelFile(levelLocations.at(index));
-	// Resets sand only if the passed level is not the same as the current level.
-	bool sandResetLevel = (this->currentLevel == currentLevel) ? false : true;
 
 	// If level cannot be opened, output an error.
 	if (!levelFile.is_open())
@@ -238,6 +249,7 @@ void Game::loadLevel(int currentLevel)
 		return;
 	}
 
+	bool sandLoc[12][12];
 	int value; // Corresponds to each object/value in the text file.
 	// 0 - Blank Sand, 1 - Sand, 2 - DigDug, 3 - Pooka, 4 - Fygar, 5 - Rock.
 	int currentX = 0; // Specifies current x position of window.
@@ -259,44 +271,44 @@ void Game::loadLevel(int currentLevel)
 		switch (value)
 		{
 		case 0:
-			if (sandResetLevel)
-				sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
+			sandLoc[(currentY - 32) / 16][currentX / 16] = false;
+			sand.at(currentSand)->preReset(sf::Vector2f(currentX, currentY));
 			currentSand++;
 			break;
 		case 1:
-			if (sandResetLevel)
-				sand.at(currentSand)->preReset(true, sf::Vector2f(currentX, currentY));
+			sandLoc[(currentY - 32) / 16][currentX / 16] = true;
+			sand.at(currentSand)->preReset(sf::Vector2f(currentX, currentY));
 			currentSand++;
 			break;
 		case 2:
 			digDug->reset(sf::Vector2f(currentX, currentY));
 
-			if (sandResetLevel)
-				sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
+			sandLoc[(currentY - 32) / 16][currentX / 16] = false;
+			sand.at(currentSand)->preReset(sf::Vector2f(currentX, currentY));
 			currentSand++;
 			break;
 		case 3:
 			enemies.at(currentPooka)->reset(sf::Vector2f(currentX, currentY));
 			currentPooka++;
 
-			if (sandResetLevel)
-				sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
+			sandLoc[(currentY - 32) / 16][currentX / 16] = false;
+			sand.at(currentSand)->preReset(sf::Vector2f(currentX, currentY));
 			currentSand++;
 			break;
 		case 4:
 			enemies.at(currentFygar)->reset(sf::Vector2f(currentX, currentY));
 			currentFygar++;
 
-			if (sandResetLevel)
-				sand.at(currentSand)->preReset(false, sf::Vector2f(currentX, currentY));
+			sandLoc[(currentY - 32) / 16][currentX / 16] = false;
+			sand.at(currentSand)->preReset(sf::Vector2f(currentX, currentY));
 			currentSand++;
 			break;
 		case 5:
 			rocks.at(currentRock)->reset(sf::Vector2f(currentX, currentY));
 			currentRock++;
 
-			if (sandResetLevel)
-				sand.at(currentSand)->preReset(true, sf::Vector2f(currentX, currentY));
+			sandLoc[(currentY - 32) / 16][currentX / 16] = true;
+			sand.at(currentSand)->preReset(sf::Vector2f(currentX, currentY));
 			currentSand++;
 			break;
 		default:
@@ -325,6 +337,7 @@ void Game::loadLevel(int currentLevel)
 	
 	// Sets round to passed level.
 	ui->setRound(currentLevel);
+	ui->setLives(currentLives);
 
 	this->currentLevel = currentLevel;
 
@@ -334,7 +347,7 @@ void Game::loadLevel(int currentLevel)
 	{
 		if (s->getBackActive())
 		{
-			s->reset(currentLevel, sandResetLevel);
+			s->reset(currentLevel, sandResetLevel, sandLoc);
 		}
 	}
 }

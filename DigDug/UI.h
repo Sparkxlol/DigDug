@@ -10,7 +10,7 @@ public:
 
 	void addScore(int);
 	void setRound(int);
-	void addLives(int);
+	void setLives(int);
 	void setHighScore(int);
 	void drawObject();
 

@@ -15,7 +15,6 @@ Sand::Sand() : Sand(nullptr, nullptr)
 
 	// Allow for correct positioning on the mask/texture.
 	topActive = true;
-	reset(1, true);
 }
 
 
@@ -39,7 +38,6 @@ Sand::Sand(sf::RenderWindow* win, Game* game)
 
 	// Allow for correct positioning on the mask/texture.
 	topActive = true;
-	reset(1, true);
 }
 
 
@@ -122,7 +120,7 @@ bool Sand::changeSand(sf::Vector2f playerPos, int dir)
 
 
 // Resets the sand based on the corresponding round.
-void Sand::reset(int round, bool full)
+void Sand::reset(int round, bool full, bool sandLoc[12][12])
 {
 	// If a full reset (meaning different level from last)
 	// Change the path and masking based on surrounding sand.
@@ -179,67 +177,33 @@ void Sand::reset(int round, bool full)
 
 		background2.loadSprite(sandChoice);
 
-		// If top is active from the pre-reset (not 1 in level load).
-		if (!getTopActive())
+		int xPos = getPosition().x / 16;
+		int yPos = (getPosition().y - 32) / 16;
+			
+		// If sandLoc is false, open path, otherwise full path.
+		if (sandLoc[yPos][xPos] == false)
 		{
-			bool sandCollided[4];
-
-			for (int i = 0; i < 4; i++)
-				sandCollided[i] = false;
-
-			// Creates colliders for each side of the sand.
-			sf::FloatRect mainCollider = getBackCollider();
-			mainCollider.left += .125f;
-			mainCollider.width -= .25f;
-			mainCollider.top += .125f;
-			mainCollider.height -= .25f;
-
-			sf::FloatRect topCollider = mainCollider;
-			topCollider.top -= .25f;
-
-			sf::FloatRect bottomCollider = mainCollider;
-			bottomCollider.height += .25f;
-
-			sf::FloatRect leftCollider = mainCollider;
-			leftCollider.left -= .25f;
-
-			sf::FloatRect rightCollider = mainCollider;
-			rightCollider.width += .25f;
-
-			// Checks collision of these colliders
-			// to see where other sand is located.
-			for (int i = 0;
-				i < game->getArrLength(Game::Object::sandSand); i++)
+				// If collided on any side, the mask is set to allow digging.
+			if (xPos <= 0 || sandLoc[yPos][xPos - 1] == false)
 			{
-				if (game->checkCollision(topCollider,
-					Game::Object::sandSand, i))
-					sandCollided[0] = true;
-				if (game->checkCollision(bottomCollider,
-					Game::Object::sandSand, i))
-					sandCollided[1] = true;
-				if (game->checkCollision(leftCollider,
-					Game::Object::sandSand, i))
-					sandCollided[2] = true;
-				if (game->checkCollision(rightCollider,
-					Game::Object::sandSand, i))
-					sandCollided[3] = true;
-			}
-
-			// If collided on any side, the mask is set to allow digging.
-			if (sandCollided[0])
-				bottomMask = 16;
-			if (sandCollided[1])
-				topMask = 16;
-			if (sandCollided[2])
-				rightMask = 16;
-			if (sandCollided[3])
+				leftMove = true;
 				leftMask = 16;
-
-			// "Moves/Openings" are set to opposite of collisions.
-			upMove = !sandCollided[0];
-			downMove = !sandCollided[1];
-			leftMove = !sandCollided[2];
-			rightMove = !sandCollided[3];
+			}
+			if (xPos >= 11 || sandLoc[yPos][xPos + 1] == false)
+			{
+				rightMove = true;
+				rightMask = 16;
+			}
+			if (yPos <= 0 || sandLoc[yPos - 1][xPos] == false)
+			{
+				upMove = true;
+				topMask = 16;
+			}
+			if (yPos >= 11 || sandLoc[yPos + 1][xPos] == false)
+			{
+				downMove = true;
+				bottomMask = 16;
+			}
 
 			background2.setTextureRect(sf::IntRect(0, 0, 0, 0));
 
@@ -347,12 +311,11 @@ void Sand::setActive(const bool& active)
 
 
 // If false, check sides, if true, check nothing.
-void Sand::preReset(const bool& full, sf::Vector2f pos)
+void Sand::preReset(sf::Vector2f pos)
 {
 	foreground.setPosition(pos);
 	background2.setPosition(pos);
 	setActive(true);
-	topActive = full;
 }
 
 

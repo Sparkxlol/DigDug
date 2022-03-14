@@ -178,4 +178,6 @@ void Rock::reset(sf::Vector2f pos)
 	speed = .5f;
 	bottomCollider = false;
 	checkedBottom = false;
+
+	anim.setAnimation(0, 1, .2f, false);
 }

@@ -11,9 +11,9 @@ public:
 	Sand(sf::RenderWindow*, Game*);
 
 	bool changeSand(sf::Vector2f, int dir);
-	void reset(int round, bool);
+	void reset(int round, bool, bool[12][12]);
 	void setActive(const bool&);
-	void preReset(const bool&, sf::Vector2f); // Sets if full sand or partial sand at start
+	void preReset(sf::Vector2f); // Sets if full sand or partial sand at start
 	bool getBackActive();
 	bool getTopActive();
 
