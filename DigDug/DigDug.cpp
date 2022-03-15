@@ -50,8 +50,6 @@ void DigDug::die(std::string type)
 	if (deathType == "none")
 	{
 		deathWait.restart();
-
-		std::cout << type;
 		deathType = type;		
 	}
 }

@@ -16,6 +16,7 @@ public:
 	bool getSandCollided();
 	float getSpeed();
 	bool getFloat();
+	std::string getDeathType();
 
 	void pumpUpdate();
 	void die(std::string);
@@ -42,5 +43,7 @@ private:
 	sf::Vector2f floatTarget;
 	int currentPump; // Current amount enemy has been attacked up to 3.
 	float speed; // Speed at which enemy moves per frame.
+	std::string deathType;
+	sf::Clock deathWait;
 };
 

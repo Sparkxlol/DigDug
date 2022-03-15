@@ -148,7 +148,7 @@ void Rock::collide()
 			{
 				Enemy* const currentEnemy = game->getEnemyPointer(i);
 				currentEnemy->die("rock");
-				currentEnemy->setPosition(sf::Vector2f(currentEnemy->getPosition().x, getPosition().y + 8.0f));
+				currentEnemy->setPosition(sf::Vector2f(currentEnemy->getPosition().x, getPosition().y + 6.0f));
 				if (anim.getFinished())
 					currentEnemy->setActive(false);
 			}
@@ -158,7 +158,7 @@ void Rock::collide()
 		{
 			DigDug* const currentDig = game->getDigDugPointer();
 			currentDig->die("rock");
-			currentDig->setPosition(sf::Vector2f(currentDig->getPosition().x, getPosition().y + 8.0f));
+			currentDig->setPosition(sf::Vector2f(currentDig->getPosition().x, getPosition().y + 6.0f));
 			if (anim.getFinished())
 				currentDig->setActive(false);
 		}

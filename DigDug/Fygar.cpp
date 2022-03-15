@@ -61,12 +61,17 @@ void Fygar::drawObject()
 // Either randomly shoots fire if not floating or uses the overrided movements.
 void Fygar::movement()
 {
-	int randChoice = rand() % 1000 + 1;
-
-	if (randChoice <= 1 && !getFloat())
-		shootFire();
-	else
+	if (getDeathType() == "rock")
 		Enemy::movement();
+	else
+	{
+		int randChoice = rand() % 1000 + 1;
+
+		if (randChoice <= 1 && !getFloat())
+			shootFire();
+		else
+			Enemy::movement();
+	}
 }
 
 

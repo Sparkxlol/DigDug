@@ -52,8 +52,13 @@ void Enemy::changeCurrentPump(int pump)
 // setting enemy not active.
 void Enemy::die(std::string type)
 {
-	setActive(false);
-	game->createScore(getPosition(), type);
+	if (deathType == "none")
+	{
+		deathWait.restart();
+		deathType = type;
+		if (type == "pump")
+			setActive(false);
+	}
 }
 
 
@@ -82,6 +87,12 @@ float Enemy::getSpeed()
 bool Enemy::getFloat()
 {
 	return canFloat;
+}
+
+
+std::string Enemy::getDeathType()
+{
+	return deathType;
 }
 
 
@@ -155,97 +166,111 @@ void Enemy::collide()
 * moves randomly, escapes the level, and runs from falling rocks. */
 void Enemy::movement()
 {
-	// 1/randomFloatTime to float on every frame.
-	static const int randomFloatPercent = 15;
-	static const float randomFloatTime = 10.0f;
-	int moveDir = -1; // Direction to move.
-	float rockDifference; // Distance from the rock.
-	bool formerCanFloat = canFloat; // Checks if enemy was just floating.
-
-	// If floating then moveFloat.
-	if (canFloat)
-		moveDir = moveFloat();
-	// If cannot keep moving in current direction, change move type.
-	else if (sandCollided[getDirection()]) // !!! Might want to change to every 16x16 block for more varience. !!!
+	if (getDeathType() == "none")
 	{
-		int randFloat = rand() % randomFloatPercent + 1;
+		// 1/randomFloatTime to float on every frame.
+		static const int randomFloatPercent = 15;
+		static const float randomFloatTime = 10.0f;
+		int moveDir = -1; // Direction to move.
+		float rockDifference; // Distance from the rock.
+		bool formerCanFloat = canFloat; // Checks if enemy was just floating.
 
-		if (randFloat == randomFloatPercent && escapeTimer.getElapsedTime().asSeconds() > randomFloatTime)
+		// If floating then moveFloat.
+		if (canFloat)
 			moveDir = moveFloat();
-		else
+		// If cannot keep moving in current direction, change move type.
+		else if (sandCollided[getDirection()]) // !!! Might want to change to every 16x16 block for more varience. !!!
 		{
-			// Checks for each rock if enemy is near, and if so, run from the rock.
-			for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
+			int randFloat = rand() % randomFloatPercent + 1;
+
+			if (randFloat == randomFloatPercent && escapeTimer.getElapsedTime().asSeconds() > randomFloatTime)
+				moveDir = moveFloat();
+			else
 			{
-				if (game->getRockPointer(i)->getFall())
+				// Checks for each rock if enemy is near, and if so, run from the rock.
+				for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
 				{
-					rockDifference = getPosition().x - game->getRockPointer(i)->getPosition().x;
-					if (rockDifference <= 16.0f && rockDifference >= -16.0f)
+					if (game->getRockPointer(i)->getFall())
 					{
-						moveDir = moveFromRock(game->getRockPointer(i)->getPosition());
+						rockDifference = getPosition().x - game->getRockPointer(i)->getPosition().x;
+						if (rockDifference <= 16.0f && rockDifference >= -16.0f)
+						{
+							moveDir = moveFromRock(game->getRockPointer(i)->getPosition());
+						}
 					}
 				}
-			}
 
-			// If time after level load is 30 seconds, escape from level.
-			// If not, randomChance/15 chance to move towards player,
-			// otherwise move away.
-			if (moveDir == -1)
-			{
-				static const int randomChoice = rand() % 15 + 1;
+				// If time after level load is 30 seconds, escape from level.
+				// If not, randomChance/15 chance to move towards player,
+				// otherwise move away.
+				if (moveDir == -1)
+				{
+					static const int randomChoice = rand() % 15 + 1;
 
-				if (escapeTimer.getElapsedTime().asSeconds() > 30.0f)
-					moveDir = escapeLevel();
-				else if (randomChoice > 1)
-					moveDir = moveTowardPlayer();
-				else if (randomChoice <= 1)
-					moveDir = moveAwayPlayer();
+					if (escapeTimer.getElapsedTime().asSeconds() > 30.0f)
+						moveDir = escapeLevel();
+					else if (randomChoice > 1)
+						moveDir = moveTowardPlayer();
+					else if (randomChoice <= 1)
+						moveDir = moveAwayPlayer();
+				}
 			}
 		}
-	}
-	else // If not stopped, keep moving in current direction.
-		moveDir = getDirection();
-	
-	// If not floating and either was just floating or direction has changed,
-	// change the animation to the corresponding tiles.
-	if (!canFloat && (getDirection() != moveDir || formerCanFloat != canFloat))
-	{
-		if (moveDir == left)
+		else // If not stopped, keep moving in current direction.
+			moveDir = getDirection();
+
+		// If not floating and either was just floating or direction has changed,
+		// change the animation to the corresponding tiles.
+		if (!canFloat && (getDirection() != moveDir || formerCanFloat != canFloat))
 		{
-			if (type == EnemyType::pooka)
-				anim.setAnimation(7, 8, .2f, true);
+			if (moveDir == left)
+			{
+				if (type == EnemyType::pooka)
+					anim.setAnimation(7, 8, .2f, true);
+				else
+					anim.setAnimation(8, 9, .2f, true);
+			}
 			else
-				anim.setAnimation(8, 9, .2f, true);
+				anim.setAnimation(0, 1, .2f, true);
 		}
-		else
-			anim.setAnimation(0, 1, .2f, true);
-	}
 
-	// Move in the direction decided by previous functions.
-	switch (moveDir)
+		// Move in the direction decided by previous functions.
+		switch (moveDir)
+		{
+		case up:
+			move(sf::Vector2f(0, -getSpeed()));
+			break;
+		case down:
+			move(sf::Vector2f(0, getSpeed()));
+			break;
+		case left:
+			move(sf::Vector2f(-getSpeed(), 0));
+			break;
+		case right:
+			move(sf::Vector2f(getSpeed(), 0));
+			break;
+		default:
+			std::cout << "Invalid enemy movement direction!\n";
+		}
+
+		setDirection(moveDir);
+
+		// If enemy is offscreen, it is killed.
+		if (getPosition().x <= 0 || getPosition().x >= 15 * 16
+			|| getPosition().y <= 0 || getPosition().y >= 14 * 16)
+			die("offscreen");
+	}
+	else
 	{
-	case up:
-		move(sf::Vector2f(0, -getSpeed()));
-		break;
-	case down:
-		move(sf::Vector2f(0, getSpeed()));
-		break;
-	case left:
-		move(sf::Vector2f(-getSpeed(), 0));
-		break;
-	case right:
-		move(sf::Vector2f(getSpeed(), 0));
-		break;
-	default:
-		std::cout << "Invalid enemy movement direction!\n";
+		switch (getDirection())
+		{
+		case left:
+			anim.setAnimation(10, 11, .5f, false);
+		default:
+			anim.setAnimation(2, 3, .5f, false);
+		}
+
 	}
-
-	setDirection(moveDir);
-
-	// If enemy is offscreen, it is killed.
-	if (getPosition().x <= 0 || getPosition().x >= 15 * 16
-		|| getPosition().y <= 0 || getPosition().y >= 14 * 16)
-		die("offscreen");
 }
 
 
@@ -424,6 +449,7 @@ void Enemy::reset(sf::Vector2f pos)
 {
 	GameObject::reset(pos);
 
+	deathType = "none";
 	pumpClock.restart();
 	escapeTimer.restart();
 	canFloat = false;

@@ -77,6 +77,8 @@ void Fire::update()
 			move(sf::Vector2f(-16, 0));
 			spritesheet.setSize(sf::Vector2i((frame + 1) * 16, 16), sf::Vector2i(startX, 16), 0);
 		}
+
+		clock.restart();
 	}
 }
 

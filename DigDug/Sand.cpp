@@ -15,6 +15,15 @@ Sand::Sand() : Sand(nullptr, nullptr)
 
 	// Allow for correct positioning on the mask/texture.
 	topActive = true;
+	backActive = true;
+	topMask = 0;
+	bottomMask = 0;
+	leftMask = 0;
+	rightMask = 0;
+	upMove = false;
+	downMove = false;
+	leftMove = false;
+	rightMove = false;
 }
 
 
@@ -38,6 +47,15 @@ Sand::Sand(sf::RenderWindow* win, Game* game)
 
 	// Allow for correct positioning on the mask/texture.
 	topActive = true;
+	backActive = true;
+	topMask = 0;
+	bottomMask = 0;
+	leftMask = 0;
+	rightMask = 0;
+	upMove = false;
+	downMove = false;
+	leftMove = false;
+	rightMove = false;
 }
 
 
@@ -209,6 +227,13 @@ void Sand::reset(int round, bool full, bool sandLoc[12][12])
 
 			setSprite(); // Changes the sprite based on these collisions.
 		}
+	}
+	else
+	{
+		background2.setPosition(
+			sf::Vector2f(foreground.getPosition().x + leftMask,
+				foreground.getPosition().y + topMask)
+		);
 	}
 }
 
