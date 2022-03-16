@@ -61,6 +61,8 @@ void Enemy::die(std::string type)
 			game->createScore(getPosition(), type);
 			setActive(false);
 		}
+		else if (type == "offscreen")
+			setActive(false);
 	}
 }
 
@@ -126,44 +128,10 @@ void Enemy::pumpUpdate()
 }
 
 
-// Checks collisions with sand on every side.
-// !!! Could be very much optimized... !!! Perhaps multi-dimensional array >.<
-// Multi-dimensional array of sand in game could check the sides of the same to determine if the enemy can interact.
+// peak
 void Enemy::collide()
 {
-	sandCollided[up] = getPosition().y - getSpeed() <= 16;
-	sandCollided[down] = getPosition().y + getSpeed() >= 13 * 16;
-	sandCollided[left] = getPosition().x - getSpeed() <= 0;
-	sandCollided[right] = getPosition().x + getSpeed() >= 11 * 16;
-
-	// Creates 4 colliders for each side of the enemy.
-	sf::FloatRect topCollider = getCollider();
-	topCollider.top -= .25f;
-
-	sf::FloatRect bottomCollider = getCollider();
-	bottomCollider.height += .25f;
-
-	sf::FloatRect leftCollider = getCollider();
-	leftCollider.left -= .25f;
-
-	sf::FloatRect rightCollider = getCollider();
-	rightCollider.width += .25f;
-
-	// Checks each collision with every active sand.
-	for (int i = 0; i < game->getArrLength(Game::Object::sandSand); i++)
-	{
-		if (game->getActive(Game::Object::sandSand, i))
-		{
-			if (game->getSandPointer(i)->checkTopCollider(topCollider))
-				sandCollided[up] = true;
-			if (game->getSandPointer(i)->checkTopCollider(bottomCollider))
-				sandCollided[down] = true;
-			if (game->getSandPointer(i)->checkTopCollider(leftCollider))
-				sandCollided[left] = true;
-			if (game->getSandPointer(i)->checkTopCollider(rightCollider))
-				sandCollided[right] = true;
-		}
-	}
+	game->checkSurroundingSand(getPosition(), sandCollided, getSpeed());
 }
 
 
@@ -215,10 +183,10 @@ void Enemy::movement()
 
 					if (escapeTimer.getElapsedTime().asSeconds() > 30.0f)
 						moveDir = escapeLevel();
-					else if (randomChoice > 1)
-						moveDir = moveTowardPlayer();
-					else if (randomChoice <= 1)
+					else if (randomChoice <= 2 && sandCollided[getDirection()])
 						moveDir = moveAwayPlayer();
+					else
+						moveDir = moveTowardPlayer();
 				}
 			}
 		}

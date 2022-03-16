@@ -16,6 +16,7 @@ public:
 	void preReset(sf::Vector2f); // Sets if full sand or partial sand at start
 	bool getBackActive();
 	bool getTopActive();
+	bool getMove(int);
 
 	sf::FloatRect& getBackCollider();
 	sf::FloatRect& getForeCollider();

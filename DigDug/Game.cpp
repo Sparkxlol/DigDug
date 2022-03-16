@@ -137,6 +137,45 @@ void Game::createScore(sf::Vector2f pos, std::string type)
 }
 
 
+void Game::checkSurroundingSand(sf::Vector2f pos, bool directions[4], float speed)
+{
+	int arrXPos = static_cast<int>(pos.x) / 16;
+	int arrYPos = (static_cast<int>(pos.y) - 32) / 16;
+	float offXPos = (static_cast<int>(pos.x) % 16) + (pos.x - static_cast<int>(pos.x));
+	float offYPos = (static_cast<int>(pos.y) % 16) + (pos.y - static_cast<int>(pos.y));
+
+	for (int i = 0; i < 4; i++)
+		directions[i] = false;
+
+	if (arrYPos > 0 && arrYPos < 11 && arrXPos > 0 && arrXPos < 11)
+	{
+		if (offYPos <= 0 + speed && arrYPos > 0)
+			directions[0] = getSandCollision(arrXPos, arrYPos - 1, 0);
+		if (offYPos + 16 >= 16 - speed && arrYPos < 11)
+			directions[1] = getSandCollision(arrXPos, arrYPos + 1, 1);
+		if (offXPos <= 0 + speed && arrXPos > 0)
+			directions[2] = getSandCollision(arrXPos - 1, arrYPos, 2);
+		if (offXPos + 16 >= 16 - speed && arrYPos < 11)
+			directions[3] = getSandCollision(arrXPos + 1, arrYPos, 3);
+	}
+}
+
+
+bool Game::getSandCollision(int xPos, int yPos, int direction)
+{
+	Sand* const sandPtr = sand.at(xPos + (yPos * 12));
+
+	if (direction == 0)
+		return !sandPtr->getMove(0);
+	else if (direction == 1)
+		return !sandPtr->getMove(1);
+	else if (direction == 2)
+		return !sandPtr->getMove(2);
+	else
+		return !sandPtr->getMove(3);
+}
+
+
 // Returns the activity of a specified object and index.
 bool Game::getActive(const Game::Object& object, const int& index) const
 {

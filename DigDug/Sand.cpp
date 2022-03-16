@@ -358,6 +358,19 @@ bool Sand::getTopActive()
 }
 
 
+bool Sand::getMove(int direction)
+{
+	if (direction == 1)
+		return upMove;
+	else if (direction == 0)
+		return downMove;
+	else if (direction == 3)
+		return leftMove;
+	else
+		return rightMove;
+}
+
+
 // Returns the position of the sand.
 sf::Vector2f Sand::getPosition()
 {
