@@ -224,6 +224,14 @@ void Game::loadLevel(int currentLevel)
 	// Resets sand only if the passed level is not the same as the current level.
 	bool sandResetLevel = (this->currentLevel == currentLevel) ? false : true;
 
+	for (int i = 0; i < 12; i++)
+	{
+		for (int j = 0; j < 12; j++)
+		{
+			sandLoc[i][j] = false;
+		}
+	}
+
 	// If the level loaded is the same as previous, remove life.
 	if (!sandResetLevel)
 		currentLives--;
@@ -249,12 +257,10 @@ void Game::loadLevel(int currentLevel)
 		return;
 	}
 
-	bool sandLoc[12][12];
 	int value; // Corresponds to each object/value in the text file.
 	// 0 - Blank Sand, 1 - Sand, 2 - DigDug, 3 - Pooka, 4 - Fygar, 5 - Rock.
 	int currentX = 0; // Specifies current x position of window.
 	int currentY = 32; // Specifies current y position of window.
-
 	// Currents used for the position in the  
 	// array where an object should be changed.
 	int currentPooka = 4; // Begins pookas at 4 because of enemies array.

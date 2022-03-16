@@ -196,12 +196,6 @@ void DigDug::playerInput()
 // as well as collisions, specifically rock.
 void DigDug::playerMovement(const int& input)
 {
-	// Creates movement vectors for each direction.
-	sf::Vector2f upV = sf::Vector2f(0, -speed);
-	sf::Vector2f downV = sf::Vector2f(0, speed);
-	sf::Vector2f leftV = sf::Vector2f(-speed, 0);
-	sf::Vector2f rightV = sf::Vector2f(speed, 0);
-
 	// Finds the distance away from a 16 (from the top & left) in both axes.
 	float xPos = (getPosition().x / 16)
 		- (static_cast<int>(getPosition().x) / 16);
@@ -278,16 +272,20 @@ void DigDug::playerMovement(const int& input)
 		switch (getDirection())
 		{
 		case up:
-			move(upV);
+			if (getPosition().y - speed >= 16)
+				move(sf::Vector2f(0, -speed));
 			break;
 		case down:
-			move(downV);
+			if (getPosition().y + speed <= 13 * 16)
+				move(sf::Vector2f(0, speed));
 			break;
 		case left:
-			move(leftV);
+			if (getPosition().x - speed >= 0)
+				move(sf::Vector2f(-speed, 0));
 			break;
 		case right:
-			move(rightV);
+			if (getPosition().x + speed <= 11 * 16)
+				move(sf::Vector2f(speed, 0));
 			break;
 		}
 	}

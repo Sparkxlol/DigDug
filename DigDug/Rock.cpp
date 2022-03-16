@@ -150,7 +150,10 @@ void Rock::collide()
 				currentEnemy->die("rock");
 				currentEnemy->setPosition(sf::Vector2f(currentEnemy->getPosition().x, getPosition().y + 6.0f));
 				if (anim.getFinished())
+				{
 					currentEnemy->setActive(false);
+					game->createScore(currentEnemy->getPosition(), "rock");
+				}
 			}
 		}
 

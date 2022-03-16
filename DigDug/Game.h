@@ -47,6 +47,7 @@ private:
 
 	int currentLevel;
 	int currentLives;
+	bool sandLoc[12][12] = {};
 	sf::RenderWindow* window;
 	std::vector<std::string> levelLocations;
 };

@@ -172,6 +172,7 @@ void UI::setFlowers(int currentRound)
 // Draws all sprites in UI 
 void UI::drawObject()
 {
+	win->draw(background);
 	win->draw(roundText);
 	win->draw(hiScoreText);
 
@@ -189,8 +190,6 @@ void UI::drawObject()
 
 	for (int i = 0; i < 12; i++)
 		win->draw(flowers[i]);
-
-	win->draw(background);
 }
 
 

@@ -57,7 +57,10 @@ void Enemy::die(std::string type)
 		deathWait.restart();
 		deathType = type;
 		if (type == "pump")
+		{
+			game->createScore(getPosition(), type);
 			setActive(false);
+		}
 	}
 }
 
@@ -125,10 +128,13 @@ void Enemy::pumpUpdate()
 
 // Checks collisions with sand on every side.
 // !!! Could be very much optimized... !!! Perhaps multi-dimensional array >.<
+// Multi-dimensional array of sand in game could check the sides of the same to determine if the enemy can interact.
 void Enemy::collide()
 {
-	for (int i = 0; i < 4; i++)
-		sandCollided[i] = false;
+	sandCollided[up] = getPosition().y - getSpeed() <= 16;
+	sandCollided[down] = getPosition().y + getSpeed() >= 13 * 16;
+	sandCollided[left] = getPosition().x - getSpeed() <= 0;
+	sandCollided[right] = getPosition().x + getSpeed() >= 11 * 16;
 
 	// Creates 4 colliders for each side of the enemy.
 	sf::FloatRect topCollider = getCollider();
@@ -149,13 +155,13 @@ void Enemy::collide()
 		if (game->getActive(Game::Object::sandSand, i))
 		{
 			if (game->getSandPointer(i)->checkTopCollider(topCollider))
-				sandCollided[0] = true;
+				sandCollided[up] = true;
 			if (game->getSandPointer(i)->checkTopCollider(bottomCollider))
-				sandCollided[1] = true;
+				sandCollided[down] = true;
 			if (game->getSandPointer(i)->checkTopCollider(leftCollider))
-				sandCollided[2] = true;
+				sandCollided[left] = true;
 			if (game->getSandPointer(i)->checkTopCollider(rightCollider))
-				sandCollided[3] = true;
+				sandCollided[right] = true;
 		}
 	}
 }
