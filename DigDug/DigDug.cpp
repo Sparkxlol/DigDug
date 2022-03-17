@@ -63,12 +63,12 @@ void DigDug::update()
 	if (deathType == "none")
 		collide();
 
-	if (playSound)
-	{
-		sound.play();
-	}
-	else
-		sound.pause();
+	//if (playSound)
+	//{
+	//	sound.play();
+	//}
+	//else
+	//	sound.pause();
 
 	playerInput();
 	shot.update();

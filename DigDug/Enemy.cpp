@@ -131,7 +131,7 @@ void Enemy::pumpUpdate()
 // peak
 void Enemy::collide()
 {
-	game->checkSurroundingSand(getPosition(), sandCollided, getSpeed());
+	checkSurroundingSand();
 }
 
 
@@ -144,10 +144,11 @@ void Enemy::movement()
 	{
 		// 1/randomFloatTime to float on every frame.
 		static const int randomFloatPercent = 15;
-		static const float randomFloatTime = 10.0f;
+		static const float randomFloatTime = 50.0f;
 		int moveDir = -1; // Direction to move.
 		float rockDifference; // Distance from the rock.
 		bool formerCanFloat = canFloat; // Checks if enemy was just floating.
+		//bool foundPath = findPath(5, static_cast<int>(getPosition().x) / 16, (static_cast<int>(getPosition().y) - 32) / 16);
 
 		// If floating then moveFloat.
 		if (canFloat)
@@ -182,8 +183,8 @@ void Enemy::movement()
 					static const int randomChoice = rand() % 15 + 1;
 
 					if (escapeTimer.getElapsedTime().asSeconds() > 30.0f)
-						moveDir = escapeLevel();
-					else if (randomChoice <= 2 && sandCollided[getDirection()])
+						moveDir = escapeLevel(); // BREAKS ENEMY MOVEMENT AT 30 SECONDS
+					else if (randomChoice <= 2)
 						moveDir = moveAwayPlayer();
 					else
 						moveDir = moveTowardPlayer();
@@ -418,11 +419,125 @@ int Enemy::moveFloat()
 }
 
 
+void Enemy::checkSurroundingSand()
+{
+	int arrXPos = static_cast<int>(getPosition().x) / 16;
+	int arrYPos = (static_cast<int>(getPosition().y) - 32) / 16;
+	float offXPos = (static_cast<int>(getPosition().x) % 16) + (getPosition().x - static_cast<int>(getPosition().x));
+	float offYPos = (static_cast<int>(getPosition().y) % 16) + (getPosition().y - static_cast<int>(getPosition().y));
+
+	for (int i = 0; i < 4; i++)
+		sandCollided[i] = false;
+
+	if (arrYPos > 0 && arrYPos < 11 && arrXPos > 0 && arrXPos < 11)
+	{
+		if (offYPos <= 0 + getSpeed() * 2 && arrYPos > 0)
+			sandCollided[0] = getSandCollision(arrXPos, arrYPos - 1, 0);
+		if (offYPos + 16 >= 16 - getSpeed() * 2 && arrYPos < 11)
+			sandCollided[1] = getSandCollision(arrXPos, arrYPos + 1, 1);
+		if (offXPos <= 0 + getSpeed() * 2 && arrXPos > 0)
+			sandCollided[2] = getSandCollision(arrXPos - 1, arrYPos, 2);
+		if (offXPos + 16 >= 16 - getSpeed() * 2 && arrYPos < 11)
+			sandCollided[3] = getSandCollision(arrXPos + 1, arrYPos, 3);
+	}
+}
+
+
+bool Enemy::getSandCollision(int xPos, int yPos, int direction)
+{
+	Sand* const sandPtr = game->getSandPointer(xPos + (yPos * 12));
+
+	if (direction == 0)
+		return !sandPtr->getMove(0);
+	else if (direction == 1)
+		return !sandPtr->getMove(1);
+	else if (direction == 2)
+		return !sandPtr->getMove(2);
+	else
+		return !sandPtr->getMove(3);
+}
+
+
+bool Enemy::findPath(int lastPath, int arrXPos, int arrYPos)
+{
+	sf::Vector2f playerPos = game->getDigDugPointer()->getPosition();
+	int playerArrXPos = static_cast<int>(playerPos.x) / 16;
+	int playerArrYPos = (static_cast<int>(playerPos.y) - 32) / 16;
+
+	if (arrXPos == playerArrXPos && arrYPos == playerArrYPos)
+		return true;
+
+	int order[4] = { };
+
+	if (playerArrYPos < arrYPos)
+	{
+		order[0] = up;
+		order[2] = down;
+	}
+	else
+	{
+		order[0] = down;
+		order[2] = up;
+	}
+
+	if (playerArrXPos < arrXPos)
+	{
+		order[1] = left;
+		order[3] = right;
+	}
+	else
+	{
+		order[1] = right;
+		order[3] = left;
+	}
+
+	int currentChoice = 0;
+	bool foundPath = false;
+	while (currentChoice < 4 && !foundPath)
+	{
+		if (order[currentChoice] == up && arrYPos > 0 && lastPath != up)
+		{
+			if (game->getSandPointer(arrXPos + ((arrYPos - 1) * 12))->getMove(up))
+				foundPath = findPath(down, arrXPos, arrYPos - 1);
+		}
+		else if (order[currentChoice] == down && arrYPos < 11 && lastPath != down)
+		{
+			if (game->getSandPointer(arrXPos + ((arrYPos + 1) * 12))->getMove(down))
+				foundPath = findPath(up, arrXPos, arrYPos + 1);
+		}
+		else if (order[currentChoice] == left && arrXPos > 0 && lastPath != left)
+		{
+			if (game->getSandPointer((arrXPos - 1) + (arrYPos * 12))->getMove(left))
+				foundPath = findPath(right, arrXPos - 1, arrYPos);
+		}
+		else if (order[currentChoice] == right && arrXPos < 11 && lastPath != right)
+		{
+			if (game->getSandPointer((arrXPos + 1) + (arrYPos * 12))->getMove(right))
+				foundPath = findPath(left, arrXPos + 1, arrYPos);
+		}
+
+		currentChoice++;
+	}
+
+	if (lastPath == 5)
+	{
+		std::cout << !game->getSandPointer(arrXPos + ((arrYPos - 1) * 12))->getMove(up) << " "
+			<< !game->getSandPointer(arrXPos + ((arrYPos + 1) * 12))->getMove(down) << " "
+			<< !game->getSandPointer((arrXPos - 1) + (arrYPos * 12))->getMove(left) << " "
+			<< !game->getSandPointer((arrXPos + 1) + (arrYPos * 12))->getMove(right) << std::endl;
+		currentPath = order[currentChoice - 1];
+	}
+
+	return foundPath;
+}
+
+
 // Resets player to default values.
 void Enemy::reset(sf::Vector2f pos)
 {
 	GameObject::reset(pos);
 
+	currentPath = right;
 	deathType = "none";
 	pumpClock.restart();
 	escapeTimer.restart();

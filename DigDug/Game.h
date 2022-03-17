@@ -24,7 +24,6 @@ public:
 	Enemy* const getEnemyPointer(const int);
 	Rock* const getRockPointer(const int);
 	void createScore(sf::Vector2f, std::string);
-	void checkSurroundingSand(sf::Vector2f, bool[4], float);
 	bool getActive(const Game::Object&, const int&) const;
 
 	void update();
@@ -37,7 +36,6 @@ private:
 	GameObject& getObject(const Game::Object&, const int&) const;
 	void loadLevel(int); // input is level number 
 
-	bool getSandCollision(int, int, int);
 	bool enemiesLeft();
 
 	DigDug* digDug;
