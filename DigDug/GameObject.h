@@ -3,6 +3,7 @@
 #include <SFML/Audio.hpp>
 #include "Spritesheet.h"
 #include "Animator.h"
+#include <vector>
 
 class Game;
 
@@ -38,13 +39,17 @@ public:
 	// Enemies
 	// Sand
 
+
 protected:
 	Game* game;
 	sf::FloatRect boundingBox;
 	Spritesheet spritesheet;
 	Animator anim;
 	sf::RenderWindow* window;
+	std::vector<sf::SoundBuffer> soundFiles;
+	std::vector<sf::Sound> sounds;
 	enum Input { up, down, left, right, z, none };
+	enum class SoundChoice {theme, shot, pump};
 
 private:
 	int direction; // Direction of object animation, *might change to enum class*

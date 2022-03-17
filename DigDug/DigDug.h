@@ -26,8 +26,6 @@ private:
 	Shot shot;
 	float speed;
 
-	sf::SoundBuffer theme;
-	sf::Sound sound;
 	bool playSound;
 
 	std::string deathType;

@@ -24,11 +24,6 @@ DigDug::DigDug(sf::RenderWindow* win, Game* game)
 	anim.setSprite(&spritesheet);
 	reset(sf::Vector2f(0, 0));
 
-	if (!theme.loadFromFile("Sounds/theme.wav"))
-		std::cout << "error loading music" << std::endl; // error
-
-	sound.setBuffer(theme);
-
 	playSound = false;
 }
 
@@ -63,12 +58,15 @@ void DigDug::update()
 	if (deathType == "none")
 		collide();
 
-	//if (playSound)
-	//{
-	//	sound.play();
-	//}
-	//else
-	//	sound.pause();
+	//if sound is stopped and should be playing, play sound (playing for first time)
+	if (sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Stopped && playSound)
+		sounds.at((int)SoundChoice::theme).play();
+	//if sound is paused and should be playing, play sound
+	else if (sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Paused && playSound)
+		sounds.at((int)SoundChoice::theme).play();
+	//if sound is playing and should stop, pause sound
+	else if(sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Playing && !playSound)
+		sounds.at((int)SoundChoice::theme).pause();
 
 	playerInput();
 	shot.update();

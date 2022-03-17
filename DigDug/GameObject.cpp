@@ -24,6 +24,24 @@ GameObject::GameObject(sf::RenderWindow* win, Game* game)
 	isActive = false;
 	canMove = false;
 	direction = 0;
+
+	for (int i = 0; i < 3; i++)
+	{
+		soundFiles.push_back(sf::SoundBuffer());
+		sounds.push_back(sf::Sound());
+	}
+
+	//loads sound effects into sound buffer
+	if (!soundFiles.at(0).loadFromFile("Sounds/in-game-music.ogg"))
+		std::cout << "error loading in-game music" << std::endl; // error
+	sounds.at(0).setBuffer(soundFiles.at(0));
+	if (!soundFiles.at(1).loadFromFile("Sounds/shot.ogg"))
+		std::cout << "error loading shot sound effect" << std::endl; // error
+	sounds.at(1).setBuffer(soundFiles.at(1));
+	if (!soundFiles.at(2).loadFromFile("Sounds/pump.ogg"))
+		std::cout << "error loading pump sound effect" << std::endl; // error
+	sounds.at(2).setBuffer(soundFiles.at(2));
+
 }
 
 
