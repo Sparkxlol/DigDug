@@ -108,7 +108,7 @@ void Rock::update()
 		}
 	}
 	// If falling and has collided, end fall.
-	else if (isFalling && bottomCollider)//kills rock if collides with bottom sand
+	else if (isFalling && bottomCollider)//kills rock if collides with bottom sand or position is lowest possible
 	{
 		isFalling = false;
 		endFalling = true;
@@ -120,15 +120,12 @@ void Rock::update()
 		fall();
 
 	anim.playAnimation();
-
 }
 
 
 // Checks collisions with objects under it and 
 void Rock::collide()
 {
-	//getCollider() -- overriden collider, offset down to allow falling to work
-
 	bottomCollider = false;
 
 	// Check collision of sand under rock, if doesn't collide, fall.
@@ -137,6 +134,16 @@ void Rock::collide()
 		if (!bottomCollider)
 			bottomCollider = game->checkCollision(getCollider(), Game::Object::sandSand, i);
 	}
+
+	if (game->getDigDugPointer()->getDirection() == up || sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+	{
+		bottomCollider = true;
+	}
+	if (getPosition().y == 13 * 16) //I'd like a comment here please to explain a hard coded vertical
+	{
+		bottomCollider = true;
+	}
+
 
 	// If currently falling check collisions for enemies or digDug
 	// and kill them as well as move them downward until stopping.

@@ -25,6 +25,7 @@ public:
 	Rock* const getRockPointer(const int);
 	void createScore(sf::Vector2f, std::string);
 	bool getActive(const Game::Object&, const int&) const;
+	bool enemiesLeft();
 
 	void update();
 
@@ -35,8 +36,6 @@ private:
 	void setupLevels();
 	GameObject& getObject(const Game::Object&, const int&) const;
 	void loadLevel(int); // input is level number 
-
-	bool enemiesLeft();
 
 	DigDug* digDug;
 	std::vector<Enemy*> enemies;

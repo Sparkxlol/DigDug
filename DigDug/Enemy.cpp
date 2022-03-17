@@ -131,7 +131,7 @@ void Enemy::pumpUpdate()
 // peak
 void Enemy::collide()
 {
-	checkSurroundingSand();
+	checkSurroundingSand(getPosition(), sandCollided);
 }
 
 
@@ -419,26 +419,26 @@ int Enemy::moveFloat()
 }
 
 
-void Enemy::checkSurroundingSand()
+void Enemy::checkSurroundingSand(sf::Vector2f pos, bool choices[4])
 {
-	int arrXPos = static_cast<int>(getPosition().x) / 16;
-	int arrYPos = (static_cast<int>(getPosition().y) - 32) / 16;
-	float offXPos = (static_cast<int>(getPosition().x) % 16) + (getPosition().x - static_cast<int>(getPosition().x));
-	float offYPos = (static_cast<int>(getPosition().y) % 16) + (getPosition().y - static_cast<int>(getPosition().y));
+	int arrXPos = static_cast<int>(pos.x) / 16;
+	int arrYPos = (static_cast<int>(pos.y) - 32) / 16;
+	float offXPos = (static_cast<int>(pos.x) % 16) + (pos.x - static_cast<int>(pos.x));
+	float offYPos = (static_cast<int>(pos.y) % 16) + (pos.y - static_cast<int>(pos.y));
 
 	for (int i = 0; i < 4; i++)
-		sandCollided[i] = false;
+		choices[i] = false;
 
 	if (arrYPos > 0 && arrYPos < 11 && arrXPos > 0 && arrXPos < 11)
 	{
 		if (offYPos <= 0 + getSpeed() * 2 && arrYPos > 0)
-			sandCollided[0] = getSandCollision(arrXPos, arrYPos - 1, 0);
+			choices[0] = getSandCollision(arrXPos, arrYPos - 1, 0);
 		if (offYPos + 16 >= 16 - getSpeed() * 2 && arrYPos < 11)
-			sandCollided[1] = getSandCollision(arrXPos, arrYPos + 1, 1);
+			choices[1] = getSandCollision(arrXPos, arrYPos + 1, 1);
 		if (offXPos <= 0 + getSpeed() * 2 && arrXPos > 0)
-			sandCollided[2] = getSandCollision(arrXPos - 1, arrYPos, 2);
+			choices[2] = getSandCollision(arrXPos - 1, arrYPos, 2);
 		if (offXPos + 16 >= 16 - getSpeed() * 2 && arrYPos < 11)
-			sandCollided[3] = getSandCollision(arrXPos + 1, arrYPos, 3);
+			choices[3] = getSandCollision(arrXPos + 1, arrYPos, 3);
 	}
 }
 

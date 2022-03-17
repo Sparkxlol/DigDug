@@ -32,7 +32,7 @@ public:
 	int moveFromRock(sf::Vector2f);
 	int escapeLevel();
 	int moveFloat();
-	void checkSurroundingSand();
+	void checkSurroundingSand(sf::Vector2f, bool[4]);
 	bool getSandCollision(int, int, int);
 	bool findPath(int, int, int);
 
