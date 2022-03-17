@@ -34,10 +34,8 @@ public:
 	int moveFloat();
 	void checkSurroundingSand(sf::Vector2f, bool[4]);
 	bool getSandCollision(int, int, int);
-	bool findPath(int, int, int);
 
 private:
-	int currentPath;
 	EnemyType type; // Type of enemy: Pooka or Fygar
 	sf::Clock pumpClock; // Pump clock to determine deflation.
 	sf::Clock escapeTimer; // Timer until enemy escapes level.
