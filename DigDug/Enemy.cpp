@@ -144,7 +144,7 @@ void Enemy::movement()
 	{
 		// 1/randomFloatTime to float on every frame.
 		static const int randomFloatPercent = 15;
-		static const float randomFloatTime = 50.0f;
+		static const float randomFloatTime = 15.0f;
 		int moveDir = -1; // Direction to move.
 		float rockDifference; // Distance from the rock.
 		bool formerCanFloat = canFloat; // Checks if enemy was just floating.
@@ -230,7 +230,7 @@ void Enemy::movement()
 		setDirection(moveDir);
 
 		// If enemy is offscreen, it is killed.
-		if (getPosition().x <= 0 || getPosition().x >= 15 * 16
+		if (getPosition().x <= -16 || getPosition().x >= 15 * 16
 			|| getPosition().y <= 0 || getPosition().y >= 14 * 16)
 			die("offscreen");
 	}
@@ -343,7 +343,7 @@ int Enemy::escapeLevel()
 {
 	int moveDir = -1;
 
-	if (!sandCollided[up] && getPosition().y <= 16)
+	if (!sandCollided[up])
 		moveDir = up;
 	else if (!sandCollided[left])
 		moveDir = left;
@@ -359,7 +359,6 @@ int Enemy::escapeLevel()
 // If enemy is floating moves towards the player.
 int Enemy::moveFloat()
 {
-	// !!! Doesn't work properly !!!
 	// If ever close to player during current flight, move to former position.
 	// Otherwise move towards the general position of the player.
 	static const int floatDistance = 64;
@@ -428,22 +427,40 @@ void Enemy::checkSurroundingSand(sf::Vector2f pos, bool choices[4])
 	for (int i = 0; i < 4; i++)
 		choices[i] = false;
 
-	if (arrYPos > 0 && arrYPos < 11 && arrXPos > 0 && arrXPos < 11)
-	{
-		if (offYPos <= 0 + getSpeed() * 2 && arrYPos > 0)
-			choices[0] = getSandCollision(arrXPos, arrYPos - 1, 0);
-		if (offYPos + 16 >= 16 - getSpeed() * 2 && arrYPos < 11)
-			choices[1] = getSandCollision(arrXPos, arrYPos + 1, 1);
-		if (offXPos <= 0 + getSpeed() * 2 && arrXPos > 0)
-			choices[2] = getSandCollision(arrXPos - 1, arrYPos, 2);
-		if (offXPos + 16 >= 16 - getSpeed() * 2 && arrYPos < 11)
-			choices[3] = getSandCollision(arrXPos + 1, arrYPos, 3);
-	}
+	if (offYPos <= 0 + getSpeed() * 2)
+		choices[0] = getSandCollision(arrXPos, arrYPos - 1, 0);
+	if (offYPos + 16 >= 16 - getSpeed() * 2)
+		choices[1] = getSandCollision(arrXPos, arrYPos + 1, 1);
+	if (offXPos <= 0 + getSpeed() * 2)
+		choices[2] = getSandCollision(arrXPos - 1, arrYPos, 2);
+	if (offXPos + 16 >= 16 - getSpeed() * 2)
+		choices[3] = getSandCollision(arrXPos + 1, arrYPos, 3);
 }
 
 
 bool Enemy::getSandCollision(int xPos, int yPos, int direction)
 {
+	if (yPos == -1)
+	{
+		if (direction == up)
+			return false;
+		else if (direction == right && xPos > 11)
+			return true;
+		else if (direction == right)
+			return false;
+		else if (direction == left)
+			return false;
+	}
+
+	if (direction == up && yPos < 0)
+		return true;
+	else if (direction == down && yPos > 11)
+		return true;
+	else if (direction == left && xPos < 0)
+		return true;
+	else if (direction == right && xPos > 11)
+		return true;
+
 	Sand* const sandPtr = game->getSandPointer(xPos + (yPos * 12));
 
 	if (direction == 0)
