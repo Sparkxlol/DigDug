@@ -62,7 +62,6 @@ void Rock::die()
 	setActive(false);
 }
 
-
 // Updates the rock based on current variables.
 void Rock::update()
 {
@@ -103,7 +102,10 @@ void Rock::update()
 			for (int i = 0; i < game->getArrLength(Game::Object::enemy); i++)
 			{
 				if (game->checkCollision(GameObject::getCollider(), Game::Object::enemy, i))
+				{
 					game->getEnemyPointer(i)->setActive(false);
+					game->createScore(getPosition(), "rock");
+				}
 			}
 		}
 	}
@@ -114,9 +116,8 @@ void Rock::update()
 		endFalling = true;
 		anim.setAnimation(0, 3, .2f, true);
 	}
-
-	// If just falling, continue fall. ???????
-	if (isFalling)
+	// If just falling, continue fall.
+	else if (isFalling)
 		fall();
 
 	anim.playAnimation();
@@ -135,7 +136,7 @@ void Rock::collide()
 			bottomCollider = game->checkCollision(getCollider(), Game::Object::sandSand, i);
 	}
 
-	if (game->getDigDugPointer()->getDirection() == up || sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && game->checkCollision(getCollider(), Game::Object::dig, 0))
 	{
 		bottomCollider = true;
 	}

@@ -18,7 +18,7 @@ public:
 	bool getActive();
 	sf::Vector2f getPosition();
 	bool getCanMove();
-	sf::FloatRect& getCollider();
+	virtual sf::FloatRect& getCollider();
 
 	void setDirection(const int&);
 	void setActive(const bool&);

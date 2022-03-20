@@ -10,7 +10,7 @@ public:
 
 	bool getFall() const;
 
-	sf::FloatRect& getCollider();
+	sf::FloatRect& getCollider() override;
 
 	void fall();
 	void die();

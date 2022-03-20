@@ -12,6 +12,7 @@ public:
 	void shoot();
 	void playerInput();
 	void die(std::string);
+	sf::FloatRect& getCollider() override;
 
 	void update() override;
 	void drawObject() override;

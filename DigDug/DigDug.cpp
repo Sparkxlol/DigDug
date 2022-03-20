@@ -50,6 +50,19 @@ void DigDug::die(std::string type)
 }
 
 
+// Creates a collider for the player that is more lenient on enemy collision.
+sf::FloatRect& DigDug::getCollider()
+{
+	boundingBox = spritesheet.getGlobalBounds();
+	boundingBox.left += 3.0f;
+	boundingBox.width -= 6.0f;
+	boundingBox.top += 3.0f;
+	boundingBox.height -= 6.0f;
+
+	return boundingBox;
+}
+
+
 // Updates digDug, doing collision, input, animation updates
 // as well as checking for death and updating shot.
 void DigDug::update()
@@ -104,7 +117,7 @@ void DigDug::collide()
 	// Checks each sand and changes it if collided based on player position.
 	for (int i = 0; i < game->getArrLength(Game::Object::sandPath); i++)
 	{
-		if (game->checkCollision(getCollider(), Game::Object::sandPath, i))
+		if (game->checkCollision(GameObject::getCollider(), Game::Object::sandPath, i))
 		{
 			if (game->getSandPointer(i)->changeSand(getPosition(), getDirection()))
 				sandCollided = 5; // Shows digging animation.
