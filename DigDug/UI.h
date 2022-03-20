@@ -9,10 +9,16 @@ public:
 	~UI();
 
 	void addScore(int);
+	void resetScore();
 	void setRound(int);
 	void setLives(int);
 	void setHighScore(int);
+	void setupMainMenu();
 	void drawObject();
+
+	int getLives();
+	bool getMenuActive();
+	void update();
 
 private:
 	void setupBackground(int);
@@ -21,6 +27,9 @@ private:
 	void changeSprites(Spritesheet[], int, int);
 	void setFlowers(int);
 
+	sf::Clock mainMenuTimer;
+	sf::Clock oneupTimer;
+	bool settingUpMainMenu;
 	int highScore;
 	int currentScore;
 	int currentLives;
@@ -34,5 +43,6 @@ private:
 	Spritesheet lives[3];
 	Spritesheet flowers[12];
 	Spritesheet background;
+	Spritesheet menu;
 };
 

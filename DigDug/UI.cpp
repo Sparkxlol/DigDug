@@ -10,6 +10,7 @@ UI::UI(sf::RenderWindow* window)
 	oneupText.setupSprite("Images/1upSpritesheet.png",
 		sf::Vector2i(16, 8), sf::Vector2i(16, 8));
 	oneupText.setPosition(12 * 16, 3 * 16);
+	oneupText.setColor(sf::Color::Transparent);
 	hiScoreText.setupSprite("Images/hiscoreSpritesheet.png",
 		sf::Vector2i(48, 16), sf::Vector2i(48, 16));
 	hiScoreText.setPosition(12 * 16, 16);
@@ -25,7 +26,7 @@ UI::UI(sf::RenderWindow* window)
 	{
 		hiScore[i].setupSprite("Images/numberSpritesheet.png",
 			sf::Vector2i(80, 8), sf::Vector2i(8, 8));
-		hiScore[i].setPosition(12 * 16 + (i * 8), 16 * 2);
+		hiScore[i].setPosition(104 + (i * 8), 11);
 	}
 
 	for (int i = 0; i < 2; i++)
@@ -52,11 +53,14 @@ UI::UI(sf::RenderWindow* window)
 	background.setupSprite("Images/uiBackgroundSpritesheet.png",
 		sf::Vector2i(192, 672), sf::Vector2i(192, 224));
 	background.setPosition(sf::Vector2f(0, 0));
+	menu.setupSprite("Images/menuSpritesheet.png",
+		sf::Vector2i(240, 224), sf::Vector2i(240, 224));
 
 	// Sets initial lives to 2, score to 0,
 	// highScore to previous score, and round to 1
 	currentScore = 0;
 	currentLives = 0;
+	setupMainMenu();
 	setupHighscore();
 	setLives(2);
 	addScore(0);
@@ -71,21 +75,100 @@ UI::~UI()
 }
 
 
+int UI::getLives()
+{
+	return currentLives;
+}
+
+
+bool UI::getMenuActive()
+{
+	return settingUpMainMenu;
+}
+
+
+void UI::update()
+{
+	if (settingUpMainMenu)
+	{
+		if (menu.getPosition().y <= 0)
+		{
+			if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Z)
+				|| sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+				&& mainMenuTimer.getElapsedTime().asSeconds() >= .25f)
+			{
+				settingUpMainMenu = false;
+				for (int i = 0; i < 6; i++)
+					hiScore[i].setPosition(12 * 16 + (i * 8), 16 * 2);
+			}
+		}
+		else
+		{
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)
+				|| sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+				menu.setPosition(0, 0);
+			else
+				menu.move(sf::Vector2f(0, -1));
+
+			for (int i = 0; i < 6; i++)
+			{
+				hiScore[i].setPosition(104 + (i * 8), menu.getPosition().y + 11);
+			}
+
+			if (menu.getPosition() == sf::Vector2f(0, 0))
+				mainMenuTimer.restart();
+		}
+	}
+
+	if (oneupTimer.getElapsedTime().asSeconds() > 10.0f 
+		&& oneupText.getColor() == sf::Color::White)
+		oneupText.setColor(sf::Color::Transparent);
+}
+
 // Sets UI score to inputted value and if greater than high score, sets that.
 void UI::addScore(int value)
 {
+	int initialScore = currentScore;
 	currentScore += value;
+
+	// Changes 1UPs based on lives. 
+	if ((initialScore < 10000 && currentScore >= 10000)
+		|| (initialScore / 40000 < currentScore / 40000))
+	{
+		oneupTimer.restart();
+		oneupText.setColor(sf::Color::White);
+		setLives(currentLives + 1);
+	}
+
 	changeSprites(score, 6, currentScore);
-	if (value > highScore)
-		setHighScore(value);
+	if (currentScore > highScore)
+		setHighScore(currentScore);
 }
 
+
+void UI::resetScore()
+{
+	recordHighscore();
+	currentScore = 0;
+	changeSprites(score, 6, currentScore);
+}
 
 // Sets new high scores to inputted value
 void UI::setHighScore(int value)
 {
 	highScore = value;
 	changeSprites(hiScore, 6, value);
+}
+
+
+void UI::setupMainMenu()
+{
+	settingUpMainMenu = true;
+	menu.setPosition(0, 14 * 16); // Bottom of screen.
+	for (int i = 0; i < 6; i++)
+	{
+		hiScore[i].setPosition(96 + (i * 8), menu.getPosition().y + 16);
+	}
 }
 
 
@@ -172,24 +255,36 @@ void UI::setFlowers(int currentRound)
 // Draws all sprites in UI 
 void UI::drawObject()
 {
-	win->draw(background);
-	win->draw(roundText);
-	win->draw(hiScoreText);
-
-	for (int i = 0; i < 6; i++)
+	if (settingUpMainMenu)
 	{
-		win->draw(score[i]);
-		win->draw(hiScore[i]);
+		win->draw(menu);
+		for (int i = 0; i < 6; i++)
+		{
+			win->draw(hiScore[i]);
+		}
 	}
+	else
+	{
+		win->draw(background);
+		win->draw(roundText);
+		win->draw(hiScoreText);
+		win->draw(oneupText);
 
-	for (int i = 0; i < 2; i++)
-		win->draw(round[i]);
+		for (int i = 0; i < 6; i++)
+		{
+			win->draw(score[i]);
+			win->draw(hiScore[i]);
+		}
 
-	for (int i = 0; i < 3; i++)
-		win->draw(lives[i]);
+		for (int i = 0; i < 2; i++)
+			win->draw(round[i]);
 
-	for (int i = 0; i < 12; i++)
-		win->draw(flowers[i]);
+		for (int i = 0; i < 3; i++)
+			win->draw(lives[i]);
+
+		for (int i = 0; i < 12; i++)
+			win->draw(flowers[i]);
+	}
 }
 
 

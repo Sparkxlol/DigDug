@@ -41,12 +41,13 @@ Game::~Game()
 
 // Sets up objects, levels and loads the first level.
 Game::Game(sf::RenderWindow* window)
-	: window(window), currentLevel(1), currentLives(2)
+	: window(window), currentLevel(1)
 {
 	// Create UI and DigDug
+	settingUpMenu = true;
 	setupObjects();
 	setupLevels();
-	loadLevel(0);
+	ui->setupMainMenu();
 }
 
 
@@ -232,6 +233,7 @@ void Game::loadLevel(int currentLevel)
 		}
 	}
 
+	int currentLives = ui->getLives();
 	// If the level loaded is the same as previous, remove life.
 	if (!sandResetLevel)
 		currentLives--;
@@ -239,6 +241,8 @@ void Game::loadLevel(int currentLevel)
 	{
 		currentLives = 2;
 		currentLevel = 0;
+		ui->resetScore();
+		ui->setupMainMenu();
 		sandResetLevel = true;
 	}
 
@@ -389,18 +393,32 @@ bool Game::enemiesLeft()
 // Updates all objects.
 void Game::update()
 {
-	// Run all updates
-	updateObjects();
+	if (ui->getMenuActive())
+	{
+		settingUpMenu = true;
+		ui->update();
+		ui->drawObject();
+	}
+	else if (settingUpMenu)
+	{
+		settingUpMenu = false;
+		loadLevel(0);
+	}
+	else
+	{
+		// Run all updates
+		updateObjects();
 
-	// Check if player is dead or if all enemies are dead,
-	// and load current/next level.
-	if (!digDug->getActive())
-		loadLevel(currentLevel);
-	else if (!enemiesLeft())
-		loadLevel(currentLevel + 1);
+		// Check if player is dead or if all enemies are dead,
+		// and load current/next level.
+		if (!digDug->getActive())
+			loadLevel(currentLevel);
+		else if (!enemiesLeft())
+			loadLevel(currentLevel + 1);
 
-	// Draw all objects
-	drawObjects();
+		// Draw all objects
+		drawObjects();
+	}
 }
 
 
@@ -427,6 +445,8 @@ void Game::updateObjects()
 		if (score->getActive())
 			score->update();
 	}
+
+	ui->update();
 }
 
 
