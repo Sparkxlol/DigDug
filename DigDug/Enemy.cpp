@@ -143,52 +143,96 @@ void Enemy::movement()
 	if (getDeathType() == "none")
 	{
 		// 1/randomFloatTime to float on every frame.
-		static const int randomFloatPercent = 15;
+		static const int randomFloatPercent = 5;
 		static const float randomFloatTime = 15.0f;
+		static const float escapeTime = 30.0f;
 		int moveDir = -1; // Direction to move.
 		float rockDifference; // Distance from the rock.
 		bool formerCanFloat = canFloat; // Checks if enemy was just floating.
+
+		// Finds the distance away from a 16 (from the top & left) in both axes.
+		float xPos = (getPosition().x / 16)
+			- (static_cast<int>(getPosition().x) / 16);
+		float yPos = (getPosition().y / 16)
+			- (static_cast<int>(getPosition().y) / 16);
+
+		// If xPos/yPos is close to 0 set to 0,
+		// to check when digDug is close enough to the axis to move on that axis.
+		xPos = (xPos < .002f || xPos > .998f) ? 0.0f : xPos;
+		yPos = (yPos < .002f || yPos > .998f) ? 0.0f : yPos;
 
 		// If floating then moveFloat.
 		if (canFloat)
 			moveDir = moveFloat();
 		// If cannot keep moving in current direction, change move type.
-		else if (sandCollided[getDirection()]) // !!! Might want to change to every 16x16 block for more varience. !!!
+		else if (xPos == 0 && yPos == 0) // !!! Might want to change to every 16x16 block for more varience. !!!
 		{
-			int randFloat = rand() % randomFloatPercent + 1;
-
-			if (randFloat == randomFloatPercent && escapeTimer.getElapsedTime().asSeconds() > randomFloatTime)
-				moveDir = moveFloat();
-			else
+			if (currentPath + 1 >= path.size() && currentCollides <= 0)
 			{
-				// Checks for each rock if enemy is near, and if so, run from the rock.
-				for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
+				path.clear();
+				currentPath = 0;
+				pathEndFound = false;
+				if (escapeTimer.getElapsedTime().asSeconds() >= escapeTime)
+					findTarget(sf::Vector2f(-16, 16), // Death spot to escape
+						getPosition(), 5, std::vector<int>());
+				else
+					findTarget(game->getDigDugPointer()->getPosition(),
+						getPosition(), 5, std::vector<int>());
+			}
+
+			if (pathEndFound && path.size() != 0 && currentCollides <= 0)
+			{
+				if (currentPath < path.size())
 				{
-					if (game->getRockPointer(i)->getFall())
+					moveDir = path.at(currentPath);
+					currentPath++;
+					if (currentPath + 1 == path.size())
+						currentCollides = 1;
+				}
+				else
+					moveDir = moveTowardPlayer();
+			}
+			else if (sandCollided[getDirection()])
+			{
+				if (currentCollides > 0)
+					currentCollides--;
+				int randFloat = rand() % randomFloatPercent + 1;
+
+				if (randFloat == randomFloatPercent && escapeTimer.getElapsedTime().asSeconds() > randomFloatTime)
+					moveDir = moveFloat();
+				else
+				{
+					// Checks for each rock if enemy is near, and if so, run from the rock.
+					for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
 					{
-						rockDifference = getPosition().x - game->getRockPointer(i)->getPosition().x;
-						if (rockDifference <= 16.0f && rockDifference >= -16.0f)
+						if (game->getRockPointer(i)->getFall())
 						{
-							moveDir = moveFromRock(game->getRockPointer(i)->getPosition());
+							rockDifference = getPosition().x - game->getRockPointer(i)->getPosition().x;
+							if (rockDifference <= 16.0f && rockDifference >= -16.0f)
+							{
+								moveDir = moveFromRock(game->getRockPointer(i)->getPosition());
+							}
 						}
 					}
-				}
 
-				// If time after level load is 30 seconds, escape from level.
-				// If not, randomChance/15 chance to move towards player,
-				// otherwise move away.
-				if (moveDir == -1)
-				{
-					static const int randomChoice = rand() % 15 + 1;
+					// If time after level load is 30 seconds, escape from level.
+					// If not, randomChance/15 chance to move towards player,
+					// otherwise move away.
+					if (moveDir == -1)
+					{
+						static const int randomChoice = rand() % 15 + 1;
 
-					if (escapeTimer.getElapsedTime().asSeconds() > 30.0f)
-						moveDir = escapeLevel(); // BREAKS ENEMY MOVEMENT AT 30 SECONDS
-					else if (randomChoice <= 2)
-						moveDir = moveAwayPlayer();
-					else
-						moveDir = moveTowardPlayer();
+						if (escapeTimer.getElapsedTime().asSeconds() > escapeTime)
+							moveDir = escapeLevel(); 
+						else if (randomChoice <= 2)
+							moveDir = moveAwayPlayer();
+						else
+							moveDir = moveTowardPlayer();
+					}
 				}
 			}
+			else
+				moveDir = getDirection();
 		}
 		else // If not stopped, keep moving in current direction.
 			moveDir = getDirection();
@@ -428,57 +472,143 @@ void Enemy::checkSurroundingSand(sf::Vector2f pos, bool choices[4])
 		choices[i] = false;
 
 	if (offYPos <= 0 + getSpeed() * 2)
-		choices[0] = getSandCollision(arrXPos, arrYPos - 1, 0);
+		choices[0] = getSandCollision(arrXPos, arrYPos, 0);
 	if (offYPos + 16 >= 16 - getSpeed() * 2)
-		choices[1] = getSandCollision(arrXPos, arrYPos + 1, 1);
+		choices[1] = getSandCollision(arrXPos, arrYPos, 1);
 	if (offXPos <= 0 + getSpeed() * 2)
-		choices[2] = getSandCollision(arrXPos - 1, arrYPos, 2);
+		choices[2] = getSandCollision(arrXPos, arrYPos, 2);
 	if (offXPos + 16 >= 16 - getSpeed() * 2)
-		choices[3] = getSandCollision(arrXPos + 1, arrYPos, 3);
+		choices[3] = getSandCollision(arrXPos, arrYPos, 3);
 }
 
 
 bool Enemy::getSandCollision(int xPos, int yPos, int direction)
 {
+	// Exit of level
+	if (xPos == -1)
+	{
+		return true;
+	}
+
+	// Top layer of ground where enemy can escape.
 	if (yPos == -1)
 	{
 		if (direction == up)
-			return false;
-		else if (direction == right && xPos > 11)
+			return true;
+		else if (direction == right && xPos >= 11)
 			return true;
 		else if (direction == right)
 			return false;
 		else if (direction == left)
 			return false;
+		else if (direction == down)
+			return !game->getSandPointer(xPos + ((yPos + 1) * 12))->getMove(down);
 	}
 
-	if (direction == up && yPos < 0)
+	if (direction == up && yPos <= 0)
+	{
+		if (yPos == 0)
+			return !game->getSandPointer(xPos + (yPos * 12))->getMove(down);
+		else
+			return false;
+	}
+	else if (direction == down && yPos >= 11)
 		return true;
-	else if (direction == down && yPos > 11)
+	else if (direction == left && xPos <= 0)
 		return true;
-	else if (direction == left && xPos < 0)
-		return true;
-	else if (direction == right && xPos > 11)
+	else if (direction == right && xPos >= 11)
 		return true;
 
-	Sand* const sandPtr = game->getSandPointer(xPos + (yPos * 12));
-
-	if (direction == 0)
-		return !sandPtr->getMove(0);
-	else if (direction == 1)
-		return !sandPtr->getMove(1);
-	else if (direction == 2)
-		return !sandPtr->getMove(2);
-	else
-		return !sandPtr->getMove(3);
+	Sand* const orgSandPtr = game->getSandPointer(xPos + (yPos * 12));
+	if (direction == up)
+	{
+		Sand* const nextSandPtr = game->getSandPointer(xPos + ((yPos - 1) * 12));
+		return (!orgSandPtr->getMove(down) && !nextSandPtr->getMove(up));
+	}
+	else if (direction == down)
+	{
+		Sand* const nextSandPtr = game->getSandPointer(xPos + ((yPos + 1) * 12));
+		return (!orgSandPtr->getMove(up) && !nextSandPtr->getMove(down));
+	}
+	else if (direction == left)
+	{
+		Sand* const nextSandPtr = game->getSandPointer((xPos - 1) + (yPos * 12));
+		return (!orgSandPtr->getMove(right) && !nextSandPtr->getMove(left));
+	}
+	else if (direction == right)
+	{
+		Sand* const nextSandPtr = game->getSandPointer((xPos + 1) + (yPos * 12));
+		return (!orgSandPtr->getMove(left) && !nextSandPtr->getMove(right));
+	}
 }
 
+
+void Enemy::findTarget(sf::Vector2f target, sf::Vector2f currentPos,
+	int lastPath, std::vector<int> currentPath)
+{
+	static const int maxPathLength = 15; // Game lags if too high,
+	// but movement can still occur without finding a direct path.
+
+	if (currentPos.x < target.x + 16 && currentPos.x >= target.x &&
+		currentPos.y < target.y + 16 && currentPos.y >= target.y)
+	{
+		if (currentPath.size() <= path.size() || pathEndFound == false)
+		{
+			pathEndFound = true;
+			path = currentPath;
+		}
+	}
+
+	if (currentPath.size() > maxPathLength)
+		return;
+
+	bool collisions[4];
+	checkSurroundingSand(currentPos, collisions);
+	for (int i = 0; i < 4; i++)
+	{
+		if (collisions[i] == false)
+		{
+			if (i == up && lastPath != down)
+			{
+				currentPath.push_back(i);
+				findTarget(target, sf::Vector2f(currentPos.x,
+					currentPos.y - 16), up, currentPath);
+				currentPath.pop_back();
+			}
+			if (i == down && lastPath != up)
+			{
+				currentPath.push_back(i);
+				findTarget(target, sf::Vector2f(currentPos.x,
+					currentPos.y + 16), down, currentPath);
+				currentPath.pop_back();
+			}
+			if (i == left && lastPath != right)
+			{
+				currentPath.push_back(i);
+				findTarget(target, sf::Vector2f(currentPos.x - 16,
+					currentPos.y), left, currentPath);
+				currentPath.pop_back();
+			}
+			if (i == right && lastPath != left)
+			{
+				currentPath.push_back(i);
+				findTarget(target, sf::Vector2f(currentPos.x + 16,
+					currentPos.y), right, currentPath);
+				currentPath.pop_back();
+			}
+		}
+	}
+}
 
 // Resets player to default values.
 void Enemy::reset(sf::Vector2f pos)
 {
 	GameObject::reset(pos);
 
+	path.clear();
+	currentCollides = 0;
+	currentPath = false;
+	pathEndFound = false;
 	deathType = "none";
 	pumpClock.restart();
 	escapeTimer.restart();
