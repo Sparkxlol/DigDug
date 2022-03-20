@@ -4,8 +4,10 @@
 Score::Score(sf::RenderWindow* win, UI* const ui)
 	: window(win), ui(ui)
 { 
-	spritesheet.setupSprite("Images/scores1Spritesheet.png",
+	spritesheet1.setupSprite("Images/scores1Spritesheet.png",
 		sf::Vector2i(64, 112), sf::Vector2i(32, 16));
+	spritesheet2.setupSprite("Images/scores2Spritesheet.png",
+		sf::Vector2i(64, 96), sf::Vector2i(32, 16));
 	isActive = false;
 	deathTime = 2.5f;
 	totalScore = 0;
@@ -56,33 +58,91 @@ void Score::changeScore(sf::Vector2f pos, std::string type)
 	switch (totalScore)
 	{
 	case 200:
-		spritesheet.loadSprite(0);
+		spritesheet1.loadSprite(0);
 		break;
 	case 300:
-		spritesheet.loadSprite(2);
+		spritesheet1.loadSprite(2);
 		break;
 	case 400:
-		spritesheet.loadSprite(4);
+		spritesheet1.loadSprite(4);
 		break;
 	case 500:
-		spritesheet.loadSprite(6);
+		spritesheet1.loadSprite(6);
 		break;
 	case 600:
-		spritesheet.loadSprite(8);
+		spritesheet1.loadSprite(8);
 		break;
 	case 800:
-		spritesheet.loadSprite(10);
+		spritesheet1.loadSprite(10);
 		break;
 	case 1000:
-		spritesheet.loadSprite(12);
+		spritesheet1.loadSprite(12);
 		break;
 	default:
-		spritesheet.loadSprite(1);
+		spritesheet1.loadSprite(1);
 	}
 
-	spritesheet.setPosition(pos);
+	type = "enemy";
+	spritesheet1.setPosition(pos);
 	clock.restart();
 	setActive(true);
+}
+
+
+void Score::changeScore(sf::Vector2f pos, int fruitIndex)
+{
+	switch (fruitIndex)
+	{
+	case 0:
+		spritesheet2.loadSprite(0);
+		totalScore = 400;
+		break;
+	case 1:
+		spritesheet2.loadSprite(2);
+		totalScore = 600;
+		break;
+	case 2:
+		spritesheet2.loadSprite(4);
+		totalScore = 800;
+		break;
+	case 3:
+		spritesheet2.loadSprite(6);
+		totalScore = 1000;
+		break;
+	case 4:
+		spritesheet2.loadSprite(8);
+		totalScore = 2000;
+		break;
+	case 5:
+		spritesheet2.loadSprite(10);
+		totalScore = 3000;
+		break;
+	case 6:
+		spritesheet2.loadSprite(1);
+		totalScore = 4000;
+		break;
+	case 7:
+		spritesheet2.loadSprite(3);
+		totalScore = 5000;
+		break;
+	case 8:
+		spritesheet2.loadSprite(5);
+		totalScore = 6000;
+		break;
+	case 9:
+		spritesheet2.loadSprite(7);
+		totalScore = 7000;
+		break;
+	default:
+		spritesheet2.loadSprite(9);
+		totalScore = 8000;
+		break;
+	}
+
+	type = "fruit";
+	spritesheet2.setPosition(pos);
+	setActive(true);
+	clock.restart();
 }
 
 
@@ -104,5 +164,8 @@ void Score::update()
 // Draws the score.
 void Score::drawObject()
 {
-	window->draw(spritesheet);
+	if (type == "enemy")
+		window->draw(spritesheet1);
+	else
+		window->draw(spritesheet2);
 }

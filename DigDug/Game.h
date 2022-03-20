@@ -24,6 +24,7 @@ public:
 	Enemy* const getEnemyPointer(const int);
 	Rock* const getRockPointer(const int);
 	void createScore(sf::Vector2f, std::string);
+	void createScore(sf::Vector2f, int);
 	bool getActive(const Game::Object&, const int&) const;
 	bool enemiesLeft();
 
@@ -36,6 +37,7 @@ private:
 	void setupLevels();
 	GameObject& getObject(const Game::Object&, const int&) const;
 	void loadLevel(int); // input is level number 
+	void fruitUpdate();
 
 	DigDug* digDug;
 	std::vector<Enemy*> enemies;
@@ -43,7 +45,11 @@ private:
 	std::vector<Sand*> sand;
 	std::vector<Score*> scores;
 	UI* ui;
+	Spritesheet* fruit;
 
+	bool fruitTaken;
+	bool fruitActive;
+	int currentFruit;
 	bool settingUpMenu;
 	int currentLevel;
 	bool sandLoc[12][12] = {};

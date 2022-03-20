@@ -75,22 +75,26 @@ UI::~UI()
 }
 
 
+// Returns the current amount of lives.
 int UI::getLives()
 {
 	return currentLives;
 }
 
 
+// Returns true if showing menu.
 bool UI::getMenuActive()
 {
 	return settingUpMainMenu;
 }
 
 
+// Updates the menu and necessary timers.
 void UI::update()
 {
 	if (settingUpMainMenu)
 	{
+		// If the menu is in the correct position, the player can begin.
 		if (menu.getPosition().y <= 0)
 		{
 			if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Z)
@@ -102,6 +106,7 @@ void UI::update()
 					hiScore[i].setPosition(12 * 16 + (i * 8), 16 * 2);
 			}
 		}
+		// Moves the menu into position along with the highscore text.
 		else
 		{
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)
@@ -120,6 +125,7 @@ void UI::update()
 		}
 	}
 
+	// Sets the one up sprite to transparent when necessary.
 	if (oneupTimer.getElapsedTime().asSeconds() > 10.0f 
 		&& oneupText.getColor() == sf::Color::White)
 		oneupText.setColor(sf::Color::Transparent);
@@ -146,12 +152,14 @@ void UI::addScore(int value)
 }
 
 
+// Resets the score to 0.
 void UI::resetScore()
 {
 	recordHighscore();
 	currentScore = 0;
 	changeSprites(score, 6, currentScore);
 }
+
 
 // Sets new high scores to inputted value
 void UI::setHighScore(int value)
@@ -161,6 +169,7 @@ void UI::setHighScore(int value)
 }
 
 
+// Sets the menu to the correct positions.
 void UI::setupMainMenu()
 {
 	settingUpMainMenu = true;

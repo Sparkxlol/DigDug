@@ -31,6 +31,7 @@ Game::~Game()
 	}
 
 	delete ui;
+	delete fruit;
 
 	enemies.clear();
 	rocks.clear();
@@ -138,6 +139,21 @@ void Game::createScore(sf::Vector2f pos, std::string type)
 }
 
 
+// Creates a score based on the passed position and fruit index, making sure
+// it is not overriding a existing score.
+void Game::createScore(sf::Vector2f pos, int index)
+{
+	for (int i = 0; i < scores.size(); i++)
+	{
+		if (!scores.at(i)->getActive())
+		{
+			scores.at(i)->changeScore(pos, index);
+			return;
+		}
+	}
+}
+
+
 // Returns the activity of a specified object and index.
 bool Game::getActive(const Game::Object& object, const int& index) const
 {
@@ -177,11 +193,18 @@ void Game::setupObjects()
 		sand.at(i)->setActive(false);
 	}
 
-	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		scores.push_back(new Score(window, ui));
 		scores.at(i)->setActive(false);
 	}
+
+	fruit = new Spritesheet();
+	fruit->setupSprite("Images/fruitSpritesheet.png",
+		sf::Vector2i(160, 16), sf::Vector2i(16, 16));
+	fruitActive = false;
+	fruitTaken = false;
+	fruit->setPosition((16 * 12) / 2 - 16, (16 * 12) / 2 + 16); // DigDug spawn location.
 }
 
 
@@ -235,11 +258,15 @@ void Game::loadLevel(int currentLevel)
 
 	int currentLives = ui->getLives();
 	// If the level loaded is the same as previous, remove life.
-	if (!sandResetLevel)
+	if (!sandResetLevel && !settingUpMenu)
+	{
+		ui->setLives(currentLives - 1);
 		currentLives--;
+	}
+
 	if (currentLives == 0) // If lives are 0, reset game to level 1.
 	{
-		currentLives = 2;
+		ui->setLives(2);
 		currentLevel = 0;
 		ui->resetScore();
 		ui->setupMainMenu();
@@ -256,6 +283,11 @@ void Game::loadLevel(int currentLevel)
 
 		for (Enemy*& enemy : enemies)
 			enemy->setActive(false);
+	}
+	else
+	{	
+		fruitTaken = false;
+		fruitActive = false;
 	}
 
 	// If level is 99, reset back to 0 to prevent triple digits.
@@ -310,7 +342,8 @@ void Game::loadLevel(int currentLevel)
 			currentSand++;
 			break;
 		case 3:
-			enemies.at(currentPooka)->reset(sf::Vector2f(currentX, currentY));
+			if (sandResetLevel || enemies.at(currentPooka)->getActive())
+				enemies.at(currentPooka)->reset(sf::Vector2f(currentX, currentY));
 			currentPooka++;
 
 			sandLoc[(currentY - 32) / 16][currentX / 16] = false;
@@ -318,7 +351,8 @@ void Game::loadLevel(int currentLevel)
 			currentSand++;
 			break;
 		case 4:
-			enemies.at(currentFygar)->reset(sf::Vector2f(currentX, currentY));
+			if (sandResetLevel || enemies.at(currentFygar)->getActive())
+				enemies.at(currentFygar)->reset(sf::Vector2f(currentX, currentY));
 			currentFygar++;
 
 			sandLoc[(currentY - 32) / 16][currentX / 16] = false;
@@ -359,7 +393,6 @@ void Game::loadLevel(int currentLevel)
 	
 	// Sets round to passed level.
 	ui->setRound(currentLevel);
-	ui->setLives(currentLives);
 
 	this->currentLevel = currentLevel;
 
@@ -401,13 +434,14 @@ void Game::update()
 	}
 	else if (settingUpMenu)
 	{
-		settingUpMenu = false;
 		loadLevel(0);
+		settingUpMenu = false;
 	}
 	else
 	{
 		// Run all updates
 		updateObjects();
+		fruitUpdate();
 
 		// Check if player is dead or if all enemies are dead,
 		// and load current/next level.
@@ -482,5 +516,50 @@ void Game::drawObjects()
 	{
 		if (score->getActive())
 			score->drawObject();
+	}
+
+	if (fruitActive && !fruitTaken)
+		window->draw(*fruit);
+}
+
+
+void Game::fruitUpdate()
+{
+	if (!fruitActive)
+	{
+		static const int neededPaths = 40;
+		int totalPaths = 0;
+
+		for (Sand*& s : sand)
+		{
+			if (s->getBackActive())
+			{
+				if (s->getMove(0))
+					totalPaths++;
+				else if (s->getMove(1))
+					totalPaths++;
+				else if (s->getMove(2))
+					totalPaths++;
+				else if (s->getMove(3))
+					totalPaths++;
+			}
+		}
+		if (totalPaths > 75)
+		{
+			fruitActive = true;
+			fruit->loadSprite(currentFruit);
+			currentFruit = (currentFruit < 9) ? currentFruit + 1 : 0;
+		}
+
+	}
+	else if (!fruitTaken)
+	{
+		sf::FloatRect boundingBox = fruit->getGlobalBounds();
+		if (checkCollision(boundingBox, Object::dig, 0))
+		{
+			int scoreFrame = (currentFruit == 0) ? 9 : currentFruit - 1;
+			fruitTaken = true;
+			createScore(fruit->getPosition(), scoreFrame);
+		}
 	}
 }

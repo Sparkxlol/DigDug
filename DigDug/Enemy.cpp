@@ -414,8 +414,10 @@ int Enemy::moveFloat()
 	if (abs(currentPos.x - playerPos.x) < floatDistance 
 		&& abs(currentPos.y - playerPos.y) < floatDistance)
 	{
+		int topPlayerPosX = static_cast<int>(playerPos.x) - (static_cast<int>(playerPos.x) % 16);
+		int topPlayerPosY = static_cast<int>(playerPos.y) - (static_cast<int>(playerPos.y) % 16);
 		if (floatTarget.x == -1)
-			floatTarget = playerPos;
+			floatTarget = sf::Vector2f(topPlayerPosX, topPlayerPosY);
 	}
 
 	// If enemy has just started floating,

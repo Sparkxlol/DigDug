@@ -166,6 +166,14 @@ void DigDug::playerInput()
 			setCanMove(true);
 		}
 	}
+	// If a shot is active, and input is opposite of direction,
+	// disconnect shot.
+	else if (input <= right)
+	{
+		int oppDirection = (input % 2 == 0) ? input + 1 : input - 1;
+		if (oppDirection == getDirection())
+			shot.setActive(false);
+	}
 
 	// If not dead, either moves player in corresponding direction or shoots.
 	if (deathType == "none")
