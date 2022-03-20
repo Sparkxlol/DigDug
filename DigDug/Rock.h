@@ -26,6 +26,7 @@ private:
 	bool endFalling;
 	float speed;
 	bool bottomCollider;
+	int fallingLeniency;
 	
 	bool checkedBottom;
 };

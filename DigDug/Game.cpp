@@ -73,6 +73,8 @@ int Game::getArrLength(const Game::Object& object) const
 
 // Checks the collision using the passed collider
 // and the specified index and object. Only checks active objects.
+// Index is also used for digDug's overrided collider (0) and his old one (1).
+// Rock returns the original collider, rather than the bottom checker.
 bool Game::checkCollision(const sf::FloatRect& collider, 
 	const Game::Object& object, const int& index) const
 {
@@ -86,6 +88,17 @@ bool Game::checkCollision(const sf::FloatRect& collider,
 		if (sand.at(index)->getTopActive()) 
 			return collider.intersects(sand.at(index)->getForeCollider());
 		break;
+	case Game::Object::dig:
+		if (getObject(object, index).getActive())
+		{
+			if (index == 0)
+				return collider.intersects(getObject(object, index).getCollider());
+			else
+				return collider.intersects(getObject(object, index).GameObject::getCollider());
+		}
+	case Game::Object::rock:
+		if (getObject(object, index).getActive())
+			return collider.intersects(getObject(object, index).GameObject::getCollider());
 	default:
 		if (getObject(object, index).getActive()) // Checks all other objects.
 			return collider.intersects(getObject(object, index).getCollider());

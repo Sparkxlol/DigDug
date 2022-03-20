@@ -79,9 +79,15 @@ void Rock::update()
 	// If bottom is not collided and hasn't started falling, fall.
 	if (!bottomCollider && !isFalling && !startFalling)
 	{
-		startFalling = true;
-		fallClock.restart();
-		anim.setAnimation(0, 1, .2f, true);
+		// Falling leniency allows for holding up and preventing the rock
+		// from falling too fast.
+		fallingLeniency--;
+		if (fallingLeniency <= 0)
+		{
+			startFalling = true;
+			fallClock.restart();
+			anim.setAnimation(0, 1, .2f, true);
+		}
 	}
 	// If started falling and has been 1 second, begin downward movement.
 	else if (startFalling && fallClock.getElapsedTime().asSeconds() > 1.0f)
@@ -136,11 +142,16 @@ void Rock::collide()
 			bottomCollider = game->checkCollision(getCollider(), Game::Object::sandSand, i);
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && game->checkCollision(getCollider(), Game::Object::dig, 0))
+	// Only allows beginning a fall when player is not colliding with the object
+	// and facing up or holding up.
+	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Up)
+		|| game->getDigDugPointer()->getDirection() == up)
+		&& game->checkCollision(getCollider(), Game::Object::dig, 1))
 	{
 		bottomCollider = true;
 	}
-	if (getPosition().y == 13 * 16) //I'd like a comment here please to explain a hard coded vertical
+	// Stops the rocks fall when it hits the bottom of the screen.
+	if (getPosition().y == 13 * 16) 
 	{
 		bottomCollider = true;
 	}
@@ -160,6 +171,7 @@ void Rock::collide()
 				if (anim.getFinished())
 				{
 					currentEnemy->setActive(false);
+					// Creates score for enemy death.
 					game->createScore(currentEnemy->getPosition(), "rock");
 				}
 			}
@@ -189,6 +201,8 @@ void Rock::reset(sf::Vector2f pos)
 	speed = .5f;
 	bottomCollider = false;
 	checkedBottom = false;
+	fallingLeniency = 5;
 
 	anim.setAnimation(0, 1, .2f, false);
+	spritesheet.loadSprite(0);
 }

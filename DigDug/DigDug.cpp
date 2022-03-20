@@ -251,37 +251,62 @@ void DigDug::playerMovement(const int& input)
 		}
 	}
 
-	// Creates a new collider and changes the size of it
-	// based on the current direction to check in that direction.
-	sf::FloatRect largeCollider = getCollider();
+	// Creates a new collider to check for rock collisions that is larger.
+	sf::FloatRect largeCollider = GameObject::getCollider();
 	bool collided = false;
 
-	switch (getDirection())
-	{
-	case up:
-		largeCollider.top += .25f;
-		largeCollider.height -= 5.0f;
-		break;
-	case down:
-		largeCollider.height -= 4.75f;
-		largeCollider.top += 5.0f;
-		break;
-	case left:
-		largeCollider.left += .25f;
-		largeCollider.width -= 5.0f;
-		break;
-	case right:
-		largeCollider.width -= 4.75f;
-		largeCollider.left += 5.0f;
-		break;
-	}
+	largeCollider.top -= speed * 4;
+	largeCollider.height += speed * 12;
+	largeCollider.left -= speed * 4;
+	largeCollider.width += speed * 12;
 
 	// Checks collision with all active rocks in specified direction.
 	for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
 	{
 		if (game->checkCollision(largeCollider, Game::Object::rock, i))
 		{
-			collided = true;
+			sf::Vector2f rockPos = game->getRockPointer(i)->getPosition();
+			sf::Vector2f digPos = getPosition();
+
+			// Adds the speed to the position to see if it's the same as rock.
+			switch (getDirection())
+			{
+			case up:
+				digPos.y -= speed;
+				break;
+			case down:
+				digPos.y += speed;
+				break;
+			case left:
+				digPos.x -= speed;
+				break;
+			case right:
+				digPos.x += speed;
+				break;
+			}
+
+			// Finds the tile that the rock and dig + speed are on.
+			rockPos = sf::Vector2f(static_cast<int>(rockPos.x) / 16,
+				static_cast<int>(rockPos.y) / 16);
+			digPos = sf::Vector2f(static_cast<int>(digPos.x) / 16,
+				static_cast<int>(digPos.y) / 16);
+
+			// If the digDug pos is the same as the rock, and moving in
+			// correct direction, prevent movement.
+			// Down/Right have an added 1 because they are 16 pixels off
+			// compared to the left and right, since pos is top left.
+ 			if (getDirection() == up && digPos.y == rockPos.y
+				&& digPos.x == rockPos.x)
+				collided = true;
+			else if (getDirection() == down && digPos.y + 1 == rockPos.y
+				&& digPos.x == rockPos.x)
+				collided = true;
+			else if (getDirection() == left && digPos.x == rockPos.x
+				&& digPos.y == rockPos.y)
+				collided = true;
+			else if (getDirection() == right && digPos.x + 1 == rockPos.x
+				&& digPos.y == rockPos.y)
+				collided = true;
 		}
 	}
 
