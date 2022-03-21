@@ -183,8 +183,8 @@ void Enemy::movement()
 		// If xPos/yPos is close to 0 set to 0,
 		// to check when digDug is close 
 		// enough to the axis to move on that axis.
-		xPos = (xPos <= getSpeed()) ? 0.0f : xPos;
-		yPos = (yPos <= getSpeed()) ? 0.0f : yPos;
+		xPos = (xPos < getSpeed() + .05) ? 0.0f : xPos;
+		yPos = (yPos < getSpeed() + .05) ? 0.0f : yPos;
 
 		// If floating then moveFloat.
 		if (canFloat)
