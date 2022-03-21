@@ -49,7 +49,7 @@ protected:
 	std::vector<sf::SoundBuffer> soundFiles;
 	std::vector<sf::Sound> sounds;
 	enum Input { up, down, left, right, z, none };
-	enum class SoundChoice {theme, shot, pump};
+	enum class SoundChoice {theme, shot, pump, digdugDeath};
 
 private:
 	int direction; // Direction of object animation, *might change to enum class*

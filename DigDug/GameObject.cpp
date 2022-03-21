@@ -25,7 +25,7 @@ GameObject::GameObject(sf::RenderWindow* win, Game* game)
 	canMove = false;
 	direction = 0;
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		soundFiles.push_back(sf::SoundBuffer());
 		sounds.push_back(sf::Sound());
@@ -41,6 +41,9 @@ GameObject::GameObject(sf::RenderWindow* win, Game* game)
 	if (!soundFiles.at(2).loadFromFile("Sounds/pump.ogg"))
 		std::cout << "error loading pump sound effect" << std::endl; // error
 	sounds.at(2).setBuffer(soundFiles.at(2));
+	if (!soundFiles.at(3).loadFromFile("Sounds/digdug_death.ogg"))
+		std::cout << "error loading digdug death sound effect" << std::endl; // error
+	sounds.at(3).setBuffer(soundFiles.at(3));
 
 }
 

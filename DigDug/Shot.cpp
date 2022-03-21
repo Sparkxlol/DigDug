@@ -29,15 +29,19 @@ Shot::Shot(sf::RenderWindow* win, Game* game)
 
 // "Shoots" the air pump, setting the shot active and checking collsion.
 void Shot::shoot(sf::Vector2f playerPos, int direction)
-{
+{	
 	// If already attached and have waited for .1 seconds
 	// allow another pump, and if pump is over 3, kill enemy and set unactive.
 	if (attached && shootWait.getElapsedTime().asSeconds() > .5f)
 	{
+		sounds.at((int)SoundChoice::pump).stop();
+		sounds.at((int)SoundChoice::pump).play();
+
 		shootWait.restart();
 		attachedEnemy->changeCurrentPump(1);
 		if (attachedEnemy->getCurrentPump() > 3)
 		{
+			sounds.at((int)SoundChoice::pump).stop();//stop pump sound
 			setActive(false);
 			attached = false;
 			attachedEnemy = nullptr;
@@ -47,6 +51,8 @@ void Shot::shoot(sf::Vector2f playerPos, int direction)
 	// based on the parameters and update the mask to the correct amount.
 	else if (!attached && !getActive())
 	{
+		sounds.at((int)SoundChoice::shot).play();
+
 		// Set position to playerPos
 		setPosition(playerPos);
 		this->playerPos = playerPos;
@@ -102,6 +108,8 @@ void Shot::collide()
 			attachedEnemy = game->getEnemyPointer(i);
 			attachedEnemy->changeCurrentPump(1);
 			shootWait.restart();
+			//stop shot sound
+			sounds.at((int)SoundChoice::shot).stop();
 			return;
 		}
 	}
@@ -113,6 +121,8 @@ void Shot::collide()
 		{
 			currentMask = 0;
 			setActive(false);
+			//stop shot sound
+			sounds.at((int)SoundChoice::shot).stop();
 			return;
 		}
 	}

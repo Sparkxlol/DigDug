@@ -24,13 +24,16 @@ DigDug::DigDug(sf::RenderWindow* win, Game* game)
 	anim.setSprite(&spritesheet);
 	reset(sf::Vector2f(0, 0));
 
-	playSound = false;
+	playTheme = false;
 }
 
 
 // Runs the shoot method from shot.
 void DigDug::shoot()
-{
+{	
+	sounds.at((int)SoundChoice::theme).pause();
+	playTheme = false;
+	
 	shot.shoot(getPosition(), getDirection());
 	shooting = true;
 }
@@ -47,6 +50,13 @@ void DigDug::die(std::string type)
 		deathWait.restart();
 		deathType = type;		
 	}
+
+	//stop theme sound
+	sounds.at((int)SoundChoice::theme).stop();
+	playTheme = false;
+	
+	//play death sound effect
+	sounds.at((int)SoundChoice::digdugDeath).play();
 }
 
 
@@ -72,13 +82,13 @@ void DigDug::update()
 		collide();
 
 	//if sound is stopped and should be playing, play sound (playing for first time)
-	if (sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Stopped && playSound)
+	if (sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Stopped && playTheme)
 		sounds.at((int)SoundChoice::theme).play();
 	//if sound is paused and should be playing, play sound
-	else if (sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Paused && playSound)
+	else if (sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Paused && playTheme)
 		sounds.at((int)SoundChoice::theme).play();
 	//if sound is playing and should stop, pause sound
-	else if(sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Playing && !playSound)
+	else if(sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Playing && !playTheme)
 		sounds.at((int)SoundChoice::theme).pause();
 
 	playerInput();
@@ -173,6 +183,10 @@ void DigDug::playerInput()
 		int oppDirection = (input % 2 == 0) ? input + 1 : input - 1;
 		if (oppDirection == getDirection())
 			shot.setActive(false);
+
+		//stop shot sound
+		sounds.at((int)SoundChoice::shot).stop();
+		sounds.at((int)SoundChoice::pump).stop();
 	}
 
 	// If not dead, either moves player in corresponding direction or shoots.
@@ -187,7 +201,7 @@ void DigDug::playerInput()
 			if (getCanMove())
 			{
 				playerMovement(input);
-				playSound = true;
+				playTheme = true;
 			}
 			break;
 		case z:
@@ -201,7 +215,7 @@ void DigDug::playerInput()
 		default:
 			// Stops animations if staying still.
 			anim.setActive(false);
-			playSound = false;
+			playTheme = false;
 			break;
 		}
 	}
