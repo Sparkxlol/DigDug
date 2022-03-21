@@ -175,16 +175,16 @@ void Enemy::movement()
 		}
 
 		// Finds the distance away from a 16 (from the top & left) in both axes.
-		float xPos = (getPosition().x / 16)
-			- (static_cast<int>(getPosition().x) / 16);
-		float yPos = (getPosition().y / 16)
-			- (static_cast<int>(getPosition().y) / 16);
+		float xPos = static_cast<int>(getPosition().x) % 16 
+			+ (getPosition().x - static_cast<int>(getPosition().x));
+		float yPos = static_cast<int>(getPosition().y) % 16
+			+ (getPosition().y - static_cast<int>(getPosition().y));
 
 		// If xPos/yPos is close to 0 set to 0,
 		// to check when digDug is close 
 		// enough to the axis to move on that axis.
-		xPos = (xPos < .002f || xPos > .998f) ? 0.0f : xPos;
-		yPos = (yPos < .002f || yPos > .998f) ? 0.0f : yPos;
+		xPos = (xPos <= getSpeed()) ? 0.0f : xPos;
+		yPos = (yPos <= getSpeed()) ? 0.0f : yPos;
 
 		// If floating then moveFloat.
 		if (canFloat)
@@ -203,7 +203,7 @@ void Enemy::movement()
 				if (escapeTimer.getElapsedTime().asSeconds() >= escapeTime)
 					findTarget(sf::Vector2f(-16, 16), // Death spot to escape
 						getPosition(), 5, std::vector<int>());
-				else // Finds path to player.
+				if (path.size() == 0) // Finds path to player.
 					findTarget(game->getDigDugPointer()->getPosition(),
 						getPosition(), 5, std::vector<int>());
 			}
@@ -464,28 +464,47 @@ int Enemy::moveFloat()
 			anim.setAnimation(6, 7, .5f, true);
 	}
 
-	// If not colliding at all and at any time near the player, stop floating.
-	if (currentPos == playerPos)
-		canFloat = false;
-
 	// If still floating move towards player ignoring collisions,
 	// otherwise move towards player regarding collision.
 	if (canFloat)
 	{
 		int moveDir = -1;
-		int nearX = abs(currentPos.x - playerPos.x);
-		int nearY = abs(currentPos.y - playerPos.y);
+		float nearX = 0;
+		float nearY = 0;
 
-		if (playerPos.y < currentPos.y)
-			moveDir = up;
-		else if (playerPos.y > currentPos.y)
-			moveDir = down;
-		else if (playerPos.x < currentPos.x)
-			moveDir = left;
-		else if (playerPos.x > currentPos.x)
-			moveDir = right;
-		else
-			moveDir = -1;
+		if (currentPos.x != playerPos.x)
+			nearX = abs(currentPos.x - playerPos.x);
+		if (currentPos.y != playerPos.y)
+			nearY = abs(currentPos.y - playerPos.y);
+
+		if (floatTarget.x != -1)
+		{
+			if (nearX != 0 && nearX <= getSpeed())
+				setPosition(sf::Vector2f(playerPos.x, getPosition().y));
+			if (nearY != 0 && nearY <= getSpeed())
+				setPosition(sf::Vector2f(getPosition().x, playerPos.y));
+		}
+
+		// If not colliding at all and at any time near the player, stop floating.
+		if (getPosition() == playerPos)
+			canFloat = false;
+
+		if (!canFloat)
+			moveDir = moveTowardPlayer();
+		else if (nearY != 0 && nearY >= nearX)
+		{
+			if (getPosition().y >= playerPos.y)
+				moveDir = up;
+			else if (getPosition().y < playerPos.y)
+				moveDir = down;
+		}
+		else if (nearX != 0 && nearX > nearY)
+		{
+			if (getPosition().x >= playerPos.x)
+				moveDir = left;
+			else if (getPosition().x < playerPos.x)
+				moveDir = right;
+		}
 
 		return moveDir;
 	}
@@ -515,14 +534,10 @@ void Enemy::checkSurroundingSand(sf::Vector2f pos, bool choices[4])
 		choices[i] = false;
 
 	// If near the side of each side, see if there is sand in the way.
-	if (offYPos <= 0 + getSpeed() * 2)
-		choices[0] = getSandCollision(arrXPos, arrYPos, 0);
-	if (offYPos + 16 >= 16 - getSpeed() * 2)
-		choices[1] = getSandCollision(arrXPos, arrYPos, 1);
-	if (offXPos <= 0 + getSpeed() * 2)
-		choices[2] = getSandCollision(arrXPos, arrYPos, 2);
-	if (offXPos + 16 >= 16 - getSpeed() * 2)
-		choices[3] = getSandCollision(arrXPos, arrYPos, 3);
+	choices[0] = getSandCollision(arrXPos, arrYPos, 0);
+	choices[1] = getSandCollision(arrXPos, arrYPos, 1);
+	choices[2] = getSandCollision(arrXPos, arrYPos, 2);
+	choices[3] = getSandCollision(arrXPos, arrYPos, 3);
 }
 
 
@@ -679,7 +694,7 @@ void Enemy::reset(sf::Vector2f pos)
 	canFloat = false;
 	floatTarget = sf::Vector2f(-1, -1);
 	currentPump = 0;
-	speed = .25f;
+	speed = .3f;
 	initialPosition = pos;
 
 	spritesheet.setSize(sf::Vector2i(16, 16), sf::Vector2i(0, 0), 0);
