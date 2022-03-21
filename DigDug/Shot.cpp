@@ -74,7 +74,8 @@ void Shot::update()
 		}
 		else
 		{
-			if (attachedEnemy->getCurrentPump() <= 0)
+			if (attachedEnemy->getCurrentPump() <= 0 
+				|| attachedEnemy->getActive() == false)
 			{
 				setActive(false);
 				attached = false;
