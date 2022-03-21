@@ -201,7 +201,7 @@ void UI::setLives(int live)
 	currentLives = live;
 
 	// Prevents 0 or more than 9 lives from showing, 0 dealt with in game.
-	if (currentLives > 0 && currentLives <= 9)
+	if (currentLives >= 0 && currentLives <= 9)
 	{
 		// 3 x 3 grid of lives with 3 seperate images
 		// Height is amount of images and width is lives per image used.
@@ -334,6 +334,7 @@ void UI::changeSprites(Spritesheet arr[], int size, int value)
 // Sets up the background of the texture based on level.
 void UI::setupBackground(int round)
 {
+	round--;
 	int lowerRound = round % 12;
 
 	if (lowerRound >= 0 && lowerRound < 5)

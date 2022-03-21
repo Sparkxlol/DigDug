@@ -277,7 +277,7 @@ void Game::loadLevel(int currentLevel)
 		currentLives--;
 	}
 
-	if (currentLives == 0) // If lives are 0, reset game to level 1.
+	if (currentLives < 0) // If lives are 0, reset game to level 1.
 	{
 		ui->setLives(2);
 		currentLevel = 0;
@@ -308,7 +308,7 @@ void Game::loadLevel(int currentLevel)
 		currentLevel = 0;
 
 	// Sets round to passed level.
-	ui->setRound(currentLevel);
+	ui->setRound(currentLevel + 1);
 
 	this->currentLevel = currentLevel;
 

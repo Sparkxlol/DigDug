@@ -128,7 +128,8 @@ void DigDug::collide()
 	for (int i = 0; i < game->getArrLength(Game::Object::enemy); i++)
 	{
 		if (game->checkCollision(getCollider(), Game::Object::enemy, i)
-			&& game->getEnemyPointer(i)->getCurrentPump() <= 0)
+			&& game->getEnemyPointer(i)->getCurrentPump() <= 0
+			&& !game->getEnemyPointer(i)->getFloat())
 		{
 			die("enemy");
 		}

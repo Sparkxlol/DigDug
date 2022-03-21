@@ -237,7 +237,7 @@ void Enemy::movement()
 					currentCollides--;
 				int randFloat = rand() % randomFloatPercent + 1;
 
-				if (randFloat == randomFloatPercent && 
+				if (randFloat == randomFloatPercent &&
 					escapeTimer.getElapsedTime().asSeconds() > randomFloatTime)
 					moveDir = moveFloat();
 				else
@@ -250,7 +250,7 @@ void Enemy::movement()
 						static const int randomChoice = rand() % 15 + 1;
 
 						if (escapeTimer.getElapsedTime().asSeconds() > escapeTime)
-							moveDir = escapeLevel(); 
+							moveDir = escapeLevel();
 						else if (randomChoice <= 2)
 							moveDir = moveAwayPlayer();
 						else
@@ -315,7 +315,11 @@ void Enemy::movement()
 		default:
 			anim.setAnimation(2, 3, .5f, false);
 		}
-
+		if (deathType == "rock")
+		{
+			if (deathWait.getElapsedTime().asSeconds() > 5.0f)
+				setActive(false);
+		}
 	}
 }
 
@@ -469,6 +473,8 @@ int Enemy::moveFloat()
 	if (canFloat)
 	{
 		int moveDir = -1;
+		int nearX = abs(currentPos.x - playerPos.x);
+		int nearY = abs(currentPos.y - playerPos.y);
 
 		if (playerPos.y < currentPos.y)
 			moveDir = up;

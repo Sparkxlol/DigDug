@@ -94,6 +94,13 @@ void Fire::collide()
 	{
 		game->getDigDugPointer()->die("enemy");
 	}
+	for (int i = 0;i<game->getArrLength(Game::Object::sandSand);i++)
+	{
+		if (game->checkCollision(getCollider(), Game::Object::sandSand, i))
+		{
+			setActive(false);
+		}
+	}
 }
 
 
