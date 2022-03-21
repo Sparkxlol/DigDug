@@ -159,7 +159,7 @@ void Sand::reset(int round, bool full, bool sandLoc[12][12])
 		int sandChoice = 0;
 
 		// Changes background sprite based on round and depth.
-		if (lowerRound >= 1 && lowerRound < 5)
+		if (lowerRound >= 0 && lowerRound < 5)
 		{
 			if (sandPos == 0)
 				sandChoice = 0;

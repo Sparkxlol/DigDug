@@ -150,8 +150,8 @@ void Enemy::movement()
 	{
 		// 1/randomFloatTime to float on every frame.
 		static const int randomFloatPercent = 5;
-		static const float randomFloatTime = 15.0f;
-		static const float escapeTime = 30.0f;
+		static const float randomFloatTime = 5.0f;
+		static const float escapeTime = 45.0f;
 		int moveDir = -1; // Direction to move.
 		float rockDifference; // Distance from the rock.
 		bool formerCanFloat = canFloat; // Checks if enemy was just floating.

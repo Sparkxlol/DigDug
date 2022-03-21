@@ -8,7 +8,7 @@ UI::UI(sf::RenderWindow* window)
 		sf::Vector2i(40, 8), sf::Vector2i(40, 8));
 	roundText.setPosition(12 * 16, 12 * 16);
 	oneupText.setupSprite("Images/1upSpritesheet.png",
-		sf::Vector2i(16, 8), sf::Vector2i(16, 8));
+		sf::Vector2i(24, 8), sf::Vector2i(24, 8));
 	oneupText.setPosition(12 * 16, 3 * 16);
 	oneupText.setColor(sf::Color::Transparent);
 	hiScoreText.setupSprite("Images/hiscoreSpritesheet.png",
@@ -336,7 +336,7 @@ void UI::setupBackground(int round)
 {
 	int lowerRound = round % 12;
 
-	if (lowerRound >= 1 && lowerRound < 5)
+	if (lowerRound >= 0 && lowerRound < 5)
 		background.loadSprite(0);
 	else if (lowerRound >= 5 && lowerRound < 9)
 		background.loadSprite(1);
