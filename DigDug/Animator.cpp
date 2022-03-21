@@ -108,7 +108,7 @@ bool Animator::getActive()
 	return active;
 }
 
-
+// Gets current index
 int Animator::getFrame()
 {
 	return currentIndex;

@@ -25,6 +25,9 @@ Enemy::Enemy(sf::RenderWindow* win, Game* game, EnemyType type)
 // Input can be a negative number 
 void Enemy::changeCurrentPump(int pump)
 {
+	if (currentPump == 0)
+		initialPosition = getPosition();
+
 	// If not maxes out pump then change sprite.
 	if (currentPump < 4)
 	{
@@ -35,12 +38,14 @@ void Enemy::changeCurrentPump(int pump)
 		// If greater than 0 pumps, make sprite larger.
 		if (currentPump > 0)
 		{
+			setPosition(sf::Vector2f(initialPosition.x - 8, initialPosition.y));
 			spritesheet.setSize(sf::Vector2i(32, 32), sf::Vector2i(0, 32), currentPump - 1);
 			anim.setActive(false);
 		}
 		// If 0 pumps, make sprite normal size.
 		else
 		{
+			setPosition(initialPosition);
 			spritesheet.setSize(sf::Vector2i(16, 16), sf::Vector2i(0, 0), 0);
 			anim.setActive(true);
 		}
@@ -95,6 +100,7 @@ bool Enemy::getFloat()
 }
 
 
+// Gets the way enemy died.
 std::string Enemy::getDeathType()
 {
 	return deathType;
@@ -128,7 +134,7 @@ void Enemy::pumpUpdate()
 }
 
 
-// peak
+// Checks collision with surrounding sand.
 void Enemy::collide()
 {
 	checkSurroundingSand(getPosition(), sandCollided);
@@ -149,6 +155,24 @@ void Enemy::movement()
 		int moveDir = -1; // Direction to move.
 		float rockDifference; // Distance from the rock.
 		bool formerCanFloat = canFloat; // Checks if enemy was just floating.
+		sf::Vector2f rockPos; // Position of falling rock.
+		bool runRock = false; // True if rock is near enemy and falling.
+
+		// Checks for each rock if enemy is near, and if so, run from the rock.
+		for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
+		{
+			if (game->getRockPointer(i)->getFall())
+			{
+				rockDifference = getPosition().x
+					- game->getRockPointer(i)->getPosition().x;
+				if (rockDifference <= 16.0f && rockDifference >= -16.0f)
+				{
+					runRock = true;
+					currentCollides = 1;
+					rockPos = game->getRockPointer(i)->getPosition();
+				}
+			}
+		}
 
 		// Finds the distance away from a 16 (from the top & left) in both axes.
 		float xPos = (getPosition().x / 16)
@@ -157,31 +181,38 @@ void Enemy::movement()
 			- (static_cast<int>(getPosition().y) / 16);
 
 		// If xPos/yPos is close to 0 set to 0,
-		// to check when digDug is close enough to the axis to move on that axis.
+		// to check when digDug is close 
+		// enough to the axis to move on that axis.
 		xPos = (xPos < .002f || xPos > .998f) ? 0.0f : xPos;
 		yPos = (yPos < .002f || yPos > .998f) ? 0.0f : yPos;
 
 		// If floating then moveFloat.
 		if (canFloat)
 			moveDir = moveFloat();
-		// If cannot keep moving in current direction, change move type.
-		else if (xPos == 0 && yPos == 0) // !!! Might want to change to every 16x16 block for more varience. !!!
+		// Near center of x and y
+		else if (xPos == 0 && yPos == 0)
 		{
+			// If not doing random choices 
+			// and at the end of the path, find new path.
 			if (currentPath + 1 >= path.size() && currentCollides <= 0)
 			{
 				path.clear();
 				currentPath = 0;
 				pathEndFound = false;
+				// Finds path to escape the level at top left.
 				if (escapeTimer.getElapsedTime().asSeconds() >= escapeTime)
 					findTarget(sf::Vector2f(-16, 16), // Death spot to escape
 						getPosition(), 5, std::vector<int>());
-				else
+				else // Finds path to player.
 					findTarget(game->getDigDugPointer()->getPosition(),
 						getPosition(), 5, std::vector<int>());
 			}
 
+			// If not randomly moving,
+			// move towards the next position in path vector
 			if (pathEndFound && path.size() != 0 && currentCollides <= 0)
 			{
+				// Makes sure not out of range.
 				if (currentPath < path.size())
 				{
 					moveDir = path.at(currentPath);
@@ -192,29 +223,25 @@ void Enemy::movement()
 				else
 					moveDir = moveTowardPlayer();
 			}
+			// If near falling rock move away from rock.
+			else if (runRock)
+			{
+				moveDir = moveFromRock(rockPos);
+				currentCollides--;
+			}
+			// If collided with a wall and randomly moving,
+			// choices random choice.
 			else if (sandCollided[getDirection()])
 			{
 				if (currentCollides > 0)
 					currentCollides--;
 				int randFloat = rand() % randomFloatPercent + 1;
 
-				if (randFloat == randomFloatPercent && escapeTimer.getElapsedTime().asSeconds() > randomFloatTime)
+				if (randFloat == randomFloatPercent && 
+					escapeTimer.getElapsedTime().asSeconds() > randomFloatTime)
 					moveDir = moveFloat();
 				else
 				{
-					// Checks for each rock if enemy is near, and if so, run from the rock.
-					for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
-					{
-						if (game->getRockPointer(i)->getFall())
-						{
-							rockDifference = getPosition().x - game->getRockPointer(i)->getPosition().x;
-							if (rockDifference <= 16.0f && rockDifference >= -16.0f)
-							{
-								moveDir = moveFromRock(game->getRockPointer(i)->getPosition());
-							}
-						}
-					}
-
 					// If time after level load is 30 seconds, escape from level.
 					// If not, randomChance/15 chance to move towards player,
 					// otherwise move away.
@@ -239,7 +266,8 @@ void Enemy::movement()
 
 		// If not floating and either was just floating or direction has changed,
 		// change the animation to the corresponding tiles.
-		if (!canFloat && (getDirection() != moveDir || formerCanFloat != canFloat))
+		if (!canFloat &&
+			(getDirection() != moveDir || formerCanFloat != canFloat))
 		{
 			if (moveDir == left)
 			{
@@ -463,16 +491,24 @@ int Enemy::moveFloat()
 }
 
 
+// Checks surrounding sand if the enemy can move through it.
+// Pos is the position of the enemy while choices is changed for
+// each direction of collision.
 void Enemy::checkSurroundingSand(sf::Vector2f pos, bool choices[4])
 {
+	// Finds the array position based on the passed position.
 	int arrXPos = static_cast<int>(pos.x) / 16;
 	int arrYPos = (static_cast<int>(pos.y) - 32) / 16;
-	float offXPos = (static_cast<int>(pos.x) % 16) + (pos.x - static_cast<int>(pos.x));
-	float offYPos = (static_cast<int>(pos.y) % 16) + (pos.y - static_cast<int>(pos.y));
+	// Finds the amount the x and y position is off x and y axis.
+	float offXPos = (static_cast<int>(pos.x) % 16)
+		+ (pos.x - static_cast<int>(pos.x));
+	float offYPos = (static_cast<int>(pos.y) % 16)
+		+ (pos.y - static_cast<int>(pos.y));
 
 	for (int i = 0; i < 4; i++)
 		choices[i] = false;
 
+	// If near the side of each side, see if there is sand in the way.
 	if (offYPos <= 0 + getSpeed() * 2)
 		choices[0] = getSandCollision(arrXPos, arrYPos, 0);
 	if (offYPos + 16 >= 16 - getSpeed() * 2)
@@ -484,15 +520,18 @@ void Enemy::checkSurroundingSand(sf::Vector2f pos, bool choices[4])
 }
 
 
+// Checks if the inputted array position can be moved to
+// from the direction passed.
 bool Enemy::getSandCollision(int xPos, int yPos, int direction)
 {
-	// Exit of level
+	// Exit of level, meaning no movement.
 	if (xPos == -1)
 	{
 		return true;
 	}
 
-	// Top layer of ground where enemy can escape.
+	// Top layer of ground where enemy can escape
+	// Can move left, right and down, but not up.
 	if (yPos == -1)
 	{
 		if (direction == up)
@@ -504,16 +543,20 @@ bool Enemy::getSandCollision(int xPos, int yPos, int direction)
 		else if (direction == left)
 			return false;
 		else if (direction == down)
-			return !game->getSandPointer(xPos + ((yPos + 1) * 12))->getMove(down);
+			return !game->getSandPointer(xPos
+				+ ((yPos + 1) * 12))->getMove(down);
 	}
 
+	// If at the top layer of sand allow movement if possible
+	// otherwise prevent movement.
 	if (direction == up && yPos <= 0)
 	{
 		if (yPos == 0)
 			return !game->getSandPointer(xPos + (yPos * 12))->getMove(down);
 		else
-			return false;
+			return true;
 	}
+	// Prevents movement if the enemy tries to go out of bounds.
 	else if (direction == down && yPos >= 11)
 		return true;
 	else if (direction == left && xPos <= 0)
@@ -521,6 +564,9 @@ bool Enemy::getSandCollision(int xPos, int yPos, int direction)
 	else if (direction == right && xPos >= 11)
 		return true;
 
+	// For each direction, if the current index of sand has no sand 
+	// in direction and the next sand has no sand blocking the
+	// chosen direction collision is false.
 	Sand* const orgSandPtr = game->getSandPointer(xPos + (yPos * 12));
 	if (direction == up)
 	{
@@ -545,12 +591,17 @@ bool Enemy::getSandCollision(int xPos, int yPos, int direction)
 }
 
 
+// Finds a path towards the given target using recursion, saving the best path.
+// CurrentPos is the position in the call 'loop' while lastPath is the last
+// direction, and currentPath is the path in the current loop.
 void Enemy::findTarget(sf::Vector2f target, sf::Vector2f currentPos,
 	int lastPath, std::vector<int> currentPath)
 {
 	static const int maxPathLength = 15; // Game lags if too high,
 	// but movement can still occur without finding a direct path.
 
+	// If at the target and no path is found or the path is shorter than
+	// any previous paths, save the path to path.
 	if (currentPos.x < target.x + 16 && currentPos.x >= target.x &&
 		currentPos.y < target.y + 16 && currentPos.y >= target.y)
 	{
@@ -561,11 +612,16 @@ void Enemy::findTarget(sf::Vector2f target, sf::Vector2f currentPos,
 		}
 	}
 
+	// Returns if the current path size becomes too large.
 	if (currentPath.size() > maxPathLength)
 		return;
 
 	bool collisions[4];
+	// Checks the surrounding sand for collisions.
 	checkSurroundingSand(currentPos, collisions);
+	// For each direction, if possible, moves and finds a path
+	// towards the player saving the path through a
+	// push_back before the recursive call and a pop_back after.
 	for (int i = 0; i < 4; i++)
 	{
 		if (collisions[i] == false)
@@ -618,6 +674,7 @@ void Enemy::reset(sf::Vector2f pos)
 	floatTarget = sf::Vector2f(-1, -1);
 	currentPump = 0;
 	speed = .25f;
+	initialPosition = pos;
 
 	spritesheet.setSize(sf::Vector2i(16, 16), sf::Vector2i(0, 0), 0);
 

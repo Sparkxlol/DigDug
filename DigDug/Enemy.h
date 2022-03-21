@@ -46,6 +46,7 @@ private:
 	EnemyType type; // Type of enemy: Pooka or Fygar for animations
 	int currentPump; // Current amount enemy has been attacked up to 3.
 	sf::Clock pumpClock; // Pump clock to determine deflation.
+	sf::Vector2f initialPosition; // Pos for movement during pump
 
 	// Movement based variables.
 	sf::Clock escapeTimer; // Timer until enemy escapes level.

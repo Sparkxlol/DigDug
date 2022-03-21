@@ -256,9 +256,9 @@ void DigDug::playerMovement(const int& input)
 	bool collided = false;
 
 	largeCollider.top -= speed * 3;
-	largeCollider.height += speed * 12;
+	largeCollider.height += speed * 9;
 	largeCollider.left -= speed * 3;
-	largeCollider.width += speed * 12;
+	largeCollider.width += speed * 9;
 
 	// Checks collision with all active rocks in specified direction.
 	for (int i = 0; i < game->getArrLength(Game::Object::rock); i++)
@@ -272,16 +272,16 @@ void DigDug::playerMovement(const int& input)
 			switch (getDirection())
 			{
 			case up:
-				digPos.y -= speed;
+				digPos.y -= speed - .001;
 				break;
 			case down:
-				digPos.y += speed;
+				digPos.y += speed - .001;
 				break;
 			case left:
-				digPos.x -= speed;
+				digPos.x -= speed - .001;
 				break;
 			case right:
-				digPos.x += speed;
+				digPos.x += speed - .001;
 				break;
 			}
 

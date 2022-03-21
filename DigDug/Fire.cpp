@@ -54,20 +54,24 @@ void Fire::shoot(sf::Vector2f fygarPos, int direction)
 }
 
 
+// Updates the fire to correct size and deletion.
 void Fire::update()
 {
 	// Check collision
 	collide();
 
+	// Every .33 seconds the frame changes.
 	if (clock.getElapsedTime().asSeconds() >= .33f)
 	{
 		frame++;
 
+		// Max frame.
 		if (frame == 3)
 			setActive(false);
 
 		int startX = (frame == 1) ? 16 : 48;
 
+		// Increaes size of frame and moves it to correct location.
 		if (getDirection() == right)
 		{
 			spritesheet.setSize(sf::Vector2i((frame + 1) * 16, 16), sf::Vector2i(startX, 0), 0);
@@ -83,6 +87,7 @@ void Fire::update()
 }
 
 
+// Checks collisions with digDug, killing the player if hit.
 void Fire::collide()
 {
 	if (game->checkCollision(getCollider(), Game::Object::dig, 0))
@@ -92,6 +97,7 @@ void Fire::collide()
 }
 
 
+// Resets the fire to default values.
 void Fire::reset(sf::Vector2f pos)
 {
 	GameObject::reset(pos);

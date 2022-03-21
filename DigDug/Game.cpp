@@ -439,6 +439,7 @@ bool Game::enemiesLeft()
 // Updates all objects.
 void Game::update()
 {
+	// Sets up menu if active, and if previously active, loads initial level.
 	if (ui->getMenuActive())
 	{
 		settingUpMenu = true;
@@ -450,6 +451,7 @@ void Game::update()
 		loadLevel(0);
 		settingUpMenu = false;
 	}
+	// Main game, runs all updates.
 	else
 	{
 		// Run all updates
@@ -536,15 +538,20 @@ void Game::drawObjects()
 }
 
 
+// Fruit spawns into the game if the amount of paths dug
+// is high enough.
 void Game::fruitUpdate()
 {
+	// If fruit hasn't been active this round,
+	// spawns fruit if paths is high enough.
 	if (!fruitActive)
 	{
-		static const int neededPaths = 40;
+		static const int neededPaths = 70;
 		int totalPaths = 0;
 
 		for (Sand*& s : sand)
 		{
+			// Checks each move through a sand object.
 			if (s->getBackActive())
 			{
 				if (s->getMove(0))
@@ -565,6 +572,8 @@ void Game::fruitUpdate()
 		}
 
 	}
+	// If fruit is not taken, but exists, checks collisions
+	// and if touched, gives the player extra points.
 	else if (!fruitTaken)
 	{
 		sf::FloatRect boundingBox = fruit->getGlobalBounds();

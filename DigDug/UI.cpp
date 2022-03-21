@@ -336,9 +336,9 @@ void UI::setupBackground(int round)
 {
 	int lowerRound = round % 12;
 
-	if (lowerRound >= 1 || lowerRound < 5)
+	if (lowerRound >= 1 && lowerRound < 5)
 		background.loadSprite(0);
-	else if (lowerRound >= 5 || lowerRound < 9)
+	else if (lowerRound >= 5 && lowerRound < 9)
 		background.loadSprite(1);
 	else
 		background.loadSprite(2);
