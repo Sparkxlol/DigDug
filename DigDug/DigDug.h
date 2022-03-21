@@ -27,7 +27,7 @@ private:
 	Shot shot;
 	float speed;
 
-	bool playSound;
+	bool playTheme;
 
 	std::string deathType;
 	sf::Clock deathWait;
