@@ -35,6 +35,7 @@ void Score::setActive(const bool& active)
 
 
 // Changes the score appearance based on the position and type given.
+// Used for enemy deaths.
 void Score::changeScore(sf::Vector2f pos, std::string type)
 {
 	totalScore = 0;
@@ -82,15 +83,18 @@ void Score::changeScore(sf::Vector2f pos, std::string type)
 		spritesheet1.loadSprite(1);
 	}
 
-	type = "enemy";
+	this->type = "enemy";
 	spritesheet1.setPosition(pos);
 	clock.restart();
 	setActive(true);
 }
 
 
+// Change the score based on the position and the fruit index given.
+// Used for fruit pickups.
 void Score::changeScore(sf::Vector2f pos, int fruitIndex)
 {
+	// Sprite and score is correspondant on index.
 	switch (fruitIndex)
 	{
 	case 0:
@@ -166,6 +170,6 @@ void Score::drawObject()
 {
 	if (type == "enemy")
 		window->draw(spritesheet1);
-	else
+	else // Fruit type death
 		window->draw(spritesheet2);
 }

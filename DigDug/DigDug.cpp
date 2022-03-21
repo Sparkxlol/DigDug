@@ -255,9 +255,9 @@ void DigDug::playerMovement(const int& input)
 	sf::FloatRect largeCollider = GameObject::getCollider();
 	bool collided = false;
 
-	largeCollider.top -= speed * 4;
+	largeCollider.top -= speed * 3;
 	largeCollider.height += speed * 12;
-	largeCollider.left -= speed * 4;
+	largeCollider.left -= speed * 3;
 	largeCollider.width += speed * 12;
 
 	// Checks collision with all active rocks in specified direction.

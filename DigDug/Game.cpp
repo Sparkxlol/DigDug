@@ -307,6 +307,11 @@ void Game::loadLevel(int currentLevel)
 	if (currentLevel > 98)
 		currentLevel = 0;
 
+	// Sets round to passed level.
+	ui->setRound(currentLevel);
+
+	this->currentLevel = currentLevel;
+
 	// Load level from level class at specified index, resetting at 12.
 	int index = currentLevel % 12;
 	std::ifstream levelFile(levelLocations.at(index));
@@ -403,11 +408,6 @@ void Game::loadLevel(int currentLevel)
 	}
 
 	levelFile.close();
-	
-	// Sets round to passed level.
-	ui->setRound(currentLevel);
-
-	this->currentLevel = currentLevel;
 
 	// Uses the reset of active sands after a prereset
 	// due to reset needing to know the positions of surrounding sand.
