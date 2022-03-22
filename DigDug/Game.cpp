@@ -46,8 +46,8 @@ Game::Game(sf::RenderWindow* window)
 {
 	// Create UI and DigDug
 	settingUpMenu = true;
-	setupObjects();
 	setupLevels();
+	setupObjects();
 	ui->setupMainMenu();
 }
 

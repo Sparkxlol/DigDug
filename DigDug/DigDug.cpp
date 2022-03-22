@@ -73,6 +73,13 @@ sf::FloatRect& DigDug::getCollider()
 }
 
 
+// Returns the way digDug has died.
+std::string DigDug::getDeathType()
+{
+	return deathType;
+}
+
+
 // Updates digDug, doing collision, input, animation updates
 // as well as checking for death and updating shot.
 void DigDug::update()
@@ -99,6 +106,9 @@ void DigDug::update()
 		setActive(false);
 	// If dead by enemy animation is finished, prevent loops.
 	else if (anim.getFinished() && deathType == "enemy")
+		anim.setActive(false);
+	// Prevents dying to a rock and not being removed.
+	else if (deathWait.getElapsedTime().asSeconds() > 5.0f && deathType == "rock")
 		anim.setActive(false);
 
 	anim.playAnimation();

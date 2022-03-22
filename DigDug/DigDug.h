@@ -13,6 +13,7 @@ public:
 	void playerInput();
 	void die(std::string);
 	sf::FloatRect& getCollider() override;
+	std::string getDeathType();
 
 	void update() override;
 	void drawObject() override;

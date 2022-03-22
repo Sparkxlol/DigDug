@@ -40,8 +40,8 @@ sf::FloatRect& Rock::getCollider()
 	// with things with tiny extrusions. Ex. Dig Dug & Sand
 	boundingBox.top = getPosition().y + 16.05f;
 	boundingBox.height = .125f;
-	boundingBox.left = getPosition().x + .125f;
-	boundingBox.width = 15.875f;
+	boundingBox.left = getPosition().x + 2.0f; // Leniency for being hit.
+	boundingBox.width = 12.0f;
 
 	return boundingBox;
 }
@@ -103,11 +103,15 @@ void Rock::update()
 		if (anim.getFinished())
 		{
 			die();
-			if (game->checkCollision(GameObject::getCollider(), Game::Object::dig, 0))
+
+			if (game->checkCollision(GameObject::getCollider(), Game::Object::dig, 0)
+				&& game->getDigDugPointer()->getDeathType() == "rock")
 				game->getDigDugPointer()->setActive(false);
+
 			for (int i = 0; i < game->getArrLength(Game::Object::enemy); i++)
 			{
-				if (game->checkCollision(GameObject::getCollider(), Game::Object::enemy, i))
+				if (game->checkCollision(GameObject::getCollider(), Game::Object::enemy, i)
+					&& game->getEnemyPointer(i)->getDeathType() == "rock")
 				{
 					game->getEnemyPointer(i)->setActive(false);
 					game->createScore(getPosition(), "rock");
