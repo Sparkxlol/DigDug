@@ -46,8 +46,8 @@ Game::Game(sf::RenderWindow* window)
 {
 	// Create UI and DigDug
 	settingUpMenu = true;
-	setupObjects();
 	setupLevels();
+	setupObjects();
 	ui->setupMainMenu();
 }
 
@@ -68,6 +68,13 @@ int Game::getArrLength(const Game::Object& object) const
 	case Object::sandSand:
 		return sand.size();
 	}
+}
+
+
+// Returns the current level.
+int Game::getLevel()
+{
+	return currentLevel;
 }
 
 

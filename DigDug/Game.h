@@ -17,6 +17,7 @@ public:
 	enum class Object { dig, enemy, rock, sandPath, sandSand };
 
 	int getArrLength(const Game::Object&) const;
+	int getLevel();
 	bool checkCollision(const sf::FloatRect&,
 		const Game::Object&, const int&) const; // Used by objects
 	DigDug* const getDigDugPointer();

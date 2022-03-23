@@ -34,12 +34,31 @@ void Fygar::update()
 
 	if (getCurrentPump() <= 0)
 	{
+		// Fires the fire if triggered.
+		if (firing == true && 
+			fireClock.getElapsedTime().asSeconds() > 1.0f)
+		{
+
+			fire.setActive(true);
+			fire.shoot(getPosition(), getDirection());
+			firing = false;
+
+			if (getDirection() == right)
+				anim.setAnimation(0, 1, .2f, true);
+			else
+				anim.setAnimation(8, 9, .2f, true);
+		}
+
 		// If fire isn't active update movement.
-		if (!fire.getActive())
+		if (!fire.getActive() && firing == false)
 			movement();
 	}
 	else
+	{
+		firing = false;
+		fire.setActive(false);
 		pumpUpdate(); // If pump > 0, updates the pump.
+	}
 
 	anim.playAnimation();
 
@@ -67,7 +86,7 @@ void Fygar::movement()
 	{
 		int randChoice = rand() % 1000 + 1;
 
-		if (randChoice <= 1 && !getFloat())
+		if (randChoice <= 1 && !getFloat() && firing == false)
 			shootFire();
 		else
 			Enemy::movement();
@@ -75,12 +94,15 @@ void Fygar::movement()
 }
 
 
-// Sets fire active and shoots it.
+// Sets the animation to flashing white and sets up fire.
 void Fygar::shootFire()
 {
-	// Sets fire active and uses its shoot method.
-	fire.setActive(true);
-	fire.shoot(getPosition(), getDirection());
+	fireClock.restart();
+	firing = true;
+	if (getDirection() == right)
+		anim.setAnimation(3, 4, .2f, true);
+	else
+		anim.setAnimation(11, 12, .2f, true);
 }
 
 
@@ -89,6 +111,7 @@ void Fygar::reset(sf::Vector2f pos)
 {
 	Enemy::reset(pos);
 
+	firing = false;
 	fire.reset(pos);
 	anim.setAnimation(0, 1, .2f, true);
 }

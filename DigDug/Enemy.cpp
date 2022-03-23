@@ -149,7 +149,7 @@ void Enemy::movement()
 	if (getDeathType() == "none")
 	{
 		// 1/randomFloatTime to float on every frame.
-		static const int randomFloatPercent = 5;
+		static const int randomFloatPercent = 15;
 		static const float randomFloatTime = 5.0f;
 		static const float escapeTime = 45.0f;
 		int moveDir = -1; // Direction to move.
@@ -175,20 +175,23 @@ void Enemy::movement()
 		}
 
 		// Finds the distance away from a 16 (from the top & left) in both axes.
-		float xPos = (getPosition().x / 16)
-			- (static_cast<int>(getPosition().x) / 16);
-		float yPos = (getPosition().y / 16)
-			- (static_cast<int>(getPosition().y) / 16);
+		float xPos = static_cast<int>(getPosition().x) % 16 
+			+ (getPosition().x - static_cast<int>(getPosition().x));
+		float yPos = static_cast<int>(getPosition().y) % 16
+			+ (getPosition().y - static_cast<int>(getPosition().y));
 
 		// If xPos/yPos is close to 0 set to 0,
 		// to check when digDug is close 
 		// enough to the axis to move on that axis.
-		xPos = (xPos < .002f || xPos > .998f) ? 0.0f : xPos;
-		yPos = (yPos < .002f || yPos > .998f) ? 0.0f : yPos;
+		xPos = (xPos < getSpeed() + .05) ? 0.0f : xPos;
+		yPos = (yPos < getSpeed() + .05) ? 0.0f : yPos;
 
 		// If floating then moveFloat.
 		if (canFloat)
+		{
+			path.clear();
 			moveDir = moveFloat();
+		}
 		// Near center of x and y
 		else if (xPos == 0 && yPos == 0)
 		{
@@ -196,6 +199,12 @@ void Enemy::movement()
 			// and at the end of the path, find new path.
 			if (currentPath + 1 >= path.size() && currentCollides <= 0)
 			{
+				// Top left corner to standardize initial path position.
+				sf::Vector2f pathOrigin = sf::Vector2f(
+					static_cast<int>(getPosition().x)
+					- (static_cast<int>(getPosition().x) % 16),
+					static_cast<int>(getPosition().y)
+					- (static_cast<int>(getPosition().y) % 16));
 				path.clear();
 				currentPath = 0;
 				pathEndFound = false;
@@ -203,7 +212,7 @@ void Enemy::movement()
 				if (escapeTimer.getElapsedTime().asSeconds() >= escapeTime)
 					findTarget(sf::Vector2f(-16, 16), // Death spot to escape
 						getPosition(), 5, std::vector<int>());
-				else // Finds path to player.
+				if (path.size() == 0) // Finds path to player.
 					findTarget(game->getDigDugPointer()->getPosition(),
 						getPosition(), 5, std::vector<int>());
 			}
@@ -215,7 +224,14 @@ void Enemy::movement()
 				// Makes sure not out of range.
 				if (currentPath < path.size())
 				{
-					moveDir = path.at(currentPath);
+					if (!sandCollided[path.at(currentPath)])
+						moveDir = path.at(currentPath);
+					else
+					{
+						// Prevents moving through walls
+						// if sand has changed from path's creation.
+						moveDir = moveTowardPlayer();
+					}
 					currentPath++;
 					if (currentPath + 1 == path.size())
 						currentCollides = 1;
@@ -226,6 +242,7 @@ void Enemy::movement()
 			// If near falling rock move away from rock.
 			else if (runRock)
 			{
+				path.clear();
 				moveDir = moveFromRock(rockPos);
 				currentCollides--;
 			}
@@ -233,6 +250,7 @@ void Enemy::movement()
 			// choices random choice.
 			else if (sandCollided[getDirection()])
 			{
+				path.clear();
 				if (currentCollides > 0)
 					currentCollides--;
 				int randFloat = rand() % randomFloatPercent + 1;
@@ -296,7 +314,8 @@ void Enemy::movement()
 			move(sf::Vector2f(getSpeed(), 0));
 			break;
 		default:
-			std::cout << "Invalid enemy movement direction!\n";
+			if (formerCanFloat == canFloat)
+				std::cout << "Invalid enemy movement direction!\n";
 		}
 
 		setDirection(moveDir);
@@ -464,28 +483,52 @@ int Enemy::moveFloat()
 			anim.setAnimation(6, 7, .5f, true);
 	}
 
-	// If not colliding at all and at any time near the player, stop floating.
-	if (currentPos == playerPos)
-		canFloat = false;
-
 	// If still floating move towards player ignoring collisions,
 	// otherwise move towards player regarding collision.
 	if (canFloat)
 	{
 		int moveDir = -1;
-		int nearX = abs(currentPos.x - playerPos.x);
-		int nearY = abs(currentPos.y - playerPos.y);
+		float nearX = 0; // Checks how close enemy is to player.
+		float nearY = 0;
 
-		if (playerPos.y < currentPos.y)
-			moveDir = up;
-		else if (playerPos.y > currentPos.y)
-			moveDir = down;
-		else if (playerPos.x < currentPos.x)
-			moveDir = left;
-		else if (playerPos.x > currentPos.x)
-			moveDir = right;
-		else
-			moveDir = -1;
+		// If not already at position, change nearX and nearY.
+		if (currentPos.x != playerPos.x)
+			nearX = abs(currentPos.x - playerPos.x);
+		if (currentPos.y != playerPos.y)
+			nearY = abs(currentPos.y - playerPos.y);
+
+		// If float target is set, if near enough to player
+		// set position as target position.
+		if (floatTarget.x != -1)
+		{
+			if (nearX != 0 && nearX <= getSpeed())
+				setPosition(sf::Vector2f(playerPos.x, getPosition().y));
+			if (nearY != 0 && nearY <= getSpeed())
+				setPosition(sf::Vector2f(getPosition().x, playerPos.y));
+		}
+
+		// If not colliding at all and at any time near the player, stop floating.
+		if (getPosition() == playerPos)
+			canFloat = false;
+
+		// Moves towards player in a diagonal pattern
+		// depending on if the x or y is closer.
+		if (!canFloat)
+			moveDir = moveTowardPlayer();
+		else if (nearY != 0 && nearY >= nearX)
+		{
+			if (getPosition().y >= playerPos.y)
+				moveDir = up;
+			else if (getPosition().y < playerPos.y)
+				moveDir = down;
+		}
+		else if (nearX != 0 && nearX > nearY)
+		{
+			if (getPosition().x >= playerPos.x)
+				moveDir = left;
+			else if (getPosition().x < playerPos.x)
+				moveDir = right;
+		}
 
 		return moveDir;
 	}
@@ -515,14 +558,10 @@ void Enemy::checkSurroundingSand(sf::Vector2f pos, bool choices[4])
 		choices[i] = false;
 
 	// If near the side of each side, see if there is sand in the way.
-	if (offYPos <= 0 + getSpeed() * 2)
-		choices[0] = getSandCollision(arrXPos, arrYPos, 0);
-	if (offYPos + 16 >= 16 - getSpeed() * 2)
-		choices[1] = getSandCollision(arrXPos, arrYPos, 1);
-	if (offXPos <= 0 + getSpeed() * 2)
-		choices[2] = getSandCollision(arrXPos, arrYPos, 2);
-	if (offXPos + 16 >= 16 - getSpeed() * 2)
-		choices[3] = getSandCollision(arrXPos, arrYPos, 3);
+	choices[0] = getSandCollision(arrXPos, arrYPos, 0);
+	choices[1] = getSandCollision(arrXPos, arrYPos, 1);
+	choices[2] = getSandCollision(arrXPos, arrYPos, 2);
+	choices[3] = getSandCollision(arrXPos, arrYPos, 3);
 }
 
 
@@ -679,7 +718,7 @@ void Enemy::reset(sf::Vector2f pos)
 	canFloat = false;
 	floatTarget = sf::Vector2f(-1, -1);
 	currentPump = 0;
-	speed = .25f;
+	speed = .25f + (static_cast<int>(game->getLevel() / 12) * .025f);
 	initialPosition = pos;
 
 	spritesheet.setSize(sf::Vector2i(16, 16), sf::Vector2i(0, 0), 0);

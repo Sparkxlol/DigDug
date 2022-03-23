@@ -18,5 +18,7 @@ public:
 	void shootFire();
 private:
 	Fire fire;
+	sf::Clock fireClock;
+	bool firing;
 };
 
