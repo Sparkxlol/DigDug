@@ -31,7 +31,7 @@ DigDug::DigDug(sf::RenderWindow* win, Game* game)
 // Runs the shoot method from shot.
 void DigDug::shoot()
 {	
-	sounds.at((int)SoundChoice::theme).pause();
+	pauseSound((int)SoundChoice::theme);
 	playTheme = false;
 	
 	shot.shoot(getPosition(), getDirection());
@@ -52,11 +52,11 @@ void DigDug::die(std::string type)
 	}
 
 	//stop theme sound
-	sounds.at((int)SoundChoice::theme).stop();
+	stopSound((int)SoundChoice::theme);
 	playTheme = false;
 	
 	//play death sound effect
-	sounds.at((int)SoundChoice::digdugDeath).play();
+	//sounds.at((int)SoundChoice::digdug_death).play();
 }
 
 
@@ -88,15 +88,21 @@ void DigDug::update()
 	if (deathType == "none")
 		collide();
 
+	
+
+
 	//if sound is stopped and should be playing, play sound (playing for first time)
-	if (sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Stopped && playTheme)
-		sounds.at((int)SoundChoice::theme).play();
+	if (sounds.at((int)SoundChoice::theme)->getStatus() == sf::Sound::Status::Stopped && playTheme)
+		playSound((int)SoundChoice::theme);//play
+
 	//if sound is paused and should be playing, play sound
-	else if (sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Paused && playTheme)
-		sounds.at((int)SoundChoice::theme).play();
+	else if (sounds.at((int)SoundChoice::theme)->getStatus() == sf::Sound::Status::Paused && playTheme)
+		playSound((int)SoundChoice::theme);//play
+
 	//if sound is playing and should stop, pause sound
-	else if(sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Playing && !playTheme)
-		sounds.at((int)SoundChoice::theme).pause();
+	else if(sounds.at((int)SoundChoice::theme)->getStatus() == sf::Sound::Status::Playing && !playTheme)
+		pauseSound((int)SoundChoice::theme);//pause
+
 
 	playerInput();
 	shot.update();
@@ -196,9 +202,13 @@ void DigDug::playerInput()
 		if (oppDirection == getDirection())
 			shot.setActive(false);
 
+		/*
+
 		//stop shot sound
 		sounds.at((int)SoundChoice::shot).stop();
 		sounds.at((int)SoundChoice::pump).stop();
+
+		*/
 	}
 
 	// If not dead, either moves player in corresponding direction or shoots.

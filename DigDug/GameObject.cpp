@@ -14,6 +14,11 @@ GameObject::GameObject() : GameObject(nullptr, nullptr)
 
 GameObject::~GameObject()
 {
+	for (int i = 0; i < 7; i++)
+	{
+		delete soundFiles.at(i);
+		delete sounds.at(i);
+	}
 }
 
 
@@ -25,7 +30,38 @@ GameObject::GameObject(sf::RenderWindow* win, Game* game)
 	canMove = false;
 	direction = 0;
 
-	for (int i = 0; i < 4; i++)
+
+	soundNames.push_back("Sounds/in-game-music.ogg");
+	soundNames.push_back("Sounds/shot.ogg");
+	soundNames.push_back("Sounds/pump.ogg");
+	soundNames.push_back("Sounds/digdug_death.ogg");
+	soundNames.push_back("Sounds/monster_blow.ogg");
+	soundNames.push_back("Sounds/round_clear.ogg");
+	soundNames.push_back("Sounds/game_over.ogg");
+
+
+	for (int i = 0; i < 7; i++)
+	{
+		soundFiles.push_back(new sf::SoundBuffer());
+		sounds.push_back(new sf::Sound());
+	}
+
+
+	for (int i = 1; i < 7; i++)
+	{
+		if (!soundFiles.at(i)->loadFromFile(soundNames.at(i)))
+			std::cout << "error loading in-game music" << std::endl; // error
+	}
+
+
+
+
+
+
+
+	/*
+	//clear sound buffer and sound vectors
+	for (int i = 0; i < 7; i++)
 	{
 		soundFiles.push_back(sf::SoundBuffer());
 		sounds.push_back(sf::Sound());
@@ -44,7 +80,16 @@ GameObject::GameObject(sf::RenderWindow* win, Game* game)
 	if (!soundFiles.at(3).loadFromFile("Sounds/digdug_death.ogg"))
 		std::cout << "error loading digdug death sound effect" << std::endl; // error
 	sounds.at(3).setBuffer(soundFiles.at(3));
-
+	if (!soundFiles.at(4).loadFromFile("Sounds/monster_blow.ogg"))
+		std::cout << "error loading monster blow sound effect" << std::endl; // error
+	sounds.at(4).setBuffer(soundFiles.at(4));
+	if (!soundFiles.at(5).loadFromFile("Sounds/round_clear.ogg"))
+		std::cout << "error loading digdug death sound effect" << std::endl; // error
+	sounds.at(5).setBuffer(soundFiles.at(5));
+	if (!soundFiles.at(6).loadFromFile("Sounds/game_over.ogg"))
+		std::cout << "error loading digdug death sound effect" << std::endl; // error
+	sounds.at(6).setBuffer(soundFiles.at(6));
+	*/
 }
 
 
@@ -155,4 +200,34 @@ void GameObject::reset(sf::Vector2f pos)
 	setActive(true);
 	setPosition(pos);
 	setCanMove(true);
+}
+
+
+void GameObject::playSound(const int choice)
+{
+	sounds.at(choice)->setBuffer(*soundFiles.at(choice));
+	if (!soundFiles.at(choice)->loadFromFile(soundNames.at(choice)))
+		std::cout << "error loading " << soundNames.at(choice) << std::endl; // error
+
+	sounds.at(choice)->play();
+}
+
+
+void GameObject::stopSound(const int choice)
+{
+	sounds.at(choice)->stop();
+	clearSound(choice);
+}
+
+
+void GameObject::pauseSound(const int choice)
+{
+	sounds.at(choice)->pause();
+}
+
+
+void GameObject::clearSound(const int choice)
+{
+	sounds.at(choice) = nullptr;
+	soundFiles.at(choice) = nullptr;
 }

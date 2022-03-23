@@ -39,6 +39,10 @@ public:
 	// Enemies
 	// Sand
 
+	void playSound(const int);
+	void stopSound(const int);
+	void pauseSound(const int);
+	void clearSound(const int);
 
 protected:
 	Game* game;
@@ -46,10 +50,12 @@ protected:
 	Spritesheet spritesheet;
 	Animator anim;
 	sf::RenderWindow* window;
-	std::vector<sf::SoundBuffer> soundFiles;
-	std::vector<sf::Sound> sounds;
+	std::vector<sf::SoundBuffer*> soundFiles;
+	std::vector<sf::Sound*> sounds;
+	std::vector<std::string> soundNames;
 	enum Input { up, down, left, right, z, none };
-	enum class SoundChoice {theme, shot, pump, digdugDeath};
+	enum class SoundChoice {theme, shot, pump, digdug_death, monster_blow, round_clear, game_over};
+	
 
 private:
 	int direction; // Direction of object animation, *might change to enum class*
