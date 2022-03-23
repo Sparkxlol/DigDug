@@ -231,18 +231,10 @@ void Game::setupObjects()
 // Adds all 12 levels to the game from text files.
 void Game::setupLevels()
 {
-	levelLocations.push_back("Levels/Level1.txt");
-	levelLocations.push_back("Levels/Level2.txt");
-	levelLocations.push_back("Levels/Level3.txt");
-	levelLocations.push_back("Levels/Level4.txt");
-	levelLocations.push_back("Levels/Level5.txt");
-	levelLocations.push_back("Levels/Level6.txt");
-	levelLocations.push_back("Levels/Level7.txt");
-	levelLocations.push_back("Levels/Level8.txt");
-	levelLocations.push_back("Levels/Level9.txt");
-	levelLocations.push_back("Levels/Level10.txt");
-	levelLocations.push_back("Levels/Level11.txt");
-	levelLocations.push_back("Levels/Level12.txt");
+	for (int i = 1; i <= 12; i++)
+	{
+		levelLocations.push_back("Levels/Level" + std::to_string(i) + ".txt");
+	}
 }
 
 
