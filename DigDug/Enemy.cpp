@@ -315,14 +315,19 @@ void Enemy::movement()
 			break;
 		default:
 			if (formerCanFloat == canFloat)
-				std::cout << "Invalid enemy movement direction!\n";
+			{
+				if (!canFloat)
+					moveDir = moveFloat();
+				else
+					std::cout << "Invalid enemy movement direction!\n";
+			}
 		}
 
 		setDirection(moveDir);
 
 		// If enemy is offscreen, it is killed.
-		if (getPosition().x <= -16 || getPosition().x >= 15 * 16
-			|| getPosition().y <= 0 || getPosition().y >= 14 * 16)
+		if (getPosition().x < -16 || getPosition().x >= 15 * 16
+			|| getPosition().y < 16 || getPosition().y >= 14 * 16)
 			die("offscreen");
 	}
 	else

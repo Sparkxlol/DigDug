@@ -192,9 +192,7 @@ void DigDug::playerInput()
 	// disconnect shot.
 	else if (input <= right)
 	{
-		int oppDirection = (input % 2 == 0) ? input + 1 : input - 1;
-		if (oppDirection == getDirection())
-			shot.setActive(false);
+		shot.setActive(false);
 
 		//stop shot sound
 		sounds.at((int)SoundChoice::shot).stop();

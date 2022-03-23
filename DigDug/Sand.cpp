@@ -223,44 +223,44 @@ void Sand::reset(int round, bool full, bool sandLoc[12][12])
 				bottomMask = 16;
 			}
 
-			// Middle square
-			if (yPos == 5 && xPos == 5)
-			{
-				upMove = true;
-				topMask = 16;
-			}
-			else if (yPos == 5 && xPos == 4)
-			{
-				upMove = false;
-				topMask = 0;
-				downMove = false;
-				bottomMask = 0;
-				leftMove = false;
-				leftMask = 0;
-			}
-			else if (yPos == 5 && xPos == 6)
-			{
-				upMove = false;
-				topMask = 0;
-				downMove = false;
-				bottomMask = 0;
-				rightMove = false;
-				rightMask = 0;
-			}
-
 			background2.setTextureRect(sf::IntRect(0, 0, 0, 0));
 
 			setSprite(); // Changes the sprite based on these collisions.
 		}
 		// Row leading to dig dug has to not be checked by surrounding sand.
-		else if (sandLoc[yPos][xPos] == true && xPos == 5)
+		else if (sandLoc[yPos][xPos] == true)
 		{
-			if (yPos < 5)
+			if (yPos < 5 && xPos == 5)
 			{
 				upMove = true;
 				topMask = 16;
 				downMove = true;
 				bottomMask = 16;
+				background2.setTextureRect(sf::IntRect(0, 0, 0, 0));
+				setSprite();
+			}
+			else if (yPos == 5 && xPos == 5)
+			{
+				upMove = true;
+				topMask = 16;
+				leftMove = true;
+				leftMask = 16;
+				rightMove = true;
+				rightMask = 16;
+				background2.setTextureRect(sf::IntRect(0, 0, 0, 0));
+				setSprite();
+			}
+			else if (yPos == 5 && xPos == 4)
+			{
+				rightMove = true;
+				rightMask = 16;
+				background2.setTextureRect(sf::IntRect(0, 0, 0, 0));
+				setSprite();
+			}
+			else if (yPos == 5 && xPos == 6)
+			{
+				leftMove = true;
+				leftMask = 16;
 				background2.setTextureRect(sf::IntRect(0, 0, 0, 0));
 				setSprite();
 			}

@@ -354,7 +354,7 @@ void Game::loadLevel(int currentLevel)
 		case 2:
 			digDug->reset(sf::Vector2f(currentX, currentY));
 
-			sandLoc[(currentY - 32) / 16][currentX / 16] = false;
+			sandLoc[(currentY - 32) / 16][currentX / 16] = true;
 			sand.at(currentSand)->preReset(sf::Vector2f(currentX, currentY));
 			currentSand++;
 			break;
