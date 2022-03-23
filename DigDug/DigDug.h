@@ -31,6 +31,7 @@ private:
 	bool playTheme;
 
 	std::string deathType;
+	sf::Clock shootWait;
 	sf::Clock deathWait;
 	int sandCollided;
 };

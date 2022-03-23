@@ -182,6 +182,7 @@ void DigDug::playerInput()
 	{
 		if (shooting)
 		{
+			shootWait.restart();
 			shot.reset(getPosition());
 			shooting = false;
 			setCanMove(true);
@@ -216,12 +217,14 @@ void DigDug::playerInput()
 			}
 			break;
 		case z:
-			if (!shot.getActive())
+			if (!shot.getActive() && shootWait.getElapsedTime().asSeconds() > .1f)
 			{
 				anim.setActive(false);
 				setCanMove(false);
 			}
-			shoot();
+			// If shot is already active, or the shot reset timer has been elapsed.
+			if (shot.getActive() || shootWait.getElapsedTime().asSeconds() > .1f)
+				shoot();
 			break;
 		default:
 			// Stops animations if staying still.
