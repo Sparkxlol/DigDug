@@ -71,6 +71,13 @@ int Game::getArrLength(const Game::Object& object) const
 }
 
 
+// Returns the current level.
+int Game::getLevel()
+{
+	return currentLevel;
+}
+
+
 // Checks the collision using the passed collider
 // and the specified index and object. Only checks active objects.
 // Index is also used for digDug's overrided collider (0) and his old one (1).

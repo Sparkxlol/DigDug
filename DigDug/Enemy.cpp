@@ -718,7 +718,7 @@ void Enemy::reset(sf::Vector2f pos)
 	canFloat = false;
 	floatTarget = sf::Vector2f(-1, -1);
 	currentPump = 0;
-	speed = .25f;
+	speed = .25f + (static_cast<int>(game->getLevel() / 12) * .025f);
 	initialPosition = pos;
 
 	spritesheet.setSize(sf::Vector2i(16, 16), sf::Vector2i(0, 0), 0);
