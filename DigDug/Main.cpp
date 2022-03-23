@@ -116,7 +116,8 @@
 *   - Gameplay: Once into actual gameplay, the game object is updated every 100 frames.
 *   The game updates every single active object with most objects running
 *   collision first to check around them. They they either have move functions
-*   or have sf::Clocks to change their behaviors. Each of these objects
+*   or have sf::Clocks to change their behaviors. Sounds are played and stopped
+*   based on actions done by the player or objects. Each of these objects
 *   then run their animations, changing depending on what happened that frame
 *   or if enough time has passed. After every object has completed its
 *   update function, the game then draws all active functions to the screen
