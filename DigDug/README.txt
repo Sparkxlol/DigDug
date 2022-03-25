@@ -134,11 +134,11 @@
 * 
 * The Future:
 *   - In the future of this project many things could be created/fixed to make it
-*
+*   closer to the original Dig Dug which we couldn't do in the time allotted. 
 *   - Two Player Mode: This would involve keeping the killed enemies and updated
 *   sand for each player in a vector or class which could be done either in the
 *   game class or in additional class. You would have to also have multiples
 *   scores which could be done easily by implementing multiple UIs that load for
 *   each player.
-*
+*   - More sounds and levels could have more variety and make the game more complex.
 
