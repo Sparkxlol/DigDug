@@ -68,6 +68,8 @@ int Game::getArrLength(const Game::Object& object) const
 	case Object::sandSand:
 		return sand.size();
 	}
+
+	return 0;
 }
 
 
@@ -249,6 +251,8 @@ GameObject& Game::getObject(const Game::Object& object, const int& index) const
 		return *enemies.at(index);
 	case Object::rock:
 		return *rocks.at(index);
+	default:
+		std::cerr << "Cannot retrieve object!\n";
 	}
 }
 

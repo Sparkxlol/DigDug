@@ -4,14 +4,14 @@
 
 Sand::Sand() : Sand(nullptr, nullptr)
 { 
-	foreground.setupSprite("Images/foregroundSpritesheet.png",
+	background.setupSprite("Images/foregroundSpritesheet.png",
 		sf::Vector2i(240, 16), sf::Vector2i(16, 16));
-	background2.setupSprite("Images/backgroundSpritesheet.png",
+	foreground.setupSprite("Images/backgroundSpritesheet.png",
 		sf::Vector2i(192, 16), sf::Vector2i(16, 16));
 
 	// Sets correct sprites to foreground and background.
+	background.loadSprite(0);
 	foreground.loadSprite(0);
-	background2.loadSprite(0);
 
 	// Allow for correct positioning on the mask/texture.
 	topActive = true;
@@ -36,14 +36,14 @@ Sand::~Sand()
 Sand::Sand(sf::RenderWindow* win, Game* game)
 	: window(win), game(game)
 {
-	foreground.setupSprite("Images/foregroundSpritesheet.png",
+	background.setupSprite("Images/foregroundSpritesheet.png",
 		sf::Vector2i(240, 16), sf::Vector2i(16, 16));
-	background2.setupSprite("Images/backgroundSpritesheet.png",
+	foreground.setupSprite("Images/backgroundSpritesheet.png",
 		sf::Vector2i(192, 16), sf::Vector2i(16, 16));
 
 	// Sets correct sprites to foreground and background.
+	background.loadSprite(0);
 	foreground.loadSprite(0);
-	background2.loadSprite(0);
 
 	// Allow for correct positioning on the mask/texture.
 	topActive = true;
@@ -68,8 +68,8 @@ bool Sand::changeSand(sf::Vector2f playerPos, int dir)
 {
 	// Finds x and y change from the player to the top left of the
 	// sand object and adds 16 to prevent negatives -> 32.
-	int xChange = playerPos.x - foreground.getPosition().x + 16;
-	int yChange = playerPos.y - foreground.getPosition().y + 16;
+	int xChange = playerPos.x - background.getPosition().x + 16;
+	int yChange = playerPos.y - background.getPosition().y + 16;
 
 	// Finds out which sprite to load based on the current corresponding masking.
 	// Should be optimized, probably >.<
@@ -118,18 +118,18 @@ bool Sand::changeSand(sf::Vector2f playerPos, int dir)
 
 	// Sets the top and the left of the mask to the current sprite plus the mask.
 	// Sets the width and height to the total masking or 16.
-	background2.setTextureRect(sf::IntRect(
-		background2.getIndex().x * 16 + leftMask,
-		background2.getIndex().y * 16 + topMask,
+	foreground.setTextureRect(sf::IntRect(
+		foreground.getIndex().x * 16 + leftMask,
+		foreground.getIndex().y * 16 + topMask,
 		width,
 		height
 	));
 
 	// Moves the sprite so the increase doesn't always come from the bottom of the mask when
 	// the topMask is changed instead of the bottomMask.
-	background2.setPosition(
-		sf::Vector2f(foreground.getPosition().x + leftMask,
-			foreground.getPosition().y + topMask)
+	foreground.setPosition(
+		sf::Vector2f(background.getPosition().x + leftMask,
+			background.getPosition().y + topMask)
 	);
 
 	// Returns if sand is changed from start or not.
@@ -193,7 +193,7 @@ void Sand::reset(int round, bool full, bool sandLoc[12][12])
 				sandChoice = 11;
 		}
 
-		background2.loadSprite(sandChoice);
+		foreground.loadSprite(sandChoice);
 
 		int xPos = getPosition().x / 16;
 		int yPos = (getPosition().y - 32) / 16;
@@ -223,7 +223,7 @@ void Sand::reset(int round, bool full, bool sandLoc[12][12])
 				bottomMask = 16;
 			}
 
-			background2.setTextureRect(sf::IntRect(0, 0, 0, 0));
+			foreground.setTextureRect(sf::IntRect(0, 0, 0, 0));
 
 			setSprite(); // Changes the sprite based on these collisions.
 		}
@@ -236,7 +236,7 @@ void Sand::reset(int round, bool full, bool sandLoc[12][12])
 				topMask = 16;
 				downMove = true;
 				bottomMask = 16;
-				background2.setTextureRect(sf::IntRect(0, 0, 0, 0));
+				foreground.setTextureRect(sf::IntRect(0, 0, 0, 0));
 				setSprite();
 			}
 			else if (yPos == 5 && xPos == 5)
@@ -247,30 +247,30 @@ void Sand::reset(int round, bool full, bool sandLoc[12][12])
 				leftMask = 16;
 				rightMove = true;
 				rightMask = 16;
-				background2.setTextureRect(sf::IntRect(0, 0, 0, 0));
+				foreground.setTextureRect(sf::IntRect(0, 0, 0, 0));
 				setSprite();
 			}
 			else if (yPos == 5 && xPos == 4)
 			{
 				rightMove = true;
 				rightMask = 16;
-				background2.setTextureRect(sf::IntRect(0, 0, 0, 0));
+				foreground.setTextureRect(sf::IntRect(0, 0, 0, 0));
 				setSprite();
 			}
 			else if (yPos == 5 && xPos == 6)
 			{
 				leftMove = true;
 				leftMask = 16;
-				background2.setTextureRect(sf::IntRect(0, 0, 0, 0));
+				foreground.setTextureRect(sf::IntRect(0, 0, 0, 0));
 				setSprite();
 			}
 		}
 	}
 	else
 	{
-		background2.setPosition(
-			sf::Vector2f(foreground.getPosition().x + leftMask,
-				foreground.getPosition().y + topMask)
+		foreground.setPosition(
+			sf::Vector2f(background.getPosition().x + leftMask,
+				background.getPosition().y + topMask)
 		);
 	}
 }
@@ -281,35 +281,35 @@ void Sand::reset(int round, bool full, bool sandLoc[12][12])
 void Sand::setSprite()
 {
 	if (upMove && downMove && rightMove && leftMove)
-		foreground.loadSprite(14);
+		background.loadSprite(14);
 	else if (upMove && downMove && leftMove)
-		foreground.loadSprite(12);
+		background.loadSprite(12);
 	else if (upMove && downMove && rightMove)
-		foreground.loadSprite(13);
+		background.loadSprite(13);
 	else if (downMove && leftMove && rightMove)
-		foreground.loadSprite(10);
+		background.loadSprite(10);
 	else if (upMove && leftMove && rightMove)
-		foreground.loadSprite(11);
+		background.loadSprite(11);
 	else if (upMove && rightMove)
-		foreground.loadSprite(8);
+		background.loadSprite(8);
 	else if (upMove && leftMove)
-		foreground.loadSprite(9);
+		background.loadSprite(9);
 	else if (downMove && rightMove)
-		foreground.loadSprite(6);
+		background.loadSprite(6);
 	else if (downMove && leftMove)
-		foreground.loadSprite(7);
+		background.loadSprite(7);
 	else if (leftMove && rightMove)
-		foreground.loadSprite(5);
+		background.loadSprite(5);
 	else if (upMove && downMove)
-		foreground.loadSprite(4);
+		background.loadSprite(4);
 	else if (rightMove)
-		foreground.loadSprite(2);
+		background.loadSprite(2);
 	else if (leftMove)
-		foreground.loadSprite(3);
+		background.loadSprite(3);
 	else if (downMove)
-		foreground.loadSprite(0);
+		background.loadSprite(0);
 	else
-		foreground.loadSprite(1);
+		background.loadSprite(1);
 }
 
 
@@ -317,7 +317,7 @@ void Sand::setSprite()
 // collisions with player.
 sf::FloatRect& Sand::getBackCollider()
 {
-	boundingBox = foreground.getGlobalBounds();
+	boundingBox = background.getGlobalBounds();
 
 	return boundingBox;
 }
@@ -327,7 +327,7 @@ sf::FloatRect& Sand::getBackCollider()
 // collisions with other objects.
 sf::FloatRect& Sand::getForeCollider()
 {
-	boundingBox = background2.getGlobalBounds();
+	boundingBox = foreground.getGlobalBounds();
 
 	return boundingBox;
 }
@@ -361,8 +361,8 @@ void Sand::drawObject()
 {
 	if (getBackActive())
 	{
+		window->draw(background);
 		window->draw(foreground);
-		window->draw(background2);
 	}
 }
 
@@ -376,8 +376,8 @@ void Sand::setActive(const bool& active)
 // If false, check sides, if true, check nothing.
 void Sand::preReset(sf::Vector2f pos)
 {
+	background.setPosition(pos);
 	foreground.setPosition(pos);
-	background2.setPosition(pos);
 	setActive(true);
 }
 
@@ -412,5 +412,5 @@ bool Sand::getMove(int direction)
 // Returns the position of the sand.
 sf::Vector2f Sand::getPosition()
 {
-	return foreground.getPosition();
+	return background.getPosition();
 }

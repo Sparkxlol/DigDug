@@ -56,6 +56,7 @@ private:
 	sf::Vector2f floatTarget;
 	float speed; // Speed at which enemy moves per frame.
 	int currentCollides;
+	sf::Vector2f lastSquare;
 
 	// Death based variables.
 	std::string deathType;

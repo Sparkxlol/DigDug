@@ -178,15 +178,12 @@ void DigDug::playerInput()
 
 	// If shot isn't active, resets the shot and allows movement
 	// and a new shot.
-	if (!shot.getActive())
+	if (!shot.getActive() && shooting)
 	{
-		if (shooting)
-		{
-			shootWait.restart();
-			shot.reset(getPosition());
-			shooting = false;
-			setCanMove(true);
-		}
+		shootWait.restart();
+		shot.reset(getPosition());
+		shooting = false;
+		setCanMove(true);
 	}
 	// If a shot is active, and input is opposite of direction,
 	// disconnect shot.
@@ -217,6 +214,7 @@ void DigDug::playerInput()
 		case z:
 			if (!shot.getActive() && shootWait.getElapsedTime().asSeconds() > .1f)
 			{
+				shot.reset(getPosition());
 				anim.setActive(false);
 				setCanMove(false);
 			}

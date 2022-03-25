@@ -29,8 +29,8 @@ private:
 
 	Game* game;
 	sf::RenderWindow* window;
-	Spritesheet foreground; // Foreground sprite with black that will be shown as the player walks into the sand.
-	Spritesheet background2; // Background sprite of sand which is the colorful part, which will be draw over with foreground as player walks.
+	Spritesheet background; // Foreground sprite with black that will be shown as the player walks into the sand.
+	Spritesheet foreground; // Background sprite of sand which is the colorful part, which will be draw over with foreground as player walks.
 	sf::FloatRect boundingBox; // Allows for collisions with enemies.
 	int topMask; // Pixels that the TextureRect will show horizontally on background.
 	int bottomMask;
