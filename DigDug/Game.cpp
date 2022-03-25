@@ -439,7 +439,7 @@ bool Game::enemiesLeft()
 }
 
 
-// Updates all objects.
+// Updates all objects, as well as setting up initial menu and level.
 void Game::update()
 {
 	// Sets up menu if active, and if previously active, loads initial level.

@@ -191,8 +191,8 @@ void Enemy::movement()
 		// If xPos/yPos is close to 0 set to 0,
 		// to check when digDug is close 
 		// enough to the axis to move on that axis.
-		xPos = (xPos < getSpeed()) ? 0.0f : xPos;
-		yPos = (yPos < getSpeed()) ? 0.0f : yPos;
+		xPos = (xPos < getSpeed() + getSpeed() / 2) ? 0.0f : xPos;
+		yPos = (yPos < getSpeed() + getSpeed() / 2) ? 0.0f : yPos;
 
 		// If floating then moveFloat.
 		if (canFloat)
@@ -236,7 +236,11 @@ void Enemy::movement()
 				// Makes sure not out of range.
 				if (currentPath < path.size())
 				{
-					moveDir = path.at(currentPath);
+					// Make sure enemy doesn't go through walls.
+					if (sandCollided[path.at(currentPath)])
+						moveDir = moveTowardPlayer();				
+					else
+						moveDir = path.at(currentPath);
 					currentPath++;
 					if (currentPath + 1 == path.size())
 						currentCollides = 1;
@@ -296,6 +300,11 @@ void Enemy::movement()
 				anim.setAnimation(0, 1, .2f, true);
 		}
 
+		// If enemy is offscreen, it is killed.
+		if (getPosition().x <= -15.5 || getPosition().x >= 15 * 16
+			|| getPosition().y < 16 || getPosition().y >= 14 * 16)
+			die("offscreen");
+
 		// Floats if ever stuck/colliding.
 		if (moveDir == -1)
 			moveDir = moveFloat();
@@ -320,11 +329,6 @@ void Enemy::movement()
 		}
 
 		setDirection(moveDir);
-
-		// If enemy is offscreen, it is killed.
-		if (getPosition().x < -16 || getPosition().x >= 15 * 16
-			|| getPosition().y < 16 || getPosition().y >= 14 * 16)
-			die("offscreen");
 	}
 	else
 	{
@@ -337,8 +341,12 @@ void Enemy::movement()
 		}
 		if (deathType == "rock")
 		{
+			// If not removed from screen after rock despawn, kill enemy.
 			if (deathWait.getElapsedTime().asSeconds() > 5.0f)
+			{
+				game->createScore(getPosition(), "rock");
 				setActive(false);
+			}
 		}
 	}
 }
@@ -466,8 +474,8 @@ int Enemy::moveFloat()
 	if (abs(currentPos.x - playerPos.x) < floatDistance 
 		&& abs(currentPos.y - playerPos.y) < floatDistance)
 	{
-		int topPlayerPosX = static_cast<int>(playerPos.x) - (static_cast<int>(playerPos.x) % 16);
-		int topPlayerPosY = static_cast<int>(playerPos.y) - (static_cast<int>(playerPos.y) % 16);
+		float topPlayerPosX = static_cast<int>(playerPos.x) - (static_cast<int>(playerPos.x) % 16) + .05f;
+		float topPlayerPosY = static_cast<int>(playerPos.y) - (static_cast<int>(playerPos.y) % 16) + .05f;
 		if (floatTarget.x == -1)
 			floatTarget = sf::Vector2f(topPlayerPosX, topPlayerPosY);
 	}
@@ -649,7 +657,7 @@ bool Enemy::getSandCollision(int xPos, int yPos, int direction)
 void Enemy::findTarget(sf::Vector2f target, sf::Vector2f currentPos,
 	int lastPath, std::vector<int> currentPath)
 {
-	static const int maxPathLength = 15; // Game lags if too high,
+	static const int maxPathLength = 12; // Game lags if too high,
 	// but movement can still occur without finding a direct path.
 
 	// If at the target and no path is found or the path is shorter than
