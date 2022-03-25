@@ -30,6 +30,9 @@ int main()
                 window.close();
         }
 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
+            window.close();
+
         if (clock.getElapsedTime().asSeconds() > 1)
         {
             std::cout << frames << "\n";
