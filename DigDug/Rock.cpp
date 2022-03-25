@@ -102,15 +102,21 @@ void Rock::update()
 	{
 		if (anim.getFinished())
 		{
+			sf::FloatRect largeCol = GameObject::getCollider();
+			largeCol.left -= 8.0f;
+			largeCol.width += 16.0f;
+			largeCol.top -= 8.0f;
+			largeCol.height += 16.0f;
+
 			die();
 
-			if (game->checkCollision(GameObject::getCollider(), Game::Object::dig, 0)
+			if (game->checkCollision(largeCol, Game::Object::dig, 0)
 				&& game->getDigDugPointer()->getDeathType() == "rock")
 				game->getDigDugPointer()->setActive(false);
 
 			for (int i = 0; i < game->getArrLength(Game::Object::enemy); i++)
 			{
-				if (game->checkCollision(GameObject::getCollider(), Game::Object::enemy, i)
+				if (game->checkCollision(largeCol, Game::Object::enemy, i)
 					&& game->getEnemyPointer(i)->getDeathType() == "rock")
 				{
 					game->getEnemyPointer(i)->setActive(false);

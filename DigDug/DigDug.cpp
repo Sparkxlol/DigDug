@@ -212,14 +212,15 @@ void DigDug::playerInput()
 			}
 			break;
 		case z:
-			if (!shot.getActive() && shootWait.getElapsedTime().asSeconds() > .1f)
+			// ShootWait is the timer after shooting to shoot again.
+			if (!shot.getActive() && shootWait.getElapsedTime().asSeconds() > .25f)
 			{
 				shot.reset(getPosition());
 				anim.setActive(false);
 				setCanMove(false);
 			}
 			// If shot is already active, or the shot reset timer has been elapsed.
-			if (shot.getActive() || shootWait.getElapsedTime().asSeconds() > .1f)
+			if (shot.getActive() || shootWait.getElapsedTime().asSeconds() > .25f)
 				shoot();
 			break;
 		default:

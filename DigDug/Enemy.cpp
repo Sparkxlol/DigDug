@@ -37,12 +37,12 @@ void Enemy::changeCurrentPump(int pump)
 			currentPump += pump;
 			pumpClock.restart();
 
-			// Must implement direction based exploding as well as move object to left/right when big
 			// If greater than 0 pumps, make sprite larger.
 			if (currentPump > 0)
 			{
 				setPosition(sf::Vector2f(initialPosition.x - 8, initialPosition.y));
-				spritesheet.setSize(sf::Vector2i(32, 32), sf::Vector2i(0, 32), currentPump - 1);
+				spritesheet.setSize(sf::Vector2i(32, 32),
+					sf::Vector2i(0, 32), currentPump - 1);
 				anim.setActive(false);
 			}
 			// If 0 pumps, make sprite normal size.
@@ -74,6 +74,8 @@ void Enemy::die(std::string type)
 			setActive(false);
 		else if (type == "rock") // Changes sprite to correct animation and size.
 		{
+			if (currentPump != 0)
+				setPosition(initialPosition);
 			spritesheet.setSize(sf::Vector2i(16, 16), sf::Vector2i(0, 0), 0);
 			switch (getDirection())
 			{
@@ -136,7 +138,8 @@ void Enemy::pumpUpdate()
 				currentPump = 4;
 			}
 			// If last sprite has been active for .5f seconds then die.
-			else if (getCurrentPump() == 4 && pumpClock.getElapsedTime().asSeconds() > .5f)
+			else if (getCurrentPump() == 4 
+				&& pumpClock.getElapsedTime().asSeconds() > .5f)
 				die("pump");
 		}
 		// If pump clock is greater than 1, deflate the enemy by 1.
@@ -482,8 +485,10 @@ int Enemy::moveFloat()
 	if (abs(currentPos.x - playerPos.x) < floatDistance 
 		&& abs(currentPos.y - playerPos.y) < floatDistance)
 	{
-		float topPlayerPosX = static_cast<int>(playerPos.x) - (static_cast<int>(playerPos.x) % 16) + .05f;
-		float topPlayerPosY = static_cast<int>(playerPos.y) - (static_cast<int>(playerPos.y) % 16) + .05f;
+		float topPlayerPosX = static_cast<int>(playerPos.x) 
+			- (static_cast<int>(playerPos.x) % 16) + .05f;
+		float topPlayerPosY = static_cast<int>(playerPos.y)
+			- (static_cast<int>(playerPos.y) % 16) + .05f;
 		if (floatTarget.x == -1)
 			floatTarget = sf::Vector2f(topPlayerPosX, topPlayerPosY);
 	}
