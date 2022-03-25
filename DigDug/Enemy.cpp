@@ -25,29 +25,33 @@ Enemy::Enemy(sf::RenderWindow* win, Game* game, EnemyType type)
 // Input can be a negative number 
 void Enemy::changeCurrentPump(int pump)
 {
-	if (currentPump == 0)
-		initialPosition = getPosition();
-
-	// If not maxes out pump then change sprite.
-	if (currentPump < 4)
+	// Prevents dead enemies from being pumped.
+	if (deathType == "none")
 	{
-		currentPump += pump;
-		pumpClock.restart();
+		if (currentPump == 0)
+			initialPosition = getPosition();
 
-		// Must implement direction based exploding as well as move object to left/right when big
-		// If greater than 0 pumps, make sprite larger.
-		if (currentPump > 0)
+		// If not maxes out pump then change sprite.
+		if (currentPump < 4)
 		{
-			setPosition(sf::Vector2f(initialPosition.x - 8, initialPosition.y));
-			spritesheet.setSize(sf::Vector2i(32, 32), sf::Vector2i(0, 32), currentPump - 1);
-			anim.setActive(false);
-		}
-		// If 0 pumps, make sprite normal size.
-		else
-		{
-			setPosition(initialPosition);
-			spritesheet.setSize(sf::Vector2i(16, 16), sf::Vector2i(0, 0), 0);
-			anim.setActive(true);
+			currentPump += pump;
+			pumpClock.restart();
+
+			// Must implement direction based exploding as well as move object to left/right when big
+			// If greater than 0 pumps, make sprite larger.
+			if (currentPump > 0)
+			{
+				setPosition(sf::Vector2f(initialPosition.x - 8, initialPosition.y));
+				spritesheet.setSize(sf::Vector2i(32, 32), sf::Vector2i(0, 32), currentPump - 1);
+				anim.setActive(false);
+			}
+			// If 0 pumps, make sprite normal size.
+			else
+			{
+				setPosition(initialPosition);
+				spritesheet.setSize(sf::Vector2i(16, 16), sf::Vector2i(0, 0), 0);
+				anim.setActive(true);
+			}
 		}
 	}
 }
@@ -68,6 +72,17 @@ void Enemy::die(std::string type)
 		}
 		else if (type == "offscreen")
 			setActive(false);
+		else if (type == "rock") // Changes sprite and pump to 0.
+		{
+			changeCurrentPump(0);
+			switch (getDirection())
+			{
+			case left:
+				anim.setAnimation(10, 11, .5f, false);
+			default:
+				anim.setAnimation(2, 3, .5f, false);
+			}
+		}
 	}
 }
 
@@ -332,13 +347,6 @@ void Enemy::movement()
 	}
 	else
 	{
-		switch (getDirection())
-		{
-		case left:
-			anim.setAnimation(10, 11, .5f, false);
-		default:
-			anim.setAnimation(2, 3, .5f, false);
-		}
 		if (deathType == "rock")
 		{
 			// If not removed from screen after rock despawn, kill enemy.

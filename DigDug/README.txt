@@ -133,7 +133,8 @@
 *   the game.
 * 
 * The Future:
-*   - 
+*   - In the future of this project many things could be created/fixed to make it
+*
 *   - Two Player Mode: This would involve keeping the killed enemies and updated
 *   sand for each player in a vector or class which could be done either in the
 *   game class or in additional class. You would have to also have multiples
