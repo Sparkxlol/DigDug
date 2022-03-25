@@ -2,6 +2,7 @@
 
 int main()
 {
+    // 15 * 16 is the x size of the original game in pixels, 14 * 16 is y.
     sf::RenderWindow window(sf::VideoMode(15 * 16, 14 * 16), "DigDug");
 
     sf::Clock clock;
@@ -9,6 +10,7 @@ int main()
 
     Game* game = new Game(&window);
 
+    // Changes size to be larger for user.
     window.setSize(sf::Vector2u(sf::VideoMode::getDesktopMode().height - 200,
         sf::VideoMode::getDesktopMode().height - 200));
     window.setFramerateLimit(144);

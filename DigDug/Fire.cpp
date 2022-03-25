@@ -74,12 +74,14 @@ void Fire::update()
 		// Increaes size of frame and moves it to correct location.
 		if (getDirection() == right)
 		{
-			spritesheet.setSize(sf::Vector2i((frame + 1) * 16, 16), sf::Vector2i(startX, 0), 0);
+			spritesheet.setSize(sf::Vector2i((frame + 1) * 16, 16),
+				sf::Vector2i(startX, 0), 0);
 		}
 		else if (getDirection() == left)
 		{
 			move(sf::Vector2f(-16, 0));
-			spritesheet.setSize(sf::Vector2i((frame + 1) * 16, 16), sf::Vector2i(startX, 16), 0);
+			spritesheet.setSize(sf::Vector2i((frame + 1) * 16, 16),
+				sf::Vector2i(startX, 16), 0);
 		}
 
 		clock.restart();

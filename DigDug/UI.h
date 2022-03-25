@@ -1,5 +1,6 @@
 #pragma once
 #include "Spritesheet.h"
+#include <SFML/Graphics.hpp>
 #include <fstream>
 
 class UI

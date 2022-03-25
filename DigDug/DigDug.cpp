@@ -89,13 +89,16 @@ void DigDug::update()
 		collide();
 
 	//if sound is stopped and should be playing, play sound (playing for first time)
-	if (sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Stopped && playTheme)
+	if (sounds.at((int)SoundChoice::theme).getStatus() 
+		== sf::Sound::Status::Stopped && playTheme)
 		sounds.at((int)SoundChoice::theme).play();
 	//if sound is paused and should be playing, play sound
-	else if (sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Paused && playTheme)
+	else if (sounds.at((int)SoundChoice::theme).getStatus()
+		== sf::Sound::Status::Paused && playTheme)
 		sounds.at((int)SoundChoice::theme).play();
 	//if sound is playing and should stop, pause sound
-	else if(sounds.at((int)SoundChoice::theme).getStatus() == sf::Sound::Status::Playing && !playTheme)
+	else if(sounds.at((int)SoundChoice::theme).getStatus()
+		== sf::Sound::Status::Playing && !playTheme)
 		sounds.at((int)SoundChoice::theme).pause();
 
 	playerInput();

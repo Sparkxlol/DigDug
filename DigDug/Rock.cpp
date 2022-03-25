@@ -126,7 +126,8 @@ void Rock::update()
 		}
 	}
 	// If falling and has collided, end fall.
-	else if (isFalling && bottomCollider)//kills rock if collides with bottom sand or position is lowest possible
+	//kills rock if collides with bottom sand or position is lowest possible
+	else if (isFalling && bottomCollider)
 	{
 		isFalling = false;
 		endFalling = true;
@@ -177,7 +178,8 @@ void Rock::collide()
 			{
 				Enemy* const currentEnemy = game->getEnemyPointer(i);
 				currentEnemy->die("rock");
-				currentEnemy->setPosition(sf::Vector2f(currentEnemy->getPosition().x, getPosition().y + 6.0f));
+				currentEnemy->setPosition(sf::Vector2f(currentEnemy->getPosition().x,
+					getPosition().y + 6.0f));
 				if (anim.getFinished())
 				{
 					currentEnemy->setActive(false);
@@ -191,7 +193,8 @@ void Rock::collide()
 		{
 			DigDug* const currentDig = game->getDigDugPointer();
 			currentDig->die("rock");
-			currentDig->setPosition(sf::Vector2f(currentDig->getPosition().x, getPosition().y + 6.0f));
+			currentDig->setPosition(sf::Vector2f(currentDig->getPosition().x,
+				getPosition().y + 6.0f));
 			if (anim.getFinished())
 				currentDig->setActive(false);
 		}

@@ -56,7 +56,8 @@ bool Spritesheet::loadSprite(int currentSprite)
 
 	// Sets the sprite to the correponding tile based on currentSprite.
 	// IntRect has xPos, yPos, width, height.
-	setTextureRect(sf::IntRect(xTile * spriteSize.x + startPos.x, yTile * spriteSize.y + startPos.y, 
+	setTextureRect(sf::IntRect(xTile * spriteSize.x + startPos.x,
+		yTile * spriteSize.y + startPos.y, 
 		spriteSize.x, spriteSize.y));
 
 	return true;
