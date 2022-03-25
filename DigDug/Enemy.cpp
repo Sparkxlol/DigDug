@@ -72,9 +72,9 @@ void Enemy::die(std::string type)
 		}
 		else if (type == "offscreen")
 			setActive(false);
-		else if (type == "rock") // Changes sprite and pump to 0.
+		else if (type == "rock") // Changes sprite to correct animation and size.
 		{
-			changeCurrentPump(0);
+			spritesheet.setSize(sf::Vector2i(16, 16), sf::Vector2i(0, 0), 0);
 			switch (getDirection())
 			{
 			case left:
